@@ -12,5 +12,40 @@ module.exports = defineConfig({
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     }
-  }
+  },
+  modules: [
+    {
+      resolve: "./modules/digital-product",
+    },
+    {
+      resolve: "@medusajs/fulfillment",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/fulfillment-manual",
+            id: "manual",
+          },
+          {
+            resolve: "./src/modules/digital-product-fulfillment",
+            id: "digital"
+          }
+        ],
+      },
+    },
+    {
+      resolve: "@medusajs/notification",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/notification-local",
+            id: "local",
+            options: {
+              name: "Local Notification Provider",
+              channels: ["email"],
+            },
+          },
+        ],
+      },
+    },
+  ],
 })
