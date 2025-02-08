@@ -17,6 +17,11 @@ export class MedusaService {
     });
   }
 
+  // Add getter for the medusa client
+  get client(): Medusa {
+    return this.medusaClient;
+  }
+
   getProducts(): Observable<any> {
     return from(this.medusaClient.products.list());
   }

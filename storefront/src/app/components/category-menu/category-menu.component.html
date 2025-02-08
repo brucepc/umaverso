@@ -1,0 +1,18 @@
+<nav class="category-nav">
+  @for (category of categories; track category.id) {
+    <div class="category-item" [matMenuTriggerFor]="menu">
+      <span>{{ category.name }}</span>
+      @if (category.category_children?.length) {
+        <mat-icon>expand_more</mat-icon>
+      }
+    </div>
+
+    <mat-menu #menu="matMenu" class="category-submenu">
+      @for (child of category.category_children; track child.id) {
+        <button mat-menu-item (click)="navigateToCategory(child.id)">
+          {{ child.name }}
+        </button>
+      }
+    </mat-menu>
+  }
+</nav> 
