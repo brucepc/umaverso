@@ -1,17 +1,13 @@
 <mat-toolbar color="primary">
-  <span>Umaverso</span>
+  <a routerLink="/">
+    <mat-icon svgIcon="umaverso-logo" style="height: 45px; width: auto;"></mat-icon>
+  </a>
   <span class="spacer"></span>
   <button mat-icon-button>
     <mat-icon>shopping_cart</mat-icon>
   </button>
 </mat-toolbar>
 
-<mat-toolbar class="secondary-toolbar">
-  <app-category-menu />
-</mat-toolbar>
+<router-outlet />
 
-<mat-sidenav-container>
-  <mat-sidenav-content>
-    <router-outlet />
-  </mat-sidenav-content>
-</mat-sidenav-container>
+<app-footer />

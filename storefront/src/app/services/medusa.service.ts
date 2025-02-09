@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import Medusa from "@medusajs/medusa-js"
 import { Observable, from } from 'rxjs';
+import { StoreGetProductsParams } from '../interfaces/store-params.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -22,8 +23,8 @@ export class MedusaService {
     return this.medusaClient;
   }
 
-  getProducts(): Observable<any> {
-    return from(this.medusaClient.products.list());
+  getProducts(options?: StoreGetProductsParams): Observable<any> {
+    return from(this.medusaClient.products.list(options as any));
   }
 
   getProduct(id: string): Observable<any> {

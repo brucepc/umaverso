@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { CategoryService } from '../../services/category.service';
-import { Router } from '@angular/router';
+import { CommonModule, isPlatformServer } from '@angular/common';
+import { Component, Inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatIconModule } from '@angular/material/icon';
-import { CommonModule } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
+import { CategoryService } from '../../services/category.service';
 
 @Component({
   selector: 'app-category-menu',
@@ -13,17 +13,19 @@ import { CommonModule } from '@angular/common';
     CommonModule,
     MatListModule,
     MatMenuModule,
-    MatIconModule
+    MatIconModule,
+    RouterLink
   ],
   templateUrl: './category-menu.component.html',
   styleUrls: ['./category-menu.component.scss']
 })
 export class CategoryMenuComponent implements OnInit {
-  categories: any[] = [];
+  categories = signal<any[]>([]);
 
   constructor(
     private categoryService: CategoryService,
-    private router: Router
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
   ngOnInit(): void {
@@ -31,14 +33,21 @@ export class CategoryMenuComponent implements OnInit {
   }
 
   private loadCategories(): void {
-    this.categoryService.getCategories().subscribe({
-      next: (response) => {
-        this.categories = response.product_categories.filter((cat: any) => !cat.parent_category_id);
-      },
-      error: (error) => {
-        console.error('Error loading categories:', error);
-      }
-    });
+    if (isPlatformServer(this.platformId)) {
+      // Server-side: Get categories from res.locals
+      this.categories = (global as any).res.locals.categories || [];
+    } else {
+      this.categoryService.getCategories().subscribe({
+        next: (response) => {
+          this.categories.set(
+            response.product_categories.filter((cat: any) => !cat.parent_category_id)
+          );
+        },
+        error: (error) => {
+          console.error('Error loading categories:', error);
+        }
+      });
+    }
   }
 
   navigateToCategory(categoryId: string): void {

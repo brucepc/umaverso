@@ -1,18 +1,22 @@
 <mat-card class="product-card">
   @if (product.thumbnail) {
-    <img mat-card-image [src]="product.thumbnail" [alt]="product.title">
+  <img mat-card-image [src]="product.thumbnail" [alt]="product.title">
   }
   <mat-card-header>
-    <mat-card-title>{{product.title}}</mat-card-title>
+    <mat-card-title>
+      <a [routerLink]="['/product', product.id]">
+        {{product.title}}
+      </a>
+    </mat-card-title>
   </mat-card-header>
   <mat-card-content>
     <p>{{product.description}}</p>
     @if (product?.variants?.length && product.variants[0]?.prices?.length) {
-      <p class="price">${{product.variants[0].prices[0].amount / 100}}</p>
+    <p class="price">${{product.variants[0].prices[0].amount / 100}}</p>
     }
   </mat-card-content>
   <mat-card-actions align="end">
-    <button mat-button color="primary">Details</button>
+    <button mat-button color="primary" [routerLink]="['/product', product.id]">Details</button>
     <button mat-raised-button color="primary">
       <mat-icon>add_shopping_cart</mat-icon>
       Add to Cart

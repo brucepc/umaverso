@@ -1,18 +1,23 @@
 <nav class="category-nav">
-  @for (category of categories; track category.id) {
+  @for (category of categories(); track category.handle) {
+    @if (category.category_children?.length) {
     <div class="category-item" [matMenuTriggerFor]="menu">
-      <span>{{ category.name }}</span>
-      @if (category.category_children?.length) {
-        <mat-icon>expand_more</mat-icon>
-      }
+      <span (click)="navigateToCategory(category.handle)">{{ category.name }}</span>
+      <mat-icon>expand_more</mat-icon>
     </div>
 
-    <mat-menu #menu="matMenu" class="category-submenu">
-      @for (child of category.category_children; track child.id) {
-        <button mat-menu-item (click)="navigateToCategory(child.id)">
-          {{ child.name }}
-        </button>
-      }
-    </mat-menu>
+
+      <mat-menu #menu="matMenu" class="category-submenu">
+        @for (child of category.category_children; track child.handle) {
+          <button mat-menu-item (click)="navigateToCategory(child.handle)">
+            {{ child.name }}
+          </button>
+        }
+      </mat-menu>
+    }@else {
+      <div class="category-item">
+        <a [routerLink]="['/category', category.handle]">{{ category.name }}</a>
+      </div>
+    }
   }
 </nav> 

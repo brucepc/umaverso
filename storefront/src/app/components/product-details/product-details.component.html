@@ -1,0 +1,37 @@
+@if (loading) {
+  <div class="loading-container">
+    <mat-spinner></mat-spinner>
+  </div>
+}
+
+@if (error) {
+  <div class="error-message">
+    {{ error }}
+  </div>
+}
+
+@if (product) {
+  <mat-card class="product-details">
+    <mat-card-header>
+      <mat-card-title>{{ product.title }}</mat-card-title>
+    </mat-card-header>
+    
+    @if (product.thumbnail) {
+      <img mat-card-image [src]="product.thumbnail" [alt]="product.title">
+    }
+
+    <mat-card-content>
+      <p>{{ product.description }}</p>
+      @if (product?.variants?.length && product.variants[0]?.prices?.length) {
+        <p class="price">${{ product.variants[0].prices[0].amount / 100 }}</p>
+      }
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-raised-button color="primary">
+        <mat-icon>add_shopping_cart</mat-icon>
+        Add to Cart
+      </button>
+    </mat-card-actions>
+  </mat-card>
+} 
