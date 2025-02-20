@@ -1,10 +1,13 @@
-import { Component } from '@angular/core';
-import { MatIconButton } from '@angular/material/button';
-import { MatIcon, MatIconRegistry } from '@angular/material/icon';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { DomSanitizer } from '@angular/platform-browser';
-import { RouterOutlet } from '@angular/router';
-import { FooterComponent } from './components/footer/footer.component';
+import {Component} from '@angular/core';
+import {MatIconButton} from '@angular/material/button';
+import {MatIcon, MatIconRegistry} from '@angular/material/icon';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {DomSanitizer} from '@angular/platform-browser';
+import {RouterOutlet} from '@angular/router';
+import {CurrencySelectorComponent} from "./components/currency-selector/currency-selector.component";
+import {FooterComponent} from './components/footer/footer.component';
+import {UserLocationService} from './services/user-location.service';
+
 
 @Component({
   selector: 'app-root',
@@ -14,8 +17,10 @@ import { FooterComponent } from './components/footer/footer.component';
     MatToolbarModule,
     MatIcon,
     MatIconButton,
-    FooterComponent
+    FooterComponent,
+    CurrencySelectorComponent
   ],
+  providers: [UserLocationService],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
@@ -32,5 +37,4 @@ export class AppComponent {
       this.domSanitizer.bypassSecurityTrustResourceUrl('/umaverso-logo.svg')
     );
   }
-
 }

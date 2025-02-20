@@ -1,6 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { MedusaService } from '../../services/medusa.service';
+import { Component, input } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,33 +18,8 @@ import { CommonModule } from '@angular/common';
   templateUrl: './product-details.component.html',
   styleUrls: ['./product-details.component.scss']
 })
-export class ProductDetailsComponent implements OnInit {
-  product: any;
-  loading = true;
-  error: string | null = null;
-
-  constructor(
-    private route: ActivatedRoute,
-    private medusaService: MedusaService
-  ) {}
-
-  ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      this.loadProduct(params['id']);
-    });
-  }
-
-  private loadProduct(id: string): void {
-    this.medusaService.getProduct(id).subscribe({
-      next: (response) => {
-        this.product = response.product;
-        this.loading = false;
-      },
-      error: (error) => {
-        this.error = 'Error loading product details. Please try again later.';
-        this.loading = false;
-        console.error('Error fetching product:', error);
-      }
-    });
-  }
+export class ProductDetailsComponent {
+  product = input<any>(null);
+  loading = input<boolean>(false);
+  error = input<string | null>(null);
 } 

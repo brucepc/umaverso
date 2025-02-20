@@ -1,25 +1,23 @@
 import { Routes } from '@angular/router';
-import { ProductDetailsComponent } from './components/product-details/product-details.component';
-import { ProductListComponent } from './components/product-list/product-list.component';
-import { MainMenuViewportComponent } from './viewports/main-menu-viewport/main-menu-viewport.component';
+import { ProductListPageComponent } from './pages/product-list-page/product-list-page.component';
+import { ProductDetailsPageComponent } from './pages/product-details-page/product-details-page.component';
+import { CartPageComponent } from './pages/cart-page/cart-page.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: MainMenuViewportComponent,
-    children: [
-      {
-        path: '',
-        component: ProductListComponent
-      },
-      {
-        path: 'category/:handle',
-        component: ProductListComponent
-      },
-      {
-        path: 'product/:id',
-        component: ProductDetailsComponent
-      }
-    ]
+    component: ProductListPageComponent
+  },
+  {
+    path: 'category/:handle',
+    component: ProductListPageComponent
+  },
+  {
+    path: 'product/:handle',
+    component: ProductDetailsPageComponent
+  },
+  {
+    path: 'cart',
+    component: CartPageComponent
   }
 ];

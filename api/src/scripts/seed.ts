@@ -13,14 +13,10 @@ import {
   linkSalesChannelsToStockLocationWorkflow,
   updateStoresWorkflow,
 } from "@medusajs/medusa/core-flows";
-import { CreateInventoryLevelInput, ExecArgs } from "@medusajs/framework/types";
-import {
-  ContainerRegistrationKeys,
-  Modules,
-  ProductStatus,
-} from "@medusajs/framework/utils";
+import {CreateInventoryLevelInput, ExecArgs} from "@medusajs/framework/types";
+import {ContainerRegistrationKeys, Modules, ProductStatus,} from "@medusajs/framework/utils";
 
-export default async function seedDemoData({ container }: ExecArgs) {
+export default async function seedDemoData({container}: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER);
   const link = container.resolve(ContainerRegistrationKeys.LINK);
   const query = container.resolve(ContainerRegistrationKeys.QUERY);
@@ -28,7 +24,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
   const salesChannelModuleService = container.resolve(Modules.SALES_CHANNEL);
   const storeModuleService = container.resolve(Modules.STORE);
 
-  const countries = ["gb", "de", "dk", "se", "fr", "es", "it"];
+  const countries = ["pt", "gb", "de", "dk", "se", "fr", "es", "it"];
 
   logger.info("Seeding store data...");
   const [store] = await storeModuleService.listStores();
@@ -38,7 +34,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
 
   if (!defaultSalesChannel.length) {
     // create the default sales channel
-    const { result: salesChannelResult } = await createSalesChannelsWorkflow(
+    const {result: salesChannelResult} = await createSalesChannelsWorkflow(
       container
     ).run({
       input: {
@@ -54,23 +50,20 @@ export default async function seedDemoData({ container }: ExecArgs) {
 
   await updateStoresWorkflow(container).run({
     input: {
-      selector: { id: store.id },
+      selector: {id: store.id},
       update: {
         supported_currencies: [
           {
             currency_code: "eur",
             is_default: true,
-          },
-          {
-            currency_code: "usd",
-          },
+          }
         ],
         default_sales_channel_id: defaultSalesChannel[0].id,
       },
     },
   });
   logger.info("Seeding region data...");
-  const { result: regionResult } = await createRegionsWorkflow(container).run({
+  const {result: regionResult} = await createRegionsWorkflow(container).run({
     input: {
       regions: [
         {
@@ -94,7 +87,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
   logger.info("Finished seeding tax regions.");
 
   logger.info("Seeding stock location data...");
-  const { result: stockLocationResult } = await createStockLocationsWorkflow(
+  const {result: stockLocationResult} = await createStockLocationsWorkflow(
     container
   ).run({
     input: {
@@ -122,7 +115,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
   });
 
   logger.info("Seeding fulfillment data...");
-  const { result: shippingProfileResult } =
+  const {result: shippingProfileResult} =
     await createShippingProfilesWorkflow(container).run({
       input: {
         data: [
@@ -142,6 +135,10 @@ export default async function seedDemoData({ container }: ExecArgs) {
       {
         name: "Europe",
         geo_zones: [
+          {
+            country_code: "pt",
+            type: "country",
+          },
           {
             country_code: "gb",
             type: "country",
@@ -224,44 +221,6 @@ export default async function seedDemoData({ container }: ExecArgs) {
           },
         ],
       },
-      {
-        name: "Express Shipping",
-        price_type: "flat",
-        provider_id: "manual_manual",
-        service_zone_id: fulfillmentSet.service_zones[0].id,
-        shipping_profile_id: shippingProfile.id,
-        type: {
-          label: "Express",
-          description: "Ship in 24 hours.",
-          code: "express",
-        },
-        prices: [
-          {
-            currency_code: "usd",
-            amount: 10,
-          },
-          {
-            currency_code: "eur",
-            amount: 10,
-          },
-          {
-            region_id: region.id,
-            amount: 10,
-          },
-        ],
-        rules: [
-          {
-            attribute: "enabled_in_store",
-            value: '"true"',
-            operator: "eq",
-          },
-          {
-            attribute: "is_return",
-            value: "false",
-            operator: "eq",
-          },
-        ],
-      },
     ],
   });
   logger.info("Finished seeding fulfillment data.");
@@ -275,7 +234,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
   logger.info("Finished seeding stock location data.");
 
   logger.info("Seeding publishable API key data...");
-  const { result: publishableApiKeyResult } = await createApiKeysWorkflow(
+  const {result: publishableApiKeyResult} = await createApiKeysWorkflow(
     container
   ).run({
     input: {
@@ -300,7 +259,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
 
   logger.info("Seeding product data...");
 
-  const { result: categoryResult } = await createProductCategoriesWorkflow(
+  const {result: categoryResult} = await createProductCategoriesWorkflow(
     container
   ).run({
     input: {
@@ -821,7 +780,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
 
   logger.info("Seeding inventory levels.");
 
-  const { data: inventoryItems } = await query.graph({
+  const {data: inventoryItems} = await query.graph({
     entity: "inventory_item",
     fields: ["id"],
   });

@@ -1,13 +1,13 @@
-import { Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MedusaService } from '../../services/medusa.service';
-import { ProductCardComponent } from '../product-card/product-card.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { catchError, finalize } from 'rxjs';
-import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
-import { ActivatedRoute } from '@angular/router';
-import { CategoryService } from '../../services/category.service';
+import {Component, signal} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {MedusaService} from '../../services/medusa.service';
+import {ProductCardComponent} from '../product-card/product-card.component';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatGridListModule} from '@angular/material/grid-list';
+import {catchError, finalize} from 'rxjs';
+import {BreadcrumbComponent} from '../breadcrumb/breadcrumb.component';
+import {ActivatedRoute} from '@angular/router';
+import {CategoryService} from '../../services/category.service';
 
 @Component({
   selector: 'app-product-list',
@@ -60,15 +60,16 @@ export class ProductListComponent {
   private loadProducts(categoryId?: string): void {
     this.loading.set(true);
     this.error.set(null);
-    
+
     const options: any = {
       limit: 100
     };
-    
+
     if (categoryId) {
       options.category_id = [categoryId];
     }
-    
+    options.fields = `*variants.calculated_price`;
+
     this.medusaService.getProducts(options).pipe(
       catchError(err => {
         this.error.set('Error loading products. Please try again later.');
