@@ -41,6 +41,6 @@ export class CartPageComponent {
   }
 
   proceedToCheckout() {
-    // TODO: Implement checkout functionality
+    // TODO: Implement checkout-page functionality
   }
 }
