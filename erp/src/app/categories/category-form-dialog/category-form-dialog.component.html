@@ -1,0 +1,22 @@
+<h1 mat-dialog-title>{{ isEditMode ? 'Editar Categoria' : 'Nova Categoria' }}</h1>
+
+<div mat-dialog-content [formGroup]="form" class="dialog-content">
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Nome da Categoria</mat-label>
+    <input matInput formControlName="name" required>
+    <mat-error *ngIf="form.get('name')?.hasError('required')">Campo obrigatório</mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Prefixo para SKU</mat-label>
+    <input matInput formControlName="prefix" required maxlength="5" #prefixInput>
+    <mat-hint align="end">{{ prefixInput.value.length }} / 5</mat-hint>
+    <mat-error *ngIf="form.get('prefix')?.hasError('required')">Campo obrigatório</mat-error>
+    <mat-error *ngIf="form.get('prefix')?.hasError('maxlength')">O prefixo não pode ter mais de 5 caracteres.</mat-error>
+  </mat-form-field>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="form.invalid">Salvar</button>
+</div>

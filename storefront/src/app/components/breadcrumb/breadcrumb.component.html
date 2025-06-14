@@ -1,9 +1,0 @@
-<nav class="breadcrumb">
-  <a routerLink="/" class="breadcrumb-item">Home</a>
-  @for (item of items(); track item.id) {
-    <span class="separator">
-      <mat-icon>chevron_right</mat-icon>
-    </span>
-    <a [routerLink]="item.path" class="breadcrumb-item">{{ item.name }}</a>
-  }
-</nav> 
