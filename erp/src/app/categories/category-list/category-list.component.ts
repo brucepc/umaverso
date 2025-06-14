@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Observable, EMPTY } from 'rxjs';
-import { Category } from '@models/category.model';
+import { Category } from '../../models/category.model';
 import { CategoryService } from '../category.service';
 import { CategoryFormDialogComponent } from '../category-form-dialog/category-form-dialog.component';
 
