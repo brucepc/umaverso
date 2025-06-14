@@ -1,6 +1,16 @@
 <h1 mat-dialog-title>{{ isEditMode ? 'Editar Produto' : 'Novo Produto' }}</h1>
 
 <div mat-dialog-content [formGroup]="form" class="dialog-content">
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Categoria</mat-label>
+    <mat-select formControlName="categoryId" required>
+      <mat-option *ngFor="let category of categories$ | async" [value]="category.id">
+        {{ category.name }}
+      </mat-option>
+    </mat-select>
+    <mat-error *ngIf="form.get('categoryId')?.hasError('required')">Campo obrigatório</mat-error>
+  </mat-form-field>
+
   <div class="form-row">
     <mat-form-field appearance="outline">
       <mat-label>SKU</mat-label>
