@@ -14,6 +14,10 @@ export const routes: Routes = [
         loadComponent: () => import('./categories/category-list/category-list.component').then(c => c.CategoryListComponent)
     },
     {
+        path: 'suppliers',
+        loadComponent: () => import('./suppliers/supplier-list/supplier-list.component').then(c => c.SupplierListComponent)
+    },
+    {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'

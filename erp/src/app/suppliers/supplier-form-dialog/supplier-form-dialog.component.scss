@@ -1,0 +1,34 @@
+:host {
+  display: block;
+}
+
+mat-dialog-content {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.form-grid,
+.address-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.address-title {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.address-grid {
+  grid-template-columns: repeat(3, 1fr);
+
+  .street-field {
+    grid-column: 1 / 3;
+  }
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+} 

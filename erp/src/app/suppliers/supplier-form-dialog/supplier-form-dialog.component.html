@@ -1,0 +1,64 @@
+<form [formGroup]="form" (ngSubmit)="onSave()">
+  <h1 mat-dialog-title>{{ isEditMode ? 'Editar Fornecedor' : 'Adicionar Fornecedor' }}</h1>
+  <mat-dialog-content>
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Nome (Razão Social)</mat-label>
+        <input matInput formControlName="name" required>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>NIF</mat-label>
+        <input matInput formControlName="nif" required>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email" required>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Telefone</mat-label>
+        <input matInput formControlName="phone" required>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Website (URL)</mat-label>
+        <input matInput formControlName="url">
+      </mat-form-field>
+    </div>
+
+    <h2 class="address-title">Endereço</h2>
+    <div formGroupName="address" class="address-grid">
+      <mat-form-field appearance="outline" class="street-field">
+        <mat-label>Rua</mat-label>
+        <input matInput formControlName="street" required>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Número</mat-label>
+        <input matInput formControlName="number" required>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Complemento</mat-label>
+        <input matInput formControlName="complement">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Bairro</mat-label>
+        <input matInput formControlName="neighborhood" required>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Cidade</mat-label>
+        <input matInput formControlName="city" required>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Estado</mat-label>
+        <input matInput formControlName="state" required>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>CEP</mat-label>
+        <input matInput formControlName="zipCode" required>
+      </mat-form-field>
+    </div>
+
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button type="button" (click)="onCancel()">Cancelar</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">Salvar</button>
+  </mat-dialog-actions>
+</form> 
