@@ -1,0 +1,54 @@
+<div class="container">
+  <div class="header">
+    <h1>Ordens de Produção</h1>
+    <button mat-flat-button color="primary" (click)="navigateToForm()">
+      <mat-icon>add</mat-icon>
+      Nova Ordem de Produção
+    </button>
+  </div>
+
+  <mat-table [dataSource]="(productionOrders$ | async) || []" class="mat-elevation-z8">
+    
+    <ng-container matColumnDef="productName">
+      <mat-header-cell *matHeaderCellDef> Produto a Produzir </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.productName}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="quantityToProduce">
+      <mat-header-cell *matHeaderCellDef> Quantidade </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.quantityToProduce}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.status}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="creationDate">
+      <mat-header-cell *matHeaderCellDef> Data de Criação </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.creationDate.toDate() | date:'dd/MM/yyyy HH:mm'}} </mat-cell>
+    </ng-container>
+    
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        
+        <button mat-icon-button color="primary" *ngIf="element.status === 'Pendente'" (click)="startProduction(element)" matTooltip="Iniciar Produção">
+          <mat-icon>play_arrow</mat-icon>
+        </button>
+
+        <button mat-icon-button color="primary" *ngIf="element.status === 'Em Produção'" (click)="completeProduction(element)" matTooltip="Finalizar Produção">
+          <mat-icon>check_circle</mat-icon>
+        </button>
+        
+        <button mat-icon-button *ngIf="element.status === 'Pendente'" (click)="navigateToEdit(element.id)" matTooltip="Editar Ordem">
+          <mat-icon>edit</mat-icon>
+        </button>
+
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+</div>

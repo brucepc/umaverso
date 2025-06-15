@@ -1,0 +1,115 @@
+<div class="container" [formGroup]="form">
+  <header class="page-header">
+    <h1>Novo Pedido de Compra</h1>
+    <div>
+      <button mat-stroked-button (click)="goBack()">Voltar</button>
+      <button mat-raised-button color="primary" (click)="onSave()" [disabled]="form.invalid" style="margin-left: 8px;">
+        Salvar Pedido
+      </button>
+    </div>
+  </header>
+
+  <div class="form-container">
+    <h2>Dados do Cabeçalho</h2>
+    <div class="header-form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Fornecedor</mat-label>
+        <mat-select formControlName="supplier">
+          <mat-option *ngFor="let supplier of suppliers$ | async" [value]="supplier">
+            {{ supplier.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+      <mat-form-field appearance="fill" class="form-field">
+        <mat-label>Data de Emissão</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="issueDate">
+        <mat-hint>DD/MM/YYYY</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="form-field" *ngIf="isEditMode">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status">
+          <mat-option value="OPEN">Aberto</mat-option>
+          <mat-option value="RECEIVED">Recebido</mat-option>
+          <mat-option value="CANCELED">Cancelado</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <h2>Itens do Pedido</h2>
+    <div class="table-container mat-elevation-z4" formArrayName="items">
+      <table mat-table [dataSource]="items.controls">
+        
+        <!-- Product Column -->
+        <ng-container matColumnDef="product">
+          <th mat-header-cell *matHeaderCellDef> Produto </th>
+          <td mat-cell *matCellDef="let item; let i = index" [formGroupName]="i">
+            <mat-form-field appearance="outline" class="item-form-field">
+              <mat-select formControlName="product">
+                <mat-option *ngFor="let product of products$ | async" [value]="product">
+                  {{ product.name }} ({{ product.sku }})
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <!-- Quantity Column -->
+        <ng-container matColumnDef="quantity">
+          <th mat-header-cell *matHeaderCellDef> Quantidade </th>
+          <td mat-cell *matCellDef="let item; let i = index" [formGroupName]="i">
+            <mat-form-field appearance="outline" class="item-form-field">
+              <input matInput type="number" formControlName="quantity">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <!-- Unit Cost Column -->
+        <ng-container matColumnDef="unitCost">
+          <th mat-header-cell *matHeaderCellDef> Custo Unit. </th>
+          <td mat-cell *matCellDef="let item; let i = index" [formGroupName]="i">
+            <mat-form-field appearance="outline" class="dense-form-field">
+              <input matInput type="number" formControlName="unitCost" placeholder="0.00">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <!-- Total Column -->
+        <ng-container matColumnDef="total">
+          <th mat-header-cell *matHeaderCellDef> Total Item </th>
+          <td mat-cell *matCellDef="let item; let i = index" [formGroupName]="i">
+            <mat-form-field appearance="outline" class="dense-form-field">
+              <input matInput type="number" formControlName="total" placeholder="0.00">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Ações </th>
+          <td mat-cell *matCellDef="let item; let i = index">
+            <button mat-icon-button color="warn" (click)="removeItem(i)" matTooltip="Remover Item">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <div class="grand-total-container">
+        <span class="mat-h2">Total Geral: {{ form.get('total')?.value | currency:'BRL' }}</span>
+      </div>
+      
+    </div>
+
+    <button mat-stroked-button (click)="addItem()" class="add-item-button">
+      <mat-icon>add</mat-icon>
+      Adicionar Item
+    </button>
+  </div>
+</div> 

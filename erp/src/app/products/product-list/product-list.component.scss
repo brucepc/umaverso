@@ -2,11 +2,6 @@
   margin-top: 20px;
 }
 
-button mat-icon {
-  margin-right: 8px;
-}
-
-// Estilos para a linha da tabela quando o produto está inativo
 .inactive-row {
   background-color: #fafafa;
   td {
@@ -15,7 +10,6 @@ button mat-icon {
   }
 }
 
-// Estilos para o "chip" de status
 .status-chip {
   display: inline-block;
   padding: 4px 12px;
@@ -26,10 +20,10 @@ button mat-icon {
 }
 
 .status-active {
-  background-color: #4CAF50; // Verde
+  background-color: #4CAF50; /* Verde */
 }
 
 .status-inactive {
-  background-color: #f44336; // Vermelho
-  text-decoration: none !important; // Evita que o texto do chip seja riscado
-}
+  background-color: #f44336; /* Vermelho */
+  text-decoration: none !important;
+} 

@@ -1,11 +1,11 @@
 export interface Supplier {
   id: string;
   name: string; // Razão Social ou Nome
-  nif: string; // Número de Identificação Fiscal
-  email: string;
-  phone: string;
+  nif?: string; // Número de Identificação Fiscal
+  email?: string;
+  phone?: string;
   url?: string; // Website do fornecedor
-  address: {
+  address?: {
     street: string;
     number: string;
     complement?: string;

@@ -1,0 +1,74 @@
+<div class="container">
+  <header class="page-header">
+    <h1>Pedidos de Compra</h1>
+    <button mat-raised-button color="primary" (click)="navigateToForm()">
+      <mat-icon>add</mat-icon>
+      Novo Pedido
+    </button>
+  </header>
+
+  <div class="table-container mat-elevation-z8">
+    <table mat-table [dataSource]="(purchaseOrders$ | async) || []">
+
+      <!-- ID Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> Nº Pedido </th>
+        <td mat-cell *matCellDef="let po"> {{po.id.slice(0, 8)}} </td>
+      </ng-container>
+
+      <!-- Supplier Column -->
+      <ng-container matColumnDef="supplierName">
+        <th mat-header-cell *matHeaderCellDef> Fornecedor </th>
+        <td mat-cell *matCellDef="let po"> {{po.supplierName}} </td>
+      </ng-container>
+
+      <!-- Issue Date Column -->
+      <ng-container matColumnDef="issueDate">
+        <th mat-header-cell *matHeaderCellDef> Data de Emissão </th>
+        <td mat-cell *matCellDef="let po"> {{po.issueDate.toDate() | date:'dd/MM/yyyy'}} </td>
+      </ng-container>
+
+      <!-- Total Value Column -->
+      <ng-container matColumnDef="totalValue">
+        <th mat-header-cell *matHeaderCellDef> Valor Total </th>
+        <td mat-cell *matCellDef="let po"> {{po.totalValue | currency:'EUR'}} </td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Status </th>
+        <td mat-cell *matCellDef="let po">
+          <span class="status-chip" [ngClass]="'status-' + po.status">
+            {{po.status}}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> Ações </th>
+        <td mat-cell *matCellDef="let po">
+          <button mat-icon-button matTooltip="Ver Detalhes">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-icon-button color="primary" [routerLink]="['/purchase-orders', po.id, 'edit']" matTooltip="Editar Pedido">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="cancelOrder(po.id)" matTooltip="Cancelar Pedido">
+            <mat-icon>cancel</mat-icon>
+          </button>
+          <button mat-icon-button color="accent" (click)="receiveOrder(po.id)" matTooltip="Receber Pedido">
+            <mat-icon>inventory</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="6">Nenhum pedido de compra encontrado.</td>
+      </tr>
+    </table>
+  </div>
+</div> 

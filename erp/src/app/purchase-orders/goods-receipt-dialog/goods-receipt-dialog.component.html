@@ -1,0 +1,24 @@
+<h1 mat-dialog-title>Confirmar Recebimento</h1>
+<h2 class="mat-body-2">Pedido: {{ order.id }}</h2>
+<h3 class="mat-subheading-2">Fornecedor: {{ order.supplierName }}</h3>
+
+<mat-dialog-content>
+  <p>Você está prestes a confirmar o recebimento dos seguintes itens, que irão atualizar o estoque:</p>
+
+  <mat-list role="list">
+    <mat-list-item *ngFor="let item of order.items" role="listitem">
+      <span matListItemTitle>{{ item.productName }} ({{ item.productSku }})</span>
+      <span matListItemLine>Quantidade: {{ item.quantity }}</span>
+    </mat-list-item>
+  </mat-list>
+
+  <mat-progress-bar mode="indeterminate" *ngIf="isProcessing"></mat-progress-bar>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="isProcessing">Cancelar</button>
+  <button mat-flat-button color="primary" (click)="onConfirmReceipt()" [disabled]="isProcessing">
+    Confirmar Recebimento
+  </button>
+</mat-dialog-actions>

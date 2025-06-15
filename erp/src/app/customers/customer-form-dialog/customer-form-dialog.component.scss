@@ -1,0 +1,30 @@
+.form-section {
+  margin-bottom: 20px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.street-field {
+  grid-column: 1 / 4; /* Takes up 3/4 of the space */
+}
+
+.number-field {
+  grid-column: 4 / 5; /* Takes up 1/4 of the space */
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+mat-dialog-content {
+  padding-top: 20px;
+}

@@ -1,0 +1,36 @@
+:host {
+  display: block;
+  min-width: 600px;
+  max-width: 80vw;
+}
+
+mat-dialog-content {
+  padding-top: 20px;
+  max-height: 70vh;
+}
+
+.table-container {
+  position: relative;
+  min-height: 200px; /* So the spinner has space to show */
+}
+
+mat-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.positive {
+  color: #4CAF50; /* Green */
+  font-weight: 500;
+}
+
+.negative {
+  color: #F44336; /* Red */
+  font-weight: 500;
+}
+
+td.mat-mdc-cell {
+  padding: 8px;
+}

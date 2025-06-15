@@ -1,0 +1,31 @@
+.table-container {
+  margin-top: 20px;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+  text-transform: uppercase;
+}
+
+.status-OPEN {
+  background-color: #2196F3; // Azul
+}
+
+.status-APPROVED {
+  background-color: #FFC107; // Amarelo
+  color: #333;
+}
+
+.status-RECEIVED {
+  background-color: #4CAF50; // Verde
+}
+
+.status-CANCELED {
+  background-color: #f44336; // Vermelho
+} 

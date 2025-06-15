@@ -33,18 +33,18 @@ export class SupplierFormDialogComponent {
 
   form = this.fb.group({
     name: ['', Validators.required],
-    nif: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]],
-    phone: ['', Validators.required],
+    nif: [''],
+    email: ['', Validators.email],
+    phone: [''],
     url: [''],
     address: this.fb.group({
-      street: ['', Validators.required],
-      number: ['', Validators.required],
+      street: [''],
+      number: [''],
       complement: [''],
-      neighborhood: ['', Validators.required],
-      city: ['', Validators.required],
-      state: ['', Validators.required],
-      zipCode: ['', Validators.required],
+      neighborhood: [''],
+      city: [''],
+      state: [''],
+      zipCode: [''],
     }),
   });
 
