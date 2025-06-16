@@ -1,19 +1,18 @@
 import { Injectable, inject } from '@angular/core';
 import {
   Firestore,
+  Timestamp,
   addDoc,
   collection,
   collectionData,
   doc,
   docData,
   runTransaction,
-  serverTimestamp,
-  updateDoc,
-  Timestamp,
+  serverTimestamp
 } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
-import { ProductionOrder } from '@models/production-order.model';
 import { Product } from '@models/product.model';
+import { ProductionOrder } from '@models/production-order.model';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',

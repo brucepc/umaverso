@@ -39,7 +39,7 @@ export class PurchaseOrderListComponent implements OnInit {
   purchaseOrders$: Observable<PurchaseOrder[]> = this.purchaseOrderService.getPurchaseOrders().pipe(
     tap(orders => this.purchaseOrders = orders)
   );
-  displayedColumns: string[] = ['id', 'supplierName', 'issueDate', 'totalValue', 'status', 'actions'];
+  displayedColumns: string[] = ['code', 'supplierName', 'emissionDate', 'total', 'status', 'actions'];
 
   constructor() {}
 
@@ -51,9 +51,9 @@ export class PurchaseOrderListComponent implements OnInit {
     this.router.navigate(['/purchase-orders/new']);
   }
 
-  cancelOrder(id: string): void {
+  cancelOrder(order: PurchaseOrder): void {
     if (confirm('Tem certeza que deseja cancelar este pedido?')) {
-      this.purchaseOrderService.updatePurchaseOrderStatus(id, 'CANCELED')
+      this.purchaseOrderService.updatePurchaseOrderStatus(order.id, 'CANCELED')
         .then(() => {
           this.snackBar.open('Pedido cancelado com sucesso!', 'Fechar', { duration: 3000 });
         })
@@ -64,17 +64,10 @@ export class PurchaseOrderListComponent implements OnInit {
     }
   }
 
-  receiveOrder(id: string): void {
-    const orderToReceive = this.purchaseOrders.find(p => p.id === id);
-
-    if (orderToReceive) {
-      this.dialog.open(GoodsReceiptDialogComponent, {
-        width: '500px',
-        data: orderToReceive
-      });
-    } else {
-      this.snackBar.open('Erro: Pedido de compra não encontrado.', 'Fechar', { duration: 3000 });
-      console.error('Could not find purchase order with id:', id);
-    }
+  openReceiptDialog(order: PurchaseOrder): void {
+    this.dialog.open(GoodsReceiptDialogComponent, {
+      width: '500px',
+      data: order
+    });
   }
 } 

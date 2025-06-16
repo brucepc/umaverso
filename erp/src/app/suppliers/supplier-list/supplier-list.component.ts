@@ -9,6 +9,7 @@ import { Supplier } from '@models/supplier.model';
 import { Observable, of } from 'rxjs';
 import { SupplierService } from '../supplier.service';
 import { SupplierFormDialogComponent } from '../supplier-form-dialog/supplier-form-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-supplier-list',
@@ -27,9 +28,10 @@ import { SupplierFormDialogComponent } from '../supplier-form-dialog/supplier-fo
 export class SupplierListComponent {
   private supplierService = inject(SupplierService);
   private dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
 
   suppliers$: Observable<Supplier[]> = this.supplierService.getSuppliers();
-  displayedColumns: string[] = ['name', 'nif', 'email', 'phone', 'actions'];
+  displayedColumns: string[] = ['name', 'nif', 'email', 'phone', 'isActive', 'actions'];
 
   openSupplierDialog(supplier?: Supplier): void {
     const dialogRef = this.dialog.open(SupplierFormDialogComponent, {
@@ -40,6 +42,16 @@ export class SupplierListComponent {
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
       // Aqui podemos adicionar a lógica para atualizar a lista após fechar o dialog
+    });
+  }
+
+  toggleSupplierStatus(supplier: Supplier): void {
+    this.supplierService.updateSupplierStatus(supplier.id, !supplier.isActive).then(() => {
+      this.snackBar.open(
+        `Fornecedor ${!supplier.isActive ? 'ativado' : 'desativado'} com sucesso.`,
+        'Fechar',
+        { duration: 3000 }
+      );
     });
   }
 } 

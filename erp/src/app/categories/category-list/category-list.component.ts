@@ -23,7 +23,7 @@ import { CategoryFormDialogComponent } from '../category-form-dialog/category-fo
   styleUrls: ['./category-list.component.scss']
 })
 export class CategoryListComponent implements OnInit {
-  displayedColumns: string[] = ['name', 'prefix', 'productCount', 'actions'];
+  displayedColumns: string[] = ['name', 'prefix', 'actions'];
   categories$: Observable<Category[]> = EMPTY;
 
   constructor(

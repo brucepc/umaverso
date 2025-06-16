@@ -33,7 +33,7 @@ export class SalesOrderListComponent {
   private snackBar = inject(MatSnackBar);
 
   salesOrders$: Observable<SalesOrder[]> = this.salesOrderService.getSalesOrders();
-  displayedColumns: string[] = ['id', 'customerName', 'issueDate', 'totalValue', 'status', 'actions'];
+  displayedColumns: string[] = ['code', 'customerName', 'emissionDate', 'total', 'status', 'actions'];
 
   navigateToForm(): void {
     this.router.navigate(['/sales-orders/new']);

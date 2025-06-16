@@ -1,0 +1,55 @@
+:host {
+  .page-container {
+    padding: 24px;
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 400;
+    }
+  }
+
+  .table-container {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden; /* Ensures the mat-table respects the border radius */
+  }
+
+  .full-width-table {
+    width: 100%;
+  }
+
+  .mat-column-actions {
+    width: 120px;
+    text-align: right;
+  }
+  
+  .status-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: white;
+  }
+
+  .status-draft {
+    background-color: #757575; // Cinza
+  }
+
+  .status-invoiced {
+    background-color: #4CAF50; // Verde
+  }
+
+  .status-canceled {
+    background-color: #f44336; // Vermelho
+  }
+}

@@ -1,0 +1,78 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Ordens de Produção</h1>
+    <button mat-flat-button color="primary" [routerLink]="['/production-orders/new']">
+      <mat-icon>add</mat-icon>
+      Nova Ordem
+    </button>
+  </div>
+
+  <div class="table-container mat-elevation-z8">
+    <table mat-table [dataSource]="orders$" class="full-width-table">
+
+      <!-- Product Name Column -->
+      <ng-container matColumnDef="productName">
+        <th mat-header-cell *matHeaderCellDef>Produto</th>
+        <td mat-cell *matCellDef="let element">{{ element.productName }}</td>
+      </ng-container>
+
+      <!-- Quantity Column -->
+      <ng-container matColumnDef="quantityToProduce">
+        <th mat-header-cell *matHeaderCellDef>Quantidade</th>
+        <td mat-cell *matCellDef="let element">{{ element.quantityToProduce }}</td>
+      </ng-container>
+
+      <!-- Creation Date Column -->
+      <ng-container matColumnDef="creationDate">
+        <th mat-header-cell *matHeaderCellDef>Criação</th>
+        <td mat-cell *matCellDef="let element">{{ element.creationDate.toDate() | date:'dd/MM/yy HH:mm' }}</td>
+      </ng-container>
+
+      <!-- Start Date Column -->
+      <ng-container matColumnDef="startDate">
+        <th mat-header-cell *matHeaderCellDef>Início</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.startDate ? (element.startDate.toDate() | date:'dd/MM/yy HH:mm') : '-' }}
+        </td>
+      </ng-container>
+
+      <!-- Completion Date Column -->
+      <ng-container matColumnDef="completionDate">
+        <th mat-header-cell *matHeaderCellDef>Fim</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.completionDate ? (element.completionDate.toDate() | date:'dd/MM/yy HH:mm') : '-' }}
+        </td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let element">
+           <span class="status-chip" [ngClass]="'status-' + element.status.replace(' ', '-').toLowerCase()">
+            {{ element.status }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button color="primary" (click)="startOrder(element)" *ngIf="element.status === 'Pendente'" matTooltip="Iniciar Produção">
+            <mat-icon>play_arrow</mat-icon>
+          </button>
+          <button mat-icon-button color="accent" (click)="finishOrder(element)" *ngIf="element.status === 'Em Produção'" matTooltip="Finalizar Produção">
+            <mat-icon>check_circle</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" align="center" [attr.colspan]="displayedColumns.length">Nenhuma ordem de produção encontrada.</td>
+      </tr>
+    </table>
+  </div>
+</div> 
