@@ -1,60 +1,50 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Timestamp } from '@angular/fire/firestore';
+import { Router } from '@angular/router';
 import { Product } from '@models/product.model';
-import { Observable } from 'rxjs';
-import { ProductService } from '../products/product.service';
-import { ProductionOrderService } from './production-order.service';
-import { ProductionOrder } from '@models/production-order.model';
+import { ProductService } from '@app/products/product.service';
+import { ProductionOrderService } from '@app/production-orders/production-order.service';
+import { Observable, map } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-production-order-form',
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule,
     ReactiveFormsModule,
-    MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatButtonModule
+    MatButtonModule,
   ],
   templateUrl: './production-order-form.component.html',
-  styleUrl: './production-order-form.component.scss'
+  styleUrl: './production-order-form.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductionOrderFormComponent {
   private fb = inject(FormBuilder);
   private router = inject(Router);
-  private route = inject(ActivatedRoute);
   private productService = inject(ProductService);
   private productionOrderService = inject(ProductionOrderService);
+  private snackBar = inject(MatSnackBar);
 
-  form: FormGroup;
-  finishedGoods$: Observable<Product[]>;
-  isEdit = false;
-  orderId: string | null = null;
+  productsToProduce$: Observable<Product[]> = this.productService.getProducts().pipe(
+    map((products: Product[]) => products.filter((p: Product) => p.productType === 'FABRICO_PROPRIO' && p.isActive))
+  );
 
-  constructor() {
-    this.finishedGoods$ = this.productService.getFinishedGoods();
-    this.form = this.fb.group({
-      productId: ['', Validators.required],
-      quantityToProduce: [1, [Validators.required, Validators.min(1)]]
-    });
+  form = this.fb.group({
+    product: [null as Product | null, Validators.required],
+    quantityToProduce: [1, [Validators.required, Validators.min(1)]],
+  });
 
-    this.orderId = this.route.snapshot.paramMap.get('id');
-    if (this.orderId) {
-      this.isEdit = true;
-      // Here you would typically fetch the existing order and patch the form
-      // For now, we'll focus on creation.
-    }
+  goBack(): void {
+    this.router.navigate(['/production-orders']);
   }
 
   onSave(): void {
@@ -63,24 +53,22 @@ export class ProductionOrderFormComponent {
       return;
     }
 
-    const formValue = this.form.getRawValue();
+    const { product, quantityToProduce } = this.form.getRawValue();
 
-    // Find the selected product to get its name
-    this.finishedGoods$.subscribe(products => {
-      const selectedProduct = products.find(p => p.id === formValue.productId);
-      if (!selectedProduct) return;
+    const newOrder = {
+      productId: product!.id,
+      productName: product!.name,
+      quantityToProduce: quantityToProduce!,
+    };
 
-      const newOrder: Omit<ProductionOrder, 'id'> = {
-        productId: formValue.productId,
-        productName: selectedProduct.name,
-        quantityToProduce: formValue.quantityToProduce,
-        creationDate: Timestamp.now(),
-        status: 'Pendente'
-      };
-
-      this.productionOrderService.addProductionOrder(newOrder).then(() => {
+    this.productionOrderService.addProductionOrder(newOrder)
+      .then(() => {
+        this.snackBar.open('Ordem de produção criada com sucesso!', 'Fechar', { duration: 3000 });
         this.router.navigate(['/production-orders']);
+      })
+      .catch((err: Error) => {
+        console.error(err);
+        this.snackBar.open(`Erro ao criar ordem: ${err.message}`, 'Fechar', { duration: 5000 });
       });
-    });
   }
 }

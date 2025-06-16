@@ -1,41 +1,37 @@
-<div class="form-container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>{{ isEdit ? 'Editar Ordem de Produção' : 'Nova Ordem de Produção' }}</mat-card-title>
-    </mat-card-header>
-    
-    <mat-card-content [formGroup]="form">
-      
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Produto a Produzir</mat-label>
-        <mat-select formControlName="productId">
-          <mat-option *ngFor="let product of finishedGoods$ | async" [value]="product.id">
-            {{ product.name }}
-          </mat-option>
-        </mat-select>
-        <mat-error *ngIf="form.get('productId')?.hasError('required')">
-          Produto é obrigatório.
-        </mat-error>
-      </mat-form-field>
-      
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Quantidade a Produzir</mat-label>
-        <input matInput type="number" formControlName="quantityToProduce" min="1">
-        <mat-error *ngIf="form.get('quantityToProduce')?.hasError('required')">
-          Quantidade é obrigatória.
-        </mat-error>
-        <mat-error *ngIf="form.get('quantityToProduce')?.hasError('min')">
-          Quantidade deve ser no mínimo 1.
-        </mat-error>
-      </mat-form-field>
+<div class="container">
+  <h1>Nova Ordem de Produção</h1>
 
-    </mat-card-content>
+  <form [formGroup]="form" (ngSubmit)="onSave()" class="form-container">
+    <mat-form-field appearance="fill">
+      <mat-label>Produto a Produzir</mat-label>
+      <mat-select formControlName="product" required>
+        <mat-option *ngFor="let p of productsToProduce$ | async" [value]="p">
+          {{ p.name }} ({{ p.sku }})
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('product')?.hasError('required')">
+        O produto é obrigatório.
+      </mat-error>
+    </mat-form-field>
 
-    <mat-card-actions align="end">
-      <button mat-button [routerLink]="['/production-orders']">Cancelar</button>
-      <button mat-flat-button color="primary" (click)="onSave()" [disabled]="form.invalid">
-        {{ isEdit ? 'Salvar Alterações' : 'Criar Ordem' }}
+    <mat-form-field appearance="fill">
+      <mat-label>Quantidade a Produzir</mat-label>
+      <input matInput type="number" formControlName="quantityToProduce" required min="1">
+      <mat-error *ngIf="form.get('quantityToProduce')?.hasError('required')">
+        A quantidade é obrigatória.
+      </mat-error>
+      <mat-error *ngIf="form.get('quantityToProduce')?.hasError('min')">
+        A quantidade deve ser no mínimo 1.
+      </mat-error>
+    </mat-form-field>
+
+    <div class="actions">
+      <button type="button" mat-stroked-button (click)="goBack()">
+        Cancelar
       </button>
-    </mat-card-actions>
-  </mat-card>
+      <button type="submit" mat-flat-button color="primary" [disabled]="form.invalid">
+        Criar Ordem
+      </button>
+    </div>
+  </form>
 </div>

@@ -1,8 +1,20 @@
+.container {
+  padding: 24px;
+  max-width: 600px;
+  margin: auto;
+}
+
 .form-container {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 24px;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
 }
 
 mat-card {

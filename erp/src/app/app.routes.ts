@@ -30,6 +30,18 @@ export const routes: Routes = [
         loadChildren: () => import('./sales-orders/sales-orders.routes').then(m => m.SALES_ORDERS_ROUTES)
     },
     {
+        path: 'production-orders',
+        loadChildren: () => import('./production-orders/production-orders.routes').then(m => m.PRODUCTION_ORDERS_ROUTES)
+    },
+    {
+        path: 'accounts-payable',
+        loadChildren: () => import('./accounts-payable/accounts-payable.routes').then(m => m.ACCOUNTS_PAYABLE_ROUTES)
+    },
+    {
+        path: 'accounts-receivable',
+        loadChildren: () => import('./accounts-receivable/accounts-receivable.routes').then(m => m.ACCOUNTS_RECEIVABLE_ROUTES)
+    },
+    {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'

@@ -1,93 +1,132 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, collectionData, doc, addDoc, updateDoc, runTransaction, DocumentReference, getDoc } from '@angular/fire/firestore';
+import {
+  Firestore,
+  addDoc,
+  collection,
+  collectionData,
+  doc,
+  docData,
+  runTransaction,
+  serverTimestamp,
+  updateDoc,
+  Timestamp,
+} from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { ProductionOrder } from '@models/production-order.model';
 import { Product } from '@models/product.model';
-import { Timestamp } from 'firebase/firestore';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductionOrderService {
   private firestore: Firestore = inject(Firestore);
-  private ordersCollection = collection(this.firestore, 'productionOrders');
+  private productionOrdersCollection = collection(this.firestore, 'productionOrders');
   private productsCollection = collection(this.firestore, 'products');
 
   getProductionOrders(): Observable<ProductionOrder[]> {
-    return collectionData(this.ordersCollection, { idField: 'id' }) as Observable<ProductionOrder[]>;
+    return collectionData(this.productionOrdersCollection, { idField: 'id' }) as Observable<ProductionOrder[]>;
   }
 
-  addProductionOrder(order: Omit<ProductionOrder, 'id'>) {
-    return addDoc(this.ordersCollection, order);
+  getProductionOrderById(id: string): Observable<ProductionOrder> {
+    const poDoc = doc(this.firestore, `productionOrders/${id}`);
+    return docData(poDoc, { idField: 'id' }) as Observable<ProductionOrder>;
   }
 
-  updateProductionOrder(order: ProductionOrder) {
-    const orderDocRef = doc(this.firestore, `productionOrders/${order.id}`);
-    return updateDoc(orderDocRef, { ...order });
+  async addProductionOrder(order: Omit<ProductionOrder, 'id' | 'status' | 'creationDate' | 'startDate' | 'totalCost'>): Promise<any> {
+    const newOrder: Omit<ProductionOrder, 'id'> = {
+      ...order,
+      status: 'Pendente',
+      creationDate: Timestamp.now(),
+    };
+    return addDoc(this.productionOrdersCollection, newOrder);
   }
 
-  async startProductionOrder(order: ProductionOrder): Promise<void> {
+  async startProductionOrder(orderId: string): Promise<void> {
+    const orderRef = doc(this.firestore, `productionOrders/${orderId}`);
+
     return runTransaction(this.firestore, async (transaction) => {
-      const finishedProductRef = doc(this.productsCollection, order.productId) as DocumentReference<Product>;
-      const finishedProductSnap = await transaction.get(finishedProductRef);
-      if (!finishedProductSnap.exists() || !finishedProductSnap.data().bom) {
-        throw new Error('Produto acabado ou sua Ficha Técnica não encontrados.');
+      const orderDoc = await transaction.get(orderRef);
+      if (!orderDoc.exists()) {
+        throw new Error('Production order does not exist!');
       }
-      const bom = finishedProductSnap.data().bom!;
 
-      const materialChecks = bom.map(async (item) => {
-        const materialRef = doc(this.productsCollection, item.productId) as DocumentReference<Product>;
-        const materialSnap = await transaction.get(materialRef);
-        if (!materialSnap.exists()) { throw new Error(`Matéria-prima com ID ${item.productId} não encontrada.`); }
-        const materialData = materialSnap.data();
-        const requiredStock = item.quantity * order.quantityToProduce;
-        if (materialData.currentStock < requiredStock) {
-          throw new Error(`Stock insuficiente para ${materialData.name}. Necessário: ${requiredStock}, Disponível: ${materialData.currentStock}.`);
-        }
-        return { ref: materialRef, data: materialData, required: requiredStock };
-      });
-      const materials = await Promise.all(materialChecks);
+      const orderData = orderDoc.data() as ProductionOrder;
+      if (orderData.status !== 'Pendente') {
+        throw new Error('Apenas ordens PENDENTES podem ser iniciadas.');
+      }
+      
+      const productToProduceRef = doc(this.firestore, `products/${orderData.productId}`);
+      const productToProduceDoc = await transaction.get(productToProduceRef);
+      const productData = productToProduceDoc.data() as Product;
 
+      if(!productToProduceDoc.exists() || !productData.bom) {
+        throw new Error("O produto a ser produzido não existe ou não tem Ficha Técnica (BOM).");
+      }
+      
+      const bom = productData.bom as { productId: string; quantity: number }[];
       let totalCost = 0;
-      materials.forEach(({ ref, data, required }) => {
-        const newStock = data.currentStock - required;
-        totalCost += (data.averageCost * required);
-        transaction.update(ref, { currentStock: newStock });
-      });
 
-      const orderRef = doc(this.ordersCollection, order.id);
-      transaction.update(orderRef, { status: 'Em Produção', startDate: Timestamp.now(), totalCost: totalCost });
+      for (const component of bom) {
+        const componentRef = doc(this.productsCollection, component.productId);
+        const componentDoc = await transaction.get(componentRef);
+        
+        if (!componentDoc.exists()) {
+          throw new Error(`Component with ID ${component.productId} not found.`);
+        }
+
+        const componentData = componentDoc.data() as Product;
+        const requiredQuantity = component.quantity * orderData.quantityToProduce;
+
+        if (componentData.currentStock < requiredQuantity) {
+          throw new Error(`Insufficient stock for component ${componentData.name}. Required: ${requiredQuantity}, Available: ${componentData.currentStock}`);
+        }
+
+        const newStock = componentData.currentStock - requiredQuantity;
+        transaction.update(componentRef, { currentStock: newStock });
+        totalCost += (componentData.averageCost || 0) * requiredQuantity;
+      }
+
+      transaction.update(orderRef, { 
+        status: 'Em Produção',
+        startDate: serverTimestamp(),
+        totalCost: totalCost
+      });
     });
   }
 
-  async completeProductionOrder(order: ProductionOrder): Promise<void> {
-    return runTransaction(this.firestore, async (transaction) => {
-      const finishedProductRef = doc(this.productsCollection, order.productId) as DocumentReference<Product>;
-      const finishedProductSnap = await transaction.get(finishedProductRef);
-      if (!finishedProductSnap.exists()) {
-        throw new Error('Produto acabado não encontrado para finalizar a ordem.');
+  async finishProductionOrder(orderId: string): Promise<void> {
+    const orderRef = doc(this.firestore, `productionOrders/${orderId}`);
+
+     return runTransaction(this.firestore, async (transaction) => {
+      const orderDoc = await transaction.get(orderRef);
+      if (!orderDoc.exists()) {
+        throw new Error('Production order does not exist!');
       }
 
-      const productData = finishedProductSnap.data();
-      const newStock = productData.currentStock + order.quantityToProduce;
-      
-      // Handle case where totalCost might be null/undefined for some reason
-      const productionCost = order.totalCost ?? 0;
-      
-      const newAverageCost = ((productData.currentStock * productData.averageCost) + productionCost) / newStock;
-      
-      transaction.update(finishedProductRef, {
+      const orderData = orderDoc.data() as ProductionOrder;
+       if (orderData.status !== 'Em Produção') {
+        throw new Error('Apenas ordens EM PRODUÇÃO podem ser finalizadas.');
+      }
+
+      const productRef = doc(this.productsCollection, orderData.productId);
+      const productDoc = await transaction.get(productRef);
+      if (!productDoc.exists()) {
+        throw new Error('Product not found!');
+      }
+
+      const productData = productDoc.data() as Product;
+      const newStock = productData.currentStock + orderData.quantityToProduce;
+      const newAverageCost = ((productData.averageCost * productData.currentStock) + (orderData.totalCost || 0)) / newStock;
+
+      transaction.update(productRef, {
         currentStock: newStock,
         averageCost: newAverageCost
       });
 
-      const orderRef = doc(this.ordersCollection, order.id);
-      transaction.update(orderRef, {
+      transaction.update(orderRef, { 
         status: 'Finalizada',
-        completionDate: Timestamp.now()
+        completionDate: serverTimestamp()
       });
     });
   }
-
-  // Future methods for business logic (start, complete order) will go here
 } 

@@ -6,9 +6,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
-mat-table {
+table {
   width: 100%;
+}
+
+.mat-column-actions {
+  text-align: right;
+  width: 120px;
 }
