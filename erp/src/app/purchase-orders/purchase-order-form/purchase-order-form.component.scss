@@ -1,41 +1,63 @@
-.container {
+.page-container {
   padding: 24px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h1 {
+    margin: 0;
+  }
 }
 
 .form-container {
-  margin-top: 16px;
-  padding: 24px;
-  background-color: white;
-  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-h2 {
-  margin-top: 0;
-  margin-bottom: 24px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 16px;
-}
+.form-row {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  flex-wrap: wrap;
 
-.header-form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  > * {
+    flex: 1;
+    min-width: 250px; /* Garante que em telas pequenas os campos quebrem a linha */
+  }
 }
 
 .table-container {
-  width: 100%;
-  margin-bottom: 1rem;
+  overflow: auto;
 }
 
 .item-form-field {
-  width: 100%;
-  // Remove o espaço extra abaixo do form-field dentro da tabela
-  .mat-mdc-form-field-subscript-wrapper {
-    display: none;
+  .mat-form-field-wrapper {
+    padding-bottom: 0;
   }
 }
 
 .add-item-button {
-  margin-top: 1rem;
+  margin-top: 16px;
+  align-self: flex-start;
+}
+
+.total-summary {
+  margin-top: 24px;
+  text-align: right;
+  font-size: 1.2em;
+  font-weight: 500;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
 } 

@@ -74,8 +74,8 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let product; columns: displayedColumns;" [class.inactive-row]="!product.isActive"></tr>
 
-      <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell" align="center" [attr.colspan]="displayedColumns.length">Nenhum produto encontrado.</td>
+      <tr class="mat-row"  *matNoDataRow>
+        <td class="mat-cell table-empty-row" align="center" [attr.colspan]="displayedColumns.length">Nenhum produto encontrado.</td>
       </tr>
     </table>
   </div>

@@ -1,56 +1,56 @@
-<div class="container" [formGroup]="form">
-  <header class="page-header">
-    <h1>Novo Pedido de Compra</h1>
-    <div>
-      <button mat-stroked-button (click)="goBack()">Voltar</button>
-      <button mat-raised-button color="primary" (click)="onSave()" [disabled]="form.invalid" style="margin-left: 8px;">
-        Salvar Pedido
-      </button>
-    </div>
-  </header>
+<div class="page-container">
+  <h1>{{ isEditMode ? 'Editar' : 'Novo' }} Pedido de Compra</h1>
 
-  <div class="form-container">
-    <h2>Dados do Cabeçalho</h2>
-    <div class="header-form-grid">
-      <mat-form-field appearance="outline">
+  <form [formGroup]="form" (ngSubmit)="onSave()" class="form-container">
+    <div class="form-row">
+      <mat-form-field appearance="fill">
         <mat-label>Fornecedor</mat-label>
-        <mat-select formControlName="supplier">
-          <mat-option *ngFor="let supplier of suppliers$ | async" [value]="supplier">
-            {{ supplier.name }}
+        <mat-select formControlName="supplier" required>
+          <mat-option *ngFor="let s of suppliers$ | async" [value]="s">
+            {{ s.name }}
           </mat-option>
         </mat-select>
+        <mat-error *ngIf="form.get('supplier')?.hasError('required')">
+          O fornecedor é obrigatório.
+        </mat-error>
       </mat-form-field>
-      
-      <mat-form-field appearance="fill" class="form-field">
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="fill">
         <mat-label>Data de Emissão</mat-label>
-        <input matInput [matDatepicker]="picker" formControlName="issueDate">
-        <mat-hint>DD/MM/YYYY</mat-hint>
-        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
+        <input matInput [matDatepicker]="emissionPicker" formControlName="emissionDate" required>
+        <mat-datepicker-toggle matIconSuffix [for]="emissionPicker"></mat-datepicker-toggle>
+        <mat-datepicker #emissionPicker></mat-datepicker>
+        <mat-error *ngIf="form.get('emissionDate')?.hasError('required')">
+          A data de emissão é obrigatória.
+        </mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="fill" class="form-field" *ngIf="isEditMode">
-        <mat-label>Status</mat-label>
-        <mat-select formControlName="status">
-          <mat-option value="OPEN">Aberto</mat-option>
-          <mat-option value="RECEIVED">Recebido</mat-option>
-          <mat-option value="CANCELED">Cancelado</mat-option>
-        </mat-select>
+      <mat-form-field appearance="fill">
+        <mat-label>Data Estimada de Entrega</mat-label>
+        <input matInput [matDatepicker]="deliveryPicker" formControlName="estimatedDeliveryDate" required>
+        <mat-datepicker-toggle matIconSuffix [for]="deliveryPicker"></mat-datepicker-toggle>
+        <mat-datepicker #deliveryPicker></mat-datepicker>
+        <mat-error *ngIf="form.get('estimatedDeliveryDate')?.hasError('required')">
+          A data de entrega é obrigatória.
+        </mat-error>
       </mat-form-field>
     </div>
 
     <h2>Itens do Pedido</h2>
-    <div class="table-container mat-elevation-z4" formArrayName="items">
-      <table mat-table [dataSource]="items.controls">
+    <div class="table-container mat-elevation-z8">
+      <table mat-table [dataSource]="items.controls" class="full-width-table">
+        <!-- Colunas da tabela de itens aqui -->
         
         <!-- Product Column -->
         <ng-container matColumnDef="product">
           <th mat-header-cell *matHeaderCellDef> Produto </th>
-          <td mat-cell *matCellDef="let item; let i = index" [formGroupName]="i">
+          <td mat-cell *matCellDef="let item" [formGroup]="item">
             <mat-form-field appearance="outline" class="item-form-field">
-              <mat-select formControlName="product">
-                <mat-option *ngFor="let product of products$ | async" [value]="product">
-                  {{ product.name }} ({{ product.sku }})
+              <mat-select formControlName="product" required>
+                <mat-option *ngFor="let p of products$ | async" [value]="p">
+                  {{ p.name }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -60,56 +60,66 @@
         <!-- Quantity Column -->
         <ng-container matColumnDef="quantity">
           <th mat-header-cell *matHeaderCellDef> Quantidade </th>
-          <td mat-cell *matCellDef="let item; let i = index" [formGroupName]="i">
+          <td mat-cell *matCellDef="let item" [formGroup]="item">
             <mat-form-field appearance="outline" class="item-form-field">
-              <input matInput type="number" formControlName="quantity">
+              <input matInput type="number" formControlName="quantity" required min="1">
             </mat-form-field>
           </td>
         </ng-container>
 
         <!-- Unit Cost Column -->
         <ng-container matColumnDef="unitCost">
-          <th mat-header-cell *matHeaderCellDef> Custo Unit. </th>
-          <td mat-cell *matCellDef="let item; let i = index" [formGroupName]="i">
-            <mat-form-field appearance="outline" class="dense-form-field">
-              <input matInput type="number" formControlName="unitCost" placeholder="0.00">
+          <th mat-header-cell *matHeaderCellDef> Custo Unitário </th>
+          <td mat-cell *matCellDef="let item" [formGroup]="item">
+             <mat-form-field appearance="outline" class="item-form-field">
+              <input matInput type="number" formControlName="unitCost" required min="0">
             </mat-form-field>
           </td>
         </ng-container>
 
         <!-- Total Column -->
         <ng-container matColumnDef="total">
-          <th mat-header-cell *matHeaderCellDef> Total Item </th>
-          <td mat-cell *matCellDef="let item; let i = index" [formGroupName]="i">
-            <mat-form-field appearance="outline" class="dense-form-field">
-              <input matInput type="number" formControlName="total" placeholder="0.00">
-            </mat-form-field>
+          <th mat-header-cell *matHeaderCellDef> Total </th>
+          <td mat-cell *matCellDef="let item" [formGroup]="item">
+            {{ (item.get('quantity').value || 0) * (item.get('unitCost').value || 0) | currency:'EUR' }}
           </td>
         </ng-container>
 
         <!-- Actions Column -->
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef> Ações </th>
-          <td mat-cell *matCellDef="let item; let i = index">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let item; let i = index;">
             <button mat-icon-button color="warn" (click)="removeItem(i)" matTooltip="Remover Item">
               <mat-icon>delete</mat-icon>
             </button>
           </td>
         </ng-container>
 
+
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
-
-      <div class="grand-total-container">
-        <span class="mat-h2">Total Geral: {{ form.get('total')?.value | currency:'BRL' }}</span>
-      </div>
-      
     </div>
 
-    <button mat-stroked-button (click)="addItem()" class="add-item-button">
-      <mat-icon>add</mat-icon>
-      Adicionar Item
-    </button>
-  </div>
-</div> 
+    <div class="add-item-button">
+      <button type="button" mat-stroked-button color="primary" (click)="addItem()">
+        <mat-icon>add</mat-icon>
+        Adicionar Item
+      </button>
+    </div>
+
+    <div class="total-summary">
+      <h3>Total do Pedido: {{ form.get('total')?.value | currency:'EUR' }}</h3>
+    </div>
+
+
+    <div class="form-actions">
+      <button type="button" mat-stroked-button (click)="goBack()">
+        Cancelar
+      </button>
+      <button type="submit" mat-flat-button color="primary" [disabled]="form.invalid">
+        {{ isEditMode ? 'Salvar Alterações' : 'Criar Pedido' }}
+      </button>
+    </div>
+  </form>
+</div>

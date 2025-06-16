@@ -9,6 +9,7 @@ export interface PurchaseOrder {
   supplierId: string;
   supplierName: string;
   emissionDate: Timestamp;
+  estimatedDeliveryDate: Timestamp;
   status: PurchaseOrderStatus;
   items: OrderItem[];
   total: number;

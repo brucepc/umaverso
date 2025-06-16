@@ -66,6 +66,7 @@ export class PurchaseOrderFormComponent {
   form = this.fb.group({
     supplier: [null as Supplier | null, Validators.required],
     emissionDate: [new Date(), Validators.required],
+    estimatedDeliveryDate: [new Date(), Validators.required],
     status: ['OPEN', Validators.required],
     items: this.fb.array([], [Validators.required, Validators.minLength(1)]),
     total: [{ value: 0, disabled: true }],
@@ -100,6 +101,7 @@ export class PurchaseOrderFormComponent {
               this.form.patchValue({
                 supplier: supplier,
                 emissionDate: order.emissionDate.toDate(),
+                estimatedDeliveryDate: order.estimatedDeliveryDate.toDate(),
                 status: order.status,
               });
 
@@ -207,6 +209,7 @@ export class PurchaseOrderFormComponent {
       supplierId: formValue.supplier!.id,
       supplierName: formValue.supplier!.name,
       emissionDate: Timestamp.fromDate(formValue.emissionDate!),
+      estimatedDeliveryDate: Timestamp.fromDate(formValue.estimatedDeliveryDate!),
       status: this.isEditMode ? this.form.value.status : 'OPEN',
       items: formValue.items.map((item: any) => ({
         productId: item.product.id,

@@ -1,33 +1,40 @@
-.container {
-  padding: 24px;
-  max-width: 600px;
-  margin: auto;
-}
+:host {
+  .page-container {
+    padding: 24px;
+  }
 
-.form-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
 
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 16px;
-}
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 400;
+    }
+  }
+  .table-container {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden; /* Ensures the mat-table respects the border radius */
+  }
 
-mat-card {
-  width: 100%;
-  max-width: 600px;
-}
+  .full-width-table {
+    width: 100%;
+  }
 
-mat-card-content {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+  .inactive-row {
+    background-color: #fafafa;
+    td {
+      color: #9e9e9e;
+      text-decoration: line-through;
+    }
+  }
 
-.full-width {
-  width: 100%;
+  .mat-column-actions {
+    width: 180px;
+    text-align: right;
+  }
 }
