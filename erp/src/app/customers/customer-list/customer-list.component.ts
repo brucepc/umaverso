@@ -21,6 +21,9 @@ import { CustomerFormDialogComponent } from '../customer-form-dialog/customer-fo
     MatButtonModule,
     MatTooltipModule,
   ],
+  host: {
+    class: 'page-list'
+  },
   templateUrl: './customer-list.component.html',
   styleUrls: ['./customer-list.component.scss']
 })

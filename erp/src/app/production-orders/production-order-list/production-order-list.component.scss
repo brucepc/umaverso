@@ -1,62 +1,19 @@
 :host {
-  .page-container {
-    padding: 24px;
-  }
+  // No component-specific styles needed
+}
 
-  .page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #dee2e6;
+mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
 
-    h1 {
-      margin: 0;
-      font-size: 28px;
-      font-weight: 400;
-    }
-  }
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
 
-  .table-container {
-    background-color: white;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  .full-width-table {
-    width: 100%;
-  }
-
-  .mat-column-actions {
-    width: 120px;
-    text-align: right;
-  }
-
-  .status-chip {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 12px;
-    border-radius: 16px;
-    font-size: 12px;
-    font-weight: 500;
-    color: white;
-  }
-
-  .status-pendente {
-    background-color: #2196F3; // Azul
-  }
-
-  .status-em-produção {
-    background-color: #FFC107; // Amarelo
-    color: #333;
-  }
-
-  .status-finalizada {
-    background-color: #4CAF50; // Verde
-  }
-
-  .status-cancelada {
-    background-color: #f44336; // Vermelho
-  }
+table {
+  width: 100%;
 } 

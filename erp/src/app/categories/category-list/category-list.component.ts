@@ -19,6 +19,9 @@ import { CategoryFormDialogComponent } from '../category-form-dialog/category-fo
     MatIconModule,
     MatDialogModule,
   ],
+  host: {
+    class: 'page-list'
+  },
   templateUrl: './category-list.component.html',
   styleUrls: ['./category-list.component.scss']
 })

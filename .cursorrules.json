@@ -21,12 +21,20 @@
       "tags": ["scss", "css", "styling"]
     },
     {
-        "rule": "Ao criar novas funcionalidades, siga este padrão: Modelo -> Serviço -> Componente -> Roteamento -> Template UI.",
-        "tags": ["architecture", "angular"]
+      "rule": "Ao criar novas funcionalidades, siga este padrão: Modelo -> Serviço -> Componente -> Roteamento -> Template UI.",
+      "tags": ["architecture", "angular"]
     },
     {
-        "rule": "Garanta que todos os textos e documentação para o utilizador final estejam em Português (pt-PT).",
-        "tags": ["documentation", "localization", "i18n"]
+      "rule": "Garanta que todos os textos e documentação para o utilizador final estejam em Português (pt-PT).",
+      "tags": ["documentation", "localization", "i18n"]
+    },
+    {
+      "rule": "Use o comando 'ng generate component' para criar novos componentes.",
+      "tags": ["angular", "component", "generate"]
+    },
+    {
+      "rule": "Use o comando 'tree' listar a estrutura do projeto.",
+      "tags": ["angular", "tree", "list"]
     }
   ],
   "additional_context": [

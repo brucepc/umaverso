@@ -1,15 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Supplier } from '@models/supplier.model';
-import { Observable, of } from 'rxjs';
-import { SupplierService } from '../supplier.service';
-import { SupplierFormDialogComponent } from '../supplier-form-dialog/supplier-form-dialog.component';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTableModule } from '@angular/material/table';
+import { Supplier } from '@models/supplier.model';
+import { Observable } from 'rxjs';
+import { SupplierFormDialogComponent } from '../supplier-form-dialog/supplier-form-dialog.component';
+import { SupplierService } from '../supplier.service';
 
 @Component({
   selector: 'app-supplier-list',
@@ -17,10 +17,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   imports: [
     CommonModule,
     MatTableModule,
-    MatIconModule,
     MatButtonModule,
+    MatIconModule,
+    MatDialogModule,
     MatTooltipModule,
   ],
+  host: {
+    class: 'page-list',
+  },
   templateUrl: './supplier-list.component.html',
   styleUrl: './supplier-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,7 +35,14 @@ export class SupplierListComponent {
   private snackBar = inject(MatSnackBar);
 
   suppliers$: Observable<Supplier[]> = this.supplierService.getSuppliers();
-  displayedColumns: string[] = ['name', 'nif', 'email', 'phone', 'isActive', 'actions'];
+  displayedColumns: string[] = [
+    'name',
+    'nif',
+    'email',
+    'phone',
+    'isActive',
+    'actions',
+  ];
 
   openSupplierDialog(supplier?: Supplier): void {
     const dialogRef = this.dialog.open(SupplierFormDialogComponent, {
@@ -39,19 +50,23 @@ export class SupplierListComponent {
       data: { supplier },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed');
       // Aqui podemos adicionar a lógica para atualizar a lista após fechar o dialog
     });
   }
 
   toggleSupplierStatus(supplier: Supplier): void {
-    this.supplierService.updateSupplierStatus(supplier.id, !supplier.isActive).then(() => {
-      this.snackBar.open(
-        `Fornecedor ${!supplier.isActive ? 'ativado' : 'desativado'} com sucesso.`,
-        'Fechar',
-        { duration: 3000 }
-      );
-    });
+    this.supplierService
+      .updateSupplierStatus(supplier.id, !supplier.isActive)
+      .then(() => {
+        this.snackBar.open(
+          `Fornecedor ${
+            !supplier.isActive ? 'ativado' : 'desativado'
+          } com sucesso.`,
+          'Fechar',
+          { duration: 3000 }
+        );
+      });
   }
-} 
+}

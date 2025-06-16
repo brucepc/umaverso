@@ -3,15 +3,15 @@ import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/cor
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterModule } from '@angular/router';
 import { PurchaseOrder } from '@models/purchase-order.model';
 import { Observable } from 'rxjs';
-import { PurchaseOrderService } from '../purchase-order.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { tap } from 'rxjs/operators';
 import { GoodsReceiptDialogComponent } from '../goods-receipt-dialog/goods-receipt-dialog.component';
-import { take, tap } from 'rxjs/operators';
+import { PurchaseOrderService } from '../purchase-order.service';
 
 @Component({
   selector: 'app-purchase-order-list',
@@ -25,6 +25,9 @@ import { take, tap } from 'rxjs/operators';
     MatButtonModule,
     MatTooltipModule,
   ],
+  host: {
+    class: 'page-list'
+  },
   templateUrl: './purchase-order-list.component.html',
   styleUrl: './purchase-order-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,13 +1,13 @@
-import { Component, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Observable } from 'rxjs';
 
-import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { SalesOrder } from '@models/sales-order.model';
 import { SalesOrderService } from '../sales-order.service';
@@ -24,6 +24,9 @@ import { SalesOrderService } from '../sales-order.service';
     MatIconModule,
     MatTooltipModule
   ],
+  host: {
+    class: 'page-list'
+  },
   templateUrl: './sales-order-list.component.html',
   styleUrls: ['./sales-order-list.component.scss']
 })

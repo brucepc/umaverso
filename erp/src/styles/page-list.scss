@@ -1,0 +1,84 @@
+.page-list {
+  .page-container {
+    padding: 24px;
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #dee2e6;
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 400;
+    }
+  }
+
+  .table-container {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden; /* Ensures the mat-table respects the border radius */
+  }
+
+  .full-width-table {
+    width: 100%;
+  }
+
+  .mat-column-actions {
+    width: 120px;
+    text-align: right;
+  }
+
+  // Status chips
+  .status-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: white;
+  }
+
+  // Status colors
+  .status-active,
+  .status-invoiced,
+  .status-received,
+  .status-finalizada {
+    background-color: #4CAF50; // Verde
+  }
+
+  .status-inactive,
+  .status-canceled,
+  .status-cancelada {
+    background-color: #f44336; // Vermelho
+  }
+
+  .status-draft {
+    background-color: #757575; // Cinza
+  }
+
+  .status-open,
+  .status-pendente {
+    background-color: #2196F3; // Azul
+  }
+
+  .status-approved,
+  .status-em-produção {
+    background-color: #FFC107; // Amarelo
+    color: #333;
+  }
+
+  // Inactive row style
+  .inactive-row {
+    background-color: #fafafa;
+    td {
+      color: #9e9e9e;
+      text-decoration: line-through;
+    }
+  }
+}

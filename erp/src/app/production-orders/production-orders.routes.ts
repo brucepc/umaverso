@@ -1,14 +1,19 @@
 import { Routes } from '@angular/router';
-import { ProductionOrderListComponent } from './production-order-list.component';
-import { ProductionOrderFormComponent } from './production-order-form.component';
 
 export const PRODUCTION_ORDERS_ROUTES: Routes = [
   {
     path: '',
-    component: ProductionOrderListComponent,
+    loadComponent: () => import('./production-order-list/production-order-list.component').then(m => m.ProductionOrderListComponent),
+    title: 'Ordens de Produção'
   },
-  {
-    path: 'new',
-    component: ProductionOrderFormComponent,
-  }
+  // {
+  //   path: 'new',
+  //   loadComponent: () => import('./production-order-form/production-order-form.component').then(m => m.ProductionOrderFormComponent),
+  //   title: 'Nova Ordem de Produção'
+  // },
+  // {
+  //   path: 'edit/:id',
+  //   loadComponent: () => import('./production-order-form/production-order-form.component').then(m => m.ProductionOrderFormComponent),
+  //   title: 'Editar Ordem de Produção'
+  // }
 ]; 
