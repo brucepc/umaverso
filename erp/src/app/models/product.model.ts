@@ -1,3 +1,5 @@
+import { ProductType } from "./product-type.enum";
+
 export interface BomItem {
   productId: string;
   productName?: string; // Denormalized for display
@@ -9,11 +11,11 @@ export interface Product {
   categoryId: string;
   sku: string;
   name: string;
-  productType: 'MATERIA_PRIMA' | 'PRODUTO_ACABADO' | 'REVENDA';
+  productType: ProductType;
   unitOfMeasure: string;
   currentStock: number;
   averageCost: number;
   salePrice?: number;
   isActive: boolean;
-  bom?: BomItem[]; // Bill of Materials for PRODUTO_ACABADO
+  bom?: BomItem[]; // Bill of Materials for FABRICO_PROPRIO
 } 

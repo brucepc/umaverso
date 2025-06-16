@@ -1,21 +1,13 @@
 import { Timestamp } from "@angular/fire/firestore";
-
-export interface SalesOrderItem {
-  productId: string;
-  productName: string;
-  productSku: string;
-  quantity: number;
-  unitPrice: number;
-  totalPrice: number;
-}
+import { OrderItem } from "./order-item.model";
 
 export interface SalesOrder {
   id: string;
+  code: string; 
   customerId: string;
-  customerName: string; // Denormalized
-  customerDocument: string; // Denormalized
-  issueDate: Timestamp;
-  totalValue: number;
-  status: 'DRAFT' | 'CONFIRMED' | 'CANCELED' | 'INVOICED';
-  items: SalesOrderItem[];
+  customerName: string;
+  emissionDate: Timestamp;
+  status: 'DRAFT' | 'INVOICED' | 'CANCELED';
+  items: OrderItem[];
+  total: number;
 } 

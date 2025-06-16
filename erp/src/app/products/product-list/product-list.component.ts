@@ -24,7 +24,7 @@ import { ProductStockHistoryComponent } from '../product-stock-history/product-s
     MatTooltipModule,
   ],
   templateUrl: './product-list.component.html',
-  styleUrls: ['./product-list.component.scss']
+  styleUrls: ['./product-list.component.scss'],
 })
 export class ProductListComponent {
   private productService = inject(ProductService);
@@ -32,33 +32,46 @@ export class ProductListComponent {
   private snackBar = inject(MatSnackBar);
 
   products$: Observable<Product[]> = this.productService.getProducts();
-  displayedColumns: string[] = ['sku', 'name', 'currentStock', 'unitOfMeasure', 'averageCost', 'salePrice', 'isActive', 'actions'];
+  displayedColumns: string[] = [
+    'sku',
+    'name',
+    'currentStock',
+    'unitOfMeasure',
+    'averageCost',
+    'salePrice',
+    'isActive',
+    'actions',
+  ];
 
   addProduct(): void {
     this.dialog.open(ProductFormDialogComponent, {
-      width: '450px',
-      disableClose: true
+      minWidth: 800,
+      disableClose: true,
     });
   }
-  
+
   editProduct(product: Product): void {
     this.dialog.open(ProductFormDialogComponent, {
-      width: '450px',
+      minWidth: 800,
       disableClose: true,
-      data: product
+      data: product,
     });
   }
 
   toggleProductStatus(product: Product): void {
     this.productService.toggleIsActive(product).then(() => {
-      this.snackBar.open(`Produto ${product.isActive ? 'ativado' : 'desativado'} com sucesso.`, 'Fechar', { duration: 3000});
+      this.snackBar.open(
+        `Produto ${product.isActive ? 'ativado' : 'desativado'} com sucesso.`,
+        'Fechar',
+        { duration: 3000 }
+      );
     });
   }
 
   viewStockHistory(product: Product): void {
     this.dialog.open(ProductStockHistoryComponent, {
       width: '750px',
-      data: { product: product }
+      data: { product: product },
     });
   }
-} 
+}

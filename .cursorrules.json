@@ -1,0 +1,36 @@
+{
+  "rules": [
+    {
+      "rule": "Use Angular (v19) com TypeScript para todo o desenvolvimento frontend.",
+      "tags": ["angular", "typescript", "frontend"]
+    },
+    {
+      "rule": "Utilize Angular Material para os componentes de UI para manter uma aparência consistente.",
+      "tags": ["angular-material", "ui", "frontend"]
+    },
+    {
+      "rule": "Interaja com o Firebase Firestore para todas as operações de dados no backend. Utilize a biblioteca AngularFire.",
+      "tags": ["firebase", "firestore", "database", "backend"]
+    },
+    {
+      "rule": "Siga os princípios de Behavior-Driven Development (BDD) para os testes. Escreva os ficheiros de feature usando a sintaxe Gherkin.",
+      "tags": ["bdd", "testing", "architecture"]
+    },
+    {
+      "rule": "Use SCSS para a estilização, seguindo uma abordagem modular onde os estilos são associados aos seus respetivos componentes.",
+      "tags": ["scss", "css", "styling"]
+    },
+    {
+        "rule": "Ao criar novas funcionalidades, siga este padrão: Modelo -> Serviço -> Componente -> Roteamento -> Template UI.",
+        "tags": ["architecture", "angular"]
+    },
+    {
+        "rule": "Garanta que todos os textos e documentação para o utilizador final estejam em Português (pt-PT).",
+        "tags": ["documentation", "localization", "i18n"]
+    }
+  ],
+  "additional_context": [
+    "O projeto é um sistema ERP com módulos para Produtos, Vendas, Compras, Produção e Finanças.",
+    "O objetivo é construir uma aplicação robusta, manutenível e escalável."
+  ]
+}

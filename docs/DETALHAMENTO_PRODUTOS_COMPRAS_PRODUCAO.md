@@ -40,18 +40,18 @@ Para suportar os processos de compra e produção, a entidade "Produto" precisa 
 *   `sku`: Código único (SKU - Stock Keeping Unit) (ex: "CHM-001"). Gerado a partir do prefixo da categoria.
 *   `productType`: **Campo Crítico**. Define o comportamento do produto no sistema.
     *   `MATERIA_PRIMA`: Item comprado e consumido na produção.
-    *   `PRODUTO_ACABADO`: Item fabricado e vendido.
+    *   `FABRICO_PROPRIO`: Item fabricado e vendido.
     *   `REVENDA`: Item comprado e revendido diretamente (sem produção).
 *   `unitOfMeasure`: (ex: "Peça", "Kg", "Metro", "Chapa").
 *   `currentStock`: Quantidade disponível (gerenciado pelo sistema).
 *   `averageCost`: Custo do produto (calculado a cada entrada).
-*   `salePrice`: Preço para o cliente final (aplicável a `PRODUTO_ACABADO` e `REVENDA`).
+*   `salePrice`: Preço para o cliente final (aplicável a `FABRICO_PROPRIO` e `REVENDA`).
 *   `isActive`: Controla se o produto pode ser usado em novas transações (padrão `true`).
 
 **Regras de Negócio:**
 *   O `sku` de um novo produto deve ser gerado combinando o `prefix` da sua categoria com um número sequencial.
 *   Um produto do tipo `MATERIA_PRIMA` não pode ser vendido diretamente.
-*   Um produto do tipo `PRODUTO_ACABADO` não pode ser comprado diretamente (sua entrada em estoque vem da produção).
+*   Um produto do tipo `FABRICO_PROPRIO` não pode ser comprado diretamente (sua entrada em estoque vem da produção).
 *   O `averageCost` deve ser recalculado sempre que houver uma entrada de estoque com custo diferente (seja por compra ou produção).
 
 ---
@@ -90,7 +90,7 @@ Esta entidade é um "molde" ou "receita".
 
 **Atributos:**
 *   `id`: Identificador único.
-*   `produto_acabado_id`: Referência ao produto que esta ficha técnica produz.
+*   `produto_fabrico_proprio_id`: Referência ao produto que esta ficha técnica produz.
 *   `componentes`: Lista de matérias-primas necessárias.
     *   `materia_prima_id`: Referência ao produto (tipo `MATERIA_PRIMA`).
     *   `quantidade`: Quantidade da matéria-prima necessária para produzir **uma unidade** do produto acabado.
@@ -99,7 +99,7 @@ Esta entidade é um "molde" ou "receita".
 
 **Atributos:**
 *   `id`: Identificador único.
-*   `produto_acabado_id`: Referência ao produto que será fabricado.
+*   `produto_fabrico_proprio_id`: Referência ao produto que será fabricado.
 *   `quantidade_a_produzir`: Quantidade desejada do produto acabado.
 *   `data_inicio`: Data de início da produção.
 *   `status`: (ex: "Pendente", "Em Produção", "Finalizada", "Cancelada").
@@ -113,8 +113,8 @@ Esta entidade é um "molde" ou "receita".
     4.  O `custo_total_producao` é calculado.
 *   **Ao Finalizar a OP:**
     1.  O `status` da OP muda para `Finalizada`.
-    2.  O `estoque_atual` do `PRODUTO_ACABADO` é **incrementado** pela `quantidade_a_produzir`.
-    3.  O `custo_medio` do `PRODUTO_ACABADO` é **recalculado** com base no `custo_total_producao` dividido pela quantidade produzida.
+    2.  O `estoque_atual` do `PRODUTO_FABRICO_PROPRIO` é **incrementado** pela `quantidade_a_produzir`.
+    3.  O `custo_medio` do `PRODUTO_FABRICO_PROPRIO` é **recalculado** com base no `custo_total_producao` dividido pela quantidade produzida.
 
 ---
 
@@ -143,15 +143,19 @@ Esta será a coleção principal para armazenar todos os produtos, sejam eles ma
 
 ```json
 {
-  "name": "Chapa de Aço Inox 1mm",
-  "sku": "CHM-001",
-  "categoryId": "xyz123abc",
-  "productType": "MATERIA_PRIMA",
-  "unitOfMeasure": "PECA",
-  "currentStock": 150,
-  "averageCost": 25.50,
-  "salePrice": null,
-  "isActive": true
+  "name": "Mesa de Aço Inox",
+  "sku": "MSI-001",
+  "categoryId": "def456ghi",
+  "productType": "FABRICO_PROPRIO",
+  "unitOfMeasure": "UN",
+  "currentStock": 10,
+  "averageCost": 450.00,
+  "salePrice": 750.00,
+  "isActive": true,
+  "bom": [
+    { "productId": "xyz123abc", "quantity": 1 },
+    { "productId": "jkl789mno", "quantity": 4 }
+  ]
 }
 ```
 

@@ -56,7 +56,8 @@
       <ng-container matColumnDef="isActive">
         <th mat-header-cell *matHeaderCellDef> Status </th>
         <td mat-cell *matCellDef="let product">
-          <span class="status-chip" [class.status-active]="product.isActive" [class.status-inactive]="!product.isActive">
+          <span class="status-chip" [class.status-active]="product.isActive"
+            [class.status-inactive]="!product.isActive">
             {{ product.isActive ? 'Ativo' : 'Inativo' }}
           </span>
         </td>
@@ -72,7 +73,8 @@
           <button mat-icon-button (click)="viewStockHistory(product)" matTooltip="Ver Histórico de Estoque">
             <mat-icon>history</mat-icon>
           </button>
-          <button mat-icon-button color="warn" (click)="toggleProductStatus(product)" [matTooltip]="product.isActive ? 'Desativar Produto' : 'Ativar Produto'">
+          <button mat-icon-button color="warn" (click)="toggleProductStatus(product)"
+            [matTooltip]="product.isActive ? 'Desativar Produto' : 'Ativar Produto'">
             <mat-icon>{{ product.isActive ? 'toggle_off' : 'toggle_on' }}</mat-icon>
           </button>
         </td>
@@ -80,10 +82,10 @@
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let product; columns: displayedColumns;" [class.inactive-row]="!product.isActive"></tr>
-      
+
       <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell" colspan="7">Nenhum produto encontrado.</td>
+        <td class="mat-cell" align="center" [attr.colspan]="displayedColumns.length">Nenhum produto encontrado.</td>
       </tr>
     </table>
   </div>
-</div> 
+</div>

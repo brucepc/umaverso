@@ -47,15 +47,15 @@ O controlo dos bens da empresa.
 O controlo do fluxo de caixa da empresa.
 
 ### 4.1. Contas a Receber
-- **[ ] Gerar conta a receber por venda (Automático):** Ao finalizar uma venda, o sistema deve criar um registo de conta a receber para o cliente no valor da venda.
-- **[ ] Registar o recebimento (liquidação) da conta:** Marcar uma conta como "paga" quando o cliente efetuar o pagamento.
-- **[ ] Consultar/Listar contas a receber:** Ver todas as contas que estão em aberto, filtrando por cliente ou data de vencimento.
+- **[x] Gerar conta a receber por venda (Automático):** Ao finalizar uma venda, o sistema deve criar um registo de conta a receber para o cliente no valor da venda.
+- **[x] Registar o recebimento (liquidação) da conta:** Marcar uma conta como "paga" quando o cliente efetuar o pagamento.
+- **[x] Consultar/Listar contas a receber:** Ver todas as contas que estão em aberto, filtrando por cliente ou data de vencimento.
 - **[ ] Ver o extrato financeiro de um cliente:** Listar todas as cobranças e pagamentos de um cliente específico.
 
 ### 4.2. Contas a Pagar
-- **[ ] Gerar conta a pagar por compra (Automático):** Ao receber uma compra, o sistema deve criar um registo de conta a pagar ao fornecedor.
-- **[ ] Registar o pagamento (liquidação) da conta:** Marcar uma conta como "paga" quando a empresa efetuar o pagamento.
-- **[ ] Consultar/Listar contas a pagar:** Ver todas as contas que a empresa precisa pagar, filtrando por fornecedor ou data de vencimento.
+- **[x] Gerar conta a pagar por compra (Automático):** Ao receber uma compra, o sistema deve criar um registo de conta a pagar ao fornecedor.
+- **[x] Registar o pagamento (liquidação) da conta:** Marcar uma conta como "paga" quando a empresa efetuar o pagamento.
+- **[x] Consultar/Listar contas a pagar:** Ver todas as contas que a empresa precisa pagar, filtrando por fornecedor ou data de vencimento.
 
 ## Módulo 5: Compras
 
@@ -70,8 +70,8 @@ O processo de aquisição de mercadorias e matéria-prima.
 
 Para empresas que fabricam os próprios produtos.
 
-- **[ ] Gerir Ficha Técnica (Lista de Materiais / Bill of Materials - BOM):** Definir que matérias-primas e em que quantidade são necessárias para produzir um determinado produto acabado.
-- **[ ] Criar Ordem de Produção:** Iniciar o processo de fabricação de um produto, com base em uma necessidade de venda ou para reposição de stock.
-- **[ ] Realizar abate de matéria-prima (Automático):** Ao iniciar uma ordem de produção, o sistema deve abater do stock as matérias-primas listadas na Ficha Técnica.
-- **[ ] Registar produto acabado (Entrada em Stock):** Ao finalizar uma ordem de produção, o sistema deve adicionar o produto fabricado ao stock de produtos acabados.
-- **[ ] Consultar/Listar Ordens de Produção:** Acompanhar o status de todas as ordens de produção (Ex: "Pendente", "Em Andamento", "Concluída"). 
+- **[x] Gerir Ficha Técnica (Lista de Materiais / Bill of Materials - BOM):** Definir que matérias-primas e em que quantidade são necessárias para produzir um determinado produto acabado.
+- **[x] Criar Ordem de Produção:** Iniciar o processo de fabricação de um produto, com base em uma necessidade de venda ou para reposição de stock.
+- **[x] Realizar abate de matéria-prima (Automático):** Ao iniciar uma ordem de produção, o sistema deve abater do stock as matérias-primas listadas na Ficha Técnica.
+- **[x] Registar produto acabado (Entrada em Stock):** Ao finalizar uma ordem de produção, o sistema deve adicionar o produto fabricado ao stock de produtos acabados.
+- **[x] Consultar/Listar Ordens de Produção:** Acompanhar o status de todas as ordens de produção (Ex: "Pendente", "Em Andamento", "Concluída"). 

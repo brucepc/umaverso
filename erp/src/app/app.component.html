@@ -38,6 +38,18 @@
         <mat-icon matListItemIcon>storefront</mat-icon>
         <span matListItemTitle>Ordens de Venda</span>
       </a>
+      <mat-divider></mat-divider>
+      <div mat-list-item class="nav-section-header">
+        <span matListItemTitle>FINANCEIRO</span>
+      </div>
+      <a mat-list-item routerLink="/accounts-receivable" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>receipt_long</mat-icon>
+        <span matListItemTitle>Contas a Receber</span>
+      </a>
+      <a mat-list-item routerLink="/accounts-payable" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>payment</mat-icon>
+        <span matListItemTitle>Contas a Pagar</span>
+      </a>
     </mat-nav-list>
   </mat-sidenav>
 

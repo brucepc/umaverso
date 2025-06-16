@@ -9,19 +9,18 @@ import { CustomerService } from '../customer.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-customer-form-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule
-  ],
+],
   templateUrl: './customer-form-dialog.component.html',
   styleUrls: ['./customer-form-dialog.component.scss']
 })

@@ -78,8 +78,9 @@ export class SalesOrderFormComponent implements OnInit {
 
   initForm(): void {
     this.form = this.fb.group({
+      code: ['', Validators.required],
       customer: [null as Customer | null, Validators.required],
-      issueDate: [new Date(), Validators.required],
+      emissionDate: [new Date(), Validators.required],
       items: this.fb.array([], [Validators.required, Validators.minLength(1)]),
       total: [{ value: 0, disabled: true }]
     });
@@ -147,16 +148,15 @@ export class SalesOrderFormComponent implements OnInit {
     }
     const formValue = this.form.getRawValue();
     const salesOrderData = {
+      code: formValue.code,
       customerId: formValue.customer.id,
       customerName: formValue.customer.name,
-      customerDocument: formValue.customer.document,
-      issueDate: Timestamp.fromDate(formValue.issueDate),
-      totalValue: formValue.total,
+      emissionDate: Timestamp.fromDate(formValue.emissionDate),
+      total: formValue.total,
       status: 'DRAFT' as const,
       items: formValue.items.map((item: any) => ({
         productId: item.product.id,
         productName: item.product.name,
-        productSku: item.product.sku,
         quantity: item.quantity,
         unitPrice: item.unitPrice,
         totalPrice: item.totalPrice
@@ -184,8 +184,9 @@ export class SalesOrderFormComponent implements OnInit {
           const customer = customers.find(c => c.id === order.customerId);
           
           this.form.patchValue({
+            code: order.code,
             customer: customer,
-            issueDate: order.issueDate.toDate(),
+            emissionDate: order.emissionDate.toDate(),
           });
 
           this.items.clear();

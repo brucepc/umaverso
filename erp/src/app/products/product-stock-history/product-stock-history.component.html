@@ -1,53 +1,48 @@
 <h1 mat-dialog-title>Histórico de Estoque: {{ data.product.name }}</h1>
 
 <mat-dialog-content>
-  <div class="table-container" *ngIf="movements$ | async as movements; else loading">
-    <table mat-table [dataSource]="movements" class="mat-elevation-z2" *ngIf="movements.length > 0; else noData">
-
-      <!-- Timestamp Column -->
-      <ng-container matColumnDef="timestamp">
-        <th mat-header-cell *matHeaderCellDef> Data </th>
-        <td mat-cell *matCellDef="let element"> {{ element.timestamp.toDate() | date:'dd/MM/yyyy HH:mm' }} </td>
-      </ng-container>
-
-      <!-- Movement Type Column -->
-      <ng-container matColumnDef="movementType">
-        <th mat-header-cell *matHeaderCellDef> Tipo </th>
-        <td mat-cell *matCellDef="let element"> {{ element.movementType }} </td>
-      </ng-container>
-
-      <!-- Quantity Change Column -->
-      <ng-container matColumnDef="quantityChange">
-        <th mat-header-cell *matHeaderCellDef> Quantidade </th>
-        <td mat-cell *matCellDef="let element" [ngClass]="element.quantityChange > 0 ? 'positive' : 'negative'"> 
-          {{ element.quantityChange > 0 ? '+' : '' }}{{ element.quantityChange }} 
-        </td>
-      </ng-container>
-
-      <!-- New Stock Level Column -->
-      <ng-container matColumnDef="newStockLevel">
-        <th mat-header-cell *matHeaderCellDef> Saldo </th>
-        <td mat-cell *matCellDef="let element"> {{ element.newStockLevel }} </td>
-      </ng-container>
-
-      <!-- Reference ID Column -->
-      <ng-container matColumnDef="referenceId">
-        <th mat-header-cell *matHeaderCellDef> Referência </th>
-        <td mat-cell *matCellDef="let element"> {{ element.referenceId }} </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-
-    <ng-template #noData>
-      <p>Nenhuma movimentação de estoque encontrada para este produto.</p>
-    </ng-template>
-  </div>
-
-  <ng-template #loading>
+  @if (movements$ | async; as movements) {
+    <div class="table-container">
+      @if (movements.length > 0) {
+        <table mat-table [dataSource]="movements" class="mat-elevation-z2">
+          <!-- Timestamp Column -->
+          <ng-container matColumnDef="timestamp">
+            <th mat-header-cell *matHeaderCellDef> Data </th>
+            <td mat-cell *matCellDef="let element"> {{ element.timestamp.toDate() | date:'dd/MM/yyyy HH:mm' }} </td>
+          </ng-container>
+          <!-- Movement Type Column -->
+          <ng-container matColumnDef="movementType">
+            <th mat-header-cell *matHeaderCellDef> Tipo </th>
+            <td mat-cell *matCellDef="let element"> {{ element.movementType }} </td>
+          </ng-container>
+          <!-- Quantity Change Column -->
+          <ng-container matColumnDef="quantityChange">
+            <th mat-header-cell *matHeaderCellDef> Quantidade </th>
+            <td mat-cell *matCellDef="let element" [ngClass]="element.quantityChange > 0 ? 'positive' : 'negative'">
+              {{ element.quantityChange > 0 ? '+' : '' }}{{ element.quantityChange }}
+            </td>
+          </ng-container>
+          <!-- New Stock Level Column -->
+          <ng-container matColumnDef="newStockLevel">
+            <th mat-header-cell *matHeaderCellDef> Saldo </th>
+            <td mat-cell *matCellDef="let element"> {{ element.newStockLevel }} </td>
+          </ng-container>
+          <!-- Reference ID Column -->
+          <ng-container matColumnDef="referenceId">
+            <th mat-header-cell *matHeaderCellDef> Referência </th>
+            <td mat-cell *matCellDef="let element"> {{ element.referenceId }} </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      } @else {
+        <p>Nenhuma movimentação de estoque encontrada para este produto.</p>
+      }
+    </div>
+  } @else {
     <mat-spinner diameter="50"></mat-spinner>
-  </ng-template>
+  }
+
 
 </mat-dialog-content>
 

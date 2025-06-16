@@ -12,6 +12,7 @@ import { Category } from '../../models/category.model';
 import { Product, BomItem } from '@models/product.model';
 import { CategoryService } from '../../categories/category.service';
 import { ProductService } from '../product.service';
+import { ProductType } from '@models/product-type.enum';
 
 @Component({
   selector: 'app-product-form-dialog',
@@ -40,7 +41,8 @@ export class ProductFormDialogComponent {
   categories$: Observable<Category[]>;
   rawMaterials$: Observable<Product[]>;
   isEdit = !!this.data;
-  productTypes: Product['productType'][] = ['MATERIA_PRIMA', 'PRODUTO_ACABADO', 'REVENDA'];
+  productTypeEnum = ProductType;
+  productTypes = Object.values(ProductType);
 
   constructor() {
     this.categories$ = this.categoryService.getCategories();
@@ -50,7 +52,7 @@ export class ProductFormDialogComponent {
       name: [this.data?.name || '', Validators.required],
       sku: [this.data?.sku || '', Validators.required],
       categoryId: [this.data?.categoryId || '', Validators.required],
-      productType: [this.data?.productType || 'REVENDA', Validators.required],
+      productType: [this.data?.productType || ProductType.Revenda, Validators.required],
       unitOfMeasure: [this.data?.unitOfMeasure || '', Validators.required],
       averageCost: [this.data?.averageCost || 0, [Validators.required, Validators.min(0)]],
       salePrice: [this.data?.salePrice || 0, [Validators.required, Validators.min(0)]],
@@ -62,7 +64,7 @@ export class ProductFormDialogComponent {
     }
 
     this.form.get('productType')?.valueChanges.subscribe(type => {
-      if (type !== 'PRODUTO_ACABADO') {
+      if (type !== ProductType.FabricoProprio) {
         this.bom.clear();
       }
     });
@@ -95,8 +97,8 @@ export class ProductFormDialogComponent {
     
     let productData = this.form.getRawValue();
 
-    if (productData.productType !== 'PRODUTO_ACABADO') {
-      productData.bom = []; // Ensure bom is an empty array or handled as needed
+    if (productData.productType !== ProductType.FabricoProprio) {
+      productData.bom = [];
     }
     
     const productToSave = {

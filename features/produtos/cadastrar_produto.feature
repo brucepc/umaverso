@@ -17,16 +17,16 @@ Funcionalidade: Cadastro e Gestão de Produtos
     Então eu devo ver uma mensagem de "Produto cadastrado com sucesso"
     E o produto "ACI-001" deve estar registrado no sistema com o tipo "MATERIA_PRIMA"
 
-  Cenário: Cadastrar um novo produto acabado com sucesso
+  Cenário: Cadastrar um novo produto de fabrico próprio
     Quando eu tento cadastrar um novo produto com os seguintes dados:
       | campo         | valor                   |
       | nome          | Mesa de Inox 2m         |
       | sku           | MESA-INOX-200           |
-      | tipo_produto  | PRODUTO_ACABADO         |
+      | tipo_produto  | FABRICO_PROPRIO         |
       | unidade_medida| UNIDADE                 |
       | preco_venda   | 1250.50                 |
     Então eu devo ver uma mensagem de "Produto cadastrado com sucesso"
-    E o produto "MESA-INOX-200" deve estar registrado no sistema com o tipo "PRODUTO_ACABADO" e preço de venda "1250.50"
+    E o produto "MESA-INOX-200" deve estar registrado no sistema com o tipo "FABRICO_PROPRIO" e preço de venda "1250.50"
 
   Cenário: Tentar cadastrar um produto com SKU duplicado
     Dado que já existe um produto com o SKU "ACI-001"

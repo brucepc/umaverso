@@ -30,23 +30,6 @@ export const routes: Routes = [
         loadChildren: () => import('./sales-orders/sales-orders.routes').then(m => m.SALES_ORDERS_ROUTES)
     },
     {
-        path: 'production-orders',
-        children: [
-            {
-                path: '',
-                loadComponent: () => import('./production-orders/production-order-list.component').then(m => m.ProductionOrderListComponent)
-            },
-            {
-                path: 'new',
-                loadComponent: () => import('./production-orders/production-order-form.component').then(m => m.ProductionOrderFormComponent)
-            },
-            {
-                path: 'edit/:id',
-                loadComponent: () => import('./production-orders/production-order-form.component').then(m => m.ProductionOrderFormComponent)
-            }
-        ]
-    },
-    {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'

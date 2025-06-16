@@ -16,6 +16,7 @@ import { Product } from '../models/product.model';
 import { Observable } from 'rxjs';
 import { StockMovement } from '@models/stock-movement.model';
 import { StockMovementService } from '../stock-movements/stock-movement.service';
+import { ProductType } from '@models/product-type.enum';
 
 interface StockUpdateData {
   productId: string;
@@ -39,12 +40,12 @@ export class ProductService {
   }
 
   getRawMaterials(): Observable<Product[]> {
-    const q = query(this.productsCollection, where('productType', '==', 'MATERIA_PRIMA'), where('isActive', '==', true));
+    const q = query(this.productsCollection, where('productType', '==', ProductType.MateriaPrima), where('isActive', '==', true));
     return collectionData(q, { idField: 'id' }) as Observable<Product[]>;
   }
 
   getFinishedGoods(): Observable<Product[]> {
-    const q = query(this.productsCollection, where('productType', '==', 'PRODUTO_ACABADO'), where('isActive', '==', true));
+    const q = query(this.productsCollection, where('productType', '==', ProductType.FabricoProprio), where('isActive', '==', true));
     return collectionData(q, { idField: 'id' }) as Observable<Product[]>;
   }
 
