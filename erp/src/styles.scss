@@ -3,28 +3,43 @@
 @use "./styles/_theme-colors" as primary-colors;
 @use "./styles/page-list.scss";
 
-html {
-  color-scheme: light dark;
-  @include primary-colors.high-contrast-overrides(color-scheme);
-  @include mat.theme(
-    (
-      color: primary-colors.$primary-palette,
-      typography: (
-        plain-family: Roboto,
-        brand-family: Open Sans,
-        bold-weight: 900,
-        medium-weight: 500,
-        regular-weight: 400,
-      ),
-      density: 0,
-    )
-  );
-}
+// Include the common styles for Angular Material
+@include mat.core();
+
+// Create the theme object
+$theme: mat.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: primary-colors.$primary-palette,
+      tertiary: primary-colors.$primary-palette,
+      use-system-variables: true,
+      system-variables-prefix: "md-sys",
+    ),
+    typography: (
+      brand-family: "Roboto",
+      plain-family: '"Helvetica Neue", sans-serif',
+      bold-weight: 700,
+      medium-weight: 500,
+      regular-weight: 400,
+      use-system-variables: true,
+      system-variables-prefix: "md-sys",
+    ),
+    density: (
+      scale: 0,
+    ),
+  )
+);
+
+// Apply the theme to all Angular Material components
 
 html,
 body {
   margin: 0;
   height: 100%;
+  color-scheme: light dark;
+  @include mat.all-component-themes($theme);
+  @include primary-colors.high-contrast-overrides(color-scheme);
 }
 
 :root {
