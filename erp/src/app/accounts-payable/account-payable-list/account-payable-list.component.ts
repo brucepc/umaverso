@@ -10,12 +10,16 @@ import { AccountPayableService } from '../account-payable.service';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DatePipe } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-account-payable-list',
   standalone: true,
   imports: [
     CommonModule,
+    DatePipe,
+    RouterModule,
     FormsModule,
     MatTableModule,
     MatIconModule,
@@ -23,6 +27,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatTooltipModule,
     MatSlideToggleModule,
   ],
+  host: {
+    class: 'page-list'
+  },
   templateUrl: './account-payable-list.component.html',
   styleUrl: './account-payable-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

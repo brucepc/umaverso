@@ -9,65 +9,55 @@
 
   <div class="table-container mat-elevation-z8">
     <table mat-table [dataSource]="purchaseOrders$" class="full-width-table">
-
-      <!-- Code Column -->
-      <ng-container matColumnDef="code">
-        <th mat-header-cell *matHeaderCellDef> Nº Pedido </th>
-        <td mat-cell *matCellDef="let po"> {{po.code}} </td>
-      </ng-container>
-
-      <!-- Supplier Column -->
-      <ng-container matColumnDef="supplierName">
-        <th mat-header-cell *matHeaderCellDef> Fornecedor </th>
-        <td mat-cell *matCellDef="let po"> {{po.supplierName}} </td>
-      </ng-container>
-
-      <!-- Emission Date Column -->
+      <!-- Coluna Data de Emissão -->
       <ng-container matColumnDef="emissionDate">
-        <th mat-header-cell *matHeaderCellDef> Data de Emissão </th>
-        <td mat-cell *matCellDef="let po"> {{po.emissionDate.toDate() | date:'dd/MM/yyyy'}} </td>
+        <th mat-header-cell *matHeaderCellDef>Data de Emissão</th>
+        <td mat-cell *matCellDef="let order">{{ order.emissionDate.toDate() | date:'dd/MM/yyyy' }}</td>
       </ng-container>
 
-      <!-- Estimated Delivery Date Column -->
-      <ng-container matColumnDef="estimatedDeliveryDate">
-        <th mat-header-cell *matHeaderCellDef> Previsão de Entrega </th>
-        <td mat-cell *matCellDef="let po"> {{po.estimatedDeliveryDate?.toDate() | date:'dd/MM/yyyy'}} </td>
+      <!-- Coluna Número -->
+      <ng-container matColumnDef="code">
+        <th mat-header-cell *matHeaderCellDef>Nº Pedido</th>
+        <td mat-cell *matCellDef="let order">{{ order.code }}</td>
       </ng-container>
 
-      <!-- Total Value Column -->
+      <!-- Coluna Fornecedor -->
+      <ng-container matColumnDef="supplierName">
+        <th mat-header-cell *matHeaderCellDef>Fornecedor</th>
+        <td mat-cell *matCellDef="let order">{{ order.supplierName }}</td>
+      </ng-container>
+
+      <!-- Coluna Valor Total -->
       <ng-container matColumnDef="total">
-        <th mat-header-cell *matHeaderCellDef> Valor Total </th>
-        <td mat-cell *matCellDef="let po"> {{po.total | currency:'EUR'}} </td>
+        <th mat-header-cell *matHeaderCellDef>Valor Total</th>
+        <td mat-cell *matCellDef="let order">{{ order.total | currency:'EUR' }}</td>
       </ng-container>
 
-      <!-- Status Column -->
+      <!-- Coluna Status -->
       <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef> Status </th>
-        <td mat-cell *matCellDef="let po">
-          <span class="status-chip" [ngClass]="'status-' + po.status.toLowerCase()">
-            {{po.status | titlecase}}
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let order">
+          <span class="status-chip" [ngClass]="'status-' + order.status.toLowerCase()">
+            {{ order.status | titlecase }}
           </span>
         </td>
       </ng-container>
 
-      <!-- Actions Column -->
+      <!-- Coluna Ações -->
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let po">
-          <button mat-icon-button color="primary" [routerLink]="['/purchase-orders', po.id, 'edit']" matTooltip="Editar Pedido">
-            <mat-icon>edit</mat-icon>
+        <th mat-header-cell *matHeaderCellDef>Ações</th>
+        <td mat-cell *matCellDef="let order">
+          <button mat-icon-button color="primary" [routerLink]="['/purchase-orders', order.id]" matTooltip="Ver Detalhes">
+            <mat-icon>visibility</mat-icon>
           </button>
-          <button mat-icon-button color="accent" (click)="openReceiptDialog(po)" *ngIf="po.status === 'APPROVED'" matTooltip="Receber Pedido">
-            <mat-icon>inventory</mat-icon>
-          </button>
-          <button mat-icon-button color="warn" (click)="cancelOrder(po)" *ngIf="po.status === 'OPEN'" matTooltip="Cancelar Pedido">
-            <mat-icon>cancel</mat-icon>
+          <button mat-icon-button color="accent" (click)="openReceiptDialog(order)" *ngIf="order.status === 'APPROVED'" matTooltip="Receber Mercadoria">
+            <mat-icon>local_shipping</mat-icon>
           </button>
         </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr mat-row *matRowDef="let order; columns: displayedColumns"></tr>
 
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell table-empty-row" [attr.colspan]="displayedColumns.length" align="center">Nenhum pedido de compra encontrado.</td>

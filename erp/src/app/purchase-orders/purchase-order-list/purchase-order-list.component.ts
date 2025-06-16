@@ -42,7 +42,7 @@ export class PurchaseOrderListComponent implements OnInit {
   purchaseOrders$: Observable<PurchaseOrder[]> = this.purchaseOrderService.getPurchaseOrders().pipe(
     tap(orders => this.purchaseOrders = orders)
   );
-  displayedColumns: string[] = ['code', 'supplierName', 'emissionDate', 'estimatedDeliveryDate', 'total', 'status', 'actions'];
+  displayedColumns: string[] = ['emissionDate', 'code', 'supplierName', 'total', 'status', 'actions'];
 
   constructor() {}
 

@@ -24,6 +24,11 @@
     overflow: hidden; /* Ensures the mat-table respects the border radius */
   }
 
+  .table-empty-row {
+    text-align: center;
+    padding: 40px;
+  }
+
   .full-width-table {
     width: 100%;
   }
@@ -49,7 +54,7 @@
   .status-invoiced,
   .status-received,
   .status-finalizada {
-    background-color: #4CAF50; // Verde
+    background-color: #4caf50; // Verde
   }
 
   .status-inactive,
@@ -64,12 +69,12 @@
 
   .status-open,
   .status-pendente {
-    background-color: #2196F3; // Azul
+    background-color: #2196f3; // Azul
   }
 
   .status-approved,
   .status-em-produção {
-    background-color: #FFC107; // Amarelo
+    background-color: #ffc107; // Amarelo
     color: #333;
   }
 
