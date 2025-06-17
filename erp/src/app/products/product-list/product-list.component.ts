@@ -23,8 +23,9 @@ import { ProductStockHistoryComponent } from '../product-stock-history/product-s
     MatButtonModule,
     MatTooltipModule,
   ],
+  providers: [ProductFormDialogComponent],
   host: {
-    class: 'page-list'
+    class: 'page-list',
   },
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.scss'],

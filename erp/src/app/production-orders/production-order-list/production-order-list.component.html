@@ -48,12 +48,16 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Ações</th>
         <td mat-cell *matCellDef="let order">
-          <button mat-icon-button color="primary" (click)="startOrder(order)" *ngIf="order.status === 'Pendente'" matTooltip="Iniciar Produção">
-            <mat-icon>play_arrow</mat-icon>
-          </button>
-          <button mat-icon-button color="accent" (click)="finishOrder(order)" *ngIf="order.status === 'Em Produção'" matTooltip="Finalizar Produção">
-            <mat-icon>check_circle</mat-icon>
-          </button>
+          @if (order.status === 'Pendente') {
+            <button mat-icon-button color="primary" (click)="startOrder(order)" matTooltip="Iniciar Produção">
+              <mat-icon>play_arrow</mat-icon>
+            </button>
+          }
+          @if (order.status === 'Em Produção') {
+            <button mat-icon-button color="accent" (click)="finishOrder(order)" matTooltip="Finalizar Produção">
+              <mat-icon>check_circle</mat-icon>
+            </button>
+          }
         </td>
       </ng-container>
 
@@ -65,4 +69,4 @@
       </tr>
     </table>
   </div>
-</div> 
+</div>

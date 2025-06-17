@@ -4,7 +4,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { PurchaseOrder } from '@models/purchase-order.model';
 import { ProductService } from '../../products/product.service';
 import { PurchaseOrderService } from '../purchase-order.service';
-import { CommonModule } from '@angular/common';
+
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -15,13 +15,12 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
   styleUrls: ['./goods-receipt-dialog.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     MatDialogModule,
     MatListModule,
     MatButtonModule,
     MatProgressBarModule,
     MatSnackBarModule
-  ],
+],
 })
 export class GoodsReceiptDialogComponent {
   private productService = inject(ProductService);

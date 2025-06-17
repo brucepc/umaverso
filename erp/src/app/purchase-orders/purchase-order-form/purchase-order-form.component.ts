@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Timestamp } from '@angular/fire/firestore';
 import {
@@ -10,6 +10,7 @@ import {
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -20,21 +21,28 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Product } from '@models/product.model';
 import { PurchaseOrder } from '@models/purchase-order.model';
 import { Supplier } from '@models/supplier.model';
-import { combineLatest } from 'rxjs';
+import {
+  NgOptionTemplateDirective,
+  NgSelectComponent,
+} from '@ng-select/ng-select';
+import { BehaviorSubject, combineLatest } from 'rxjs';
 import {
   debounceTime,
   distinctUntilChanged,
-  take
+  switchMap,
+  take,
 } from 'rxjs/operators';
 import { ProductService } from '../../products/product.service';
 import { PurchaseOrderService } from '../../purchase-orders/purchase-order.service';
+import { SupplierFormDialogComponent } from '../../suppliers/supplier-form-dialog/supplier-form-dialog.component';
 import { SupplierService } from '../../suppliers/supplier.service';
 
 @Component({
   selector: 'app-purchase-order-form',
   standalone: true,
   imports: [
-    CommonModule,
+    AsyncPipe,
+    CurrencyPipe,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -44,6 +52,9 @@ import { SupplierService } from '../../suppliers/supplier.service';
     MatIconModule,
     MatTableModule,
     MatTooltipModule,
+    MatDialogModule,
+    NgSelectComponent,
+    NgOptionTemplateDirective,
   ],
   templateUrl: './purchase-order-form.component.html',
   styleUrl: './purchase-order-form.component.scss',
@@ -56,8 +67,12 @@ export class PurchaseOrderFormComponent {
   private productService = inject(ProductService);
   private purchaseOrderService = inject(PurchaseOrderService);
   private route = inject(ActivatedRoute);
+  private dialog = inject(MatDialog);
 
-  suppliers$ = this.supplierService.getSuppliers();
+  private suppliersSubject = new BehaviorSubject<void>(undefined);
+  suppliers$ = this.suppliersSubject
+    .asObservable()
+    .pipe(switchMap(() => this.supplierService.getSuppliers()));
   products$ = this.productService.getProducts();
 
   isEditMode = false;
@@ -196,6 +211,19 @@ export class PurchaseOrderFormComponent {
     this.router.navigate(['/purchase-orders']);
   }
 
+  addNewSupplier(): void {
+    const dialogRef = this.dialog.open(SupplierFormDialogComponent, {
+      width: '500px',
+    });
+
+    dialogRef.afterClosed().subscribe((newSupplier) => {
+      if (newSupplier) {
+        this.suppliersSubject.next();
+        this.form.get('supplier')?.setValue(newSupplier);
+      }
+    });
+  }
+
   onSave(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -209,7 +237,9 @@ export class PurchaseOrderFormComponent {
       supplierId: formValue.supplier!.id,
       supplierName: formValue.supplier!.name,
       emissionDate: Timestamp.fromDate(formValue.emissionDate!),
-      estimatedDeliveryDate: Timestamp.fromDate(formValue.estimatedDeliveryDate!),
+      estimatedDeliveryDate: Timestamp.fromDate(
+        formValue.estimatedDeliveryDate!
+      ),
       status: this.isEditMode ? this.form.value.status : 'OPEN',
       items: formValue.items.map((item: any) => ({
         productId: item.product.id,

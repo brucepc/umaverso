@@ -35,10 +35,14 @@
     {
       "rule": "Use o comando 'tree' listar a estrutura do projeto.",
       "tags": ["angular", "tree", "list"]
+    },
+    {
+      "rule": "Evit "
     }
   ],
   "additional_context": [
     "O projeto é um sistema ERP com módulos para Produtos, Vendas, Compras, Produção e Finanças.",
-    "O objetivo é construir uma aplicação robusta, manutenível e escalável."
+    "O objetivo é construir uma aplicação robusta, manutenível e escalável.",
+    "O projeto é construido com Angular 19 e TypeScript."
   ]
 }

@@ -50,9 +50,11 @@
           <button mat-icon-button color="primary" [routerLink]="['/purchase-orders', order.id]" matTooltip="Ver Detalhes">
             <mat-icon>visibility</mat-icon>
           </button>
-          <button mat-icon-button color="accent" (click)="openReceiptDialog(order)" *ngIf="order.status === 'APPROVED'" matTooltip="Receber Mercadoria">
-            <mat-icon>local_shipping</mat-icon>
-          </button>
+          @if (order.status === 'APPROVED') {
+            <button mat-icon-button color="accent" (click)="openReceiptDialog(order)" matTooltip="Receber Mercadoria">
+              <mat-icon>local_shipping</mat-icon>
+            </button>
+          }
         </td>
       </ng-container>
 
@@ -64,4 +66,4 @@
       </tr>
     </table>
   </div>
-</div> 
+</div>

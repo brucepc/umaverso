@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -15,13 +15,12 @@ import { SupplierService } from '../supplier.service';
   selector: 'app-supplier-list',
   standalone: true,
   imports: [
-    CommonModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
-    MatTooltipModule,
-  ],
+    MatTooltipModule
+],
   host: {
     class: 'page-list',
   },

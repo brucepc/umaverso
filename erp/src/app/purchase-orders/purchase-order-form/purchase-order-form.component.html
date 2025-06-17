@@ -3,17 +3,23 @@
 
   <form [formGroup]="form" (ngSubmit)="onSave()" class="form-container">
     <div class="form-row">
-      <mat-form-field appearance="fill">
-        <mat-label>Fornecedor</mat-label>
-        <mat-select formControlName="supplier" required>
-          <mat-option *ngFor="let s of suppliers$ | async" [value]="s">
-            {{ s.name }}
-          </mat-option>
-        </mat-select>
-        <mat-error *ngIf="form.get('supplier')?.hasError('required')">
-          O fornecedor é obrigatório.
-        </mat-error>
-      </mat-form-field>
+        <ng-select [items]="suppliers$ | async"
+                   bindLabel="name"
+                   bindValue="id"
+                   formControlName="supplier"
+                   placeholder="Selecione um fornecedor"
+                   class="full-width"
+                   [notFoundText]="'Nenhum fornecedor encontrado'">
+          <ng-template ng-header-tmp>
+            <button mat-stroked-button (click)="addNewSupplier()" type="button" class="add-new-button">
+              <mat-icon>add</mat-icon> Adicionar Fornecedor
+            </button>
+          </ng-template>
+          <ng-template ng-option-tmp let-item="item">
+            <div>{{ item.name }}</div>
+            <small>{{ item.nif }}</small>
+          </ng-template>
+        </ng-select>
     </div>
 
     <div class="form-row">
@@ -22,9 +28,11 @@
         <input matInput [matDatepicker]="emissionPicker" formControlName="emissionDate" required>
         <mat-datepicker-toggle matIconSuffix [for]="emissionPicker"></mat-datepicker-toggle>
         <mat-datepicker #emissionPicker></mat-datepicker>
-        <mat-error *ngIf="form.get('emissionDate')?.hasError('required')">
-          A data de emissão é obrigatória.
-        </mat-error>
+        @if (form.get('emissionDate')?.hasError('required')) {
+          <mat-error>
+            A data de emissão é obrigatória.
+          </mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="fill">
@@ -32,9 +40,11 @@
         <input matInput [matDatepicker]="deliveryPicker" formControlName="estimatedDeliveryDate" required>
         <mat-datepicker-toggle matIconSuffix [for]="deliveryPicker"></mat-datepicker-toggle>
         <mat-datepicker #deliveryPicker></mat-datepicker>
-        <mat-error *ngIf="form.get('estimatedDeliveryDate')?.hasError('required')">
-          A data de entrega é obrigatória.
-        </mat-error>
+        @if (form.get('estimatedDeliveryDate')?.hasError('required')) {
+          <mat-error>
+            A data de entrega é obrigatória.
+          </mat-error>
+        }
       </mat-form-field>
     </div>
 
@@ -42,16 +52,18 @@
     <div class="table-container mat-elevation-z8">
       <table mat-table [dataSource]="items.controls" class="full-width-table">
         <!-- Colunas da tabela de itens aqui -->
-        
+
         <!-- Product Column -->
         <ng-container matColumnDef="product">
           <th mat-header-cell *matHeaderCellDef> Produto </th>
           <td mat-cell *matCellDef="let item" [formGroup]="item">
             <mat-form-field appearance="outline" class="item-form-field">
               <mat-select formControlName="product" required>
-                <mat-option *ngFor="let p of products$ | async" [value]="p">
-                  {{ p.name }}
-                </mat-option>
+                @for (p of products$ | async; track p.id) {
+                  <mat-option [value]="p">
+                    {{ p.name }}
+                  </mat-option>
+                }
               </mat-select>
             </mat-form-field>
           </td>
@@ -71,7 +83,7 @@
         <ng-container matColumnDef="unitCost">
           <th mat-header-cell *matHeaderCellDef> Custo Unitário </th>
           <td mat-cell *matCellDef="let item" [formGroup]="item">
-             <mat-form-field appearance="outline" class="item-form-field">
+            <mat-form-field appearance="outline" class="item-form-field">
               <input matInput type="number" formControlName="unitCost" required min="0">
             </mat-form-field>
           </td>

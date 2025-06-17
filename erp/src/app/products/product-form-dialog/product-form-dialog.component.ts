@@ -28,6 +28,7 @@ import { ProductType } from '@models/product-type.enum';
     MatIconModule,
   ],
   templateUrl: './product-form-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductFormDialogComponent {
   private fb = inject(FormBuilder);
@@ -68,6 +69,23 @@ export class ProductFormDialogComponent {
         this.bom.clear();
       }
     });
+  }
+
+  // Track by functions for ngFor directives
+  trackByType(index: number, type: ProductType): ProductType {
+    return type;
+  }
+
+  trackByCategory(index: number, category: Category): string {
+    return category.id || '';
+  }
+
+  trackByProduct(index: number, product: Product): string {
+    return product.id;
+  }
+
+  trackByBomItem(index: number): number {
+    return index;
   }
 
   get bom() {

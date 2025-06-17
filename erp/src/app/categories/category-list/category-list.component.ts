@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,12 +13,11 @@ import { CategoryFormDialogComponent } from '../category-form-dialog/category-fo
   selector: 'app-category-list',
   standalone: true,
   imports: [
-    CommonModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatDialogModule,
-  ],
+    MatDialogModule
+],
   host: {
     class: 'page-list'
   },

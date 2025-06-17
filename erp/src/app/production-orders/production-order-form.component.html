@@ -5,24 +5,32 @@
     <mat-form-field appearance="fill">
       <mat-label>Produto a Produzir</mat-label>
       <mat-select formControlName="product" required>
-        <mat-option *ngFor="let p of productsToProduce$ | async" [value]="p">
-          {{ p.name }} ({{ p.sku }})
-        </mat-option>
+        @for (p of productsToProduce$ | async; track p) {
+          <mat-option [value]="p">
+            {{ p.name }} ({{ p.sku }})
+          </mat-option>
+        }
       </mat-select>
-      <mat-error *ngIf="form.get('product')?.hasError('required')">
-        O produto é obrigatório.
-      </mat-error>
+      @if (form.get('product')?.hasError('required')) {
+        <mat-error>
+          O produto é obrigatório.
+        </mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="fill">
       <mat-label>Quantidade a Produzir</mat-label>
       <input matInput type="number" formControlName="quantityToProduce" required min="1">
-      <mat-error *ngIf="form.get('quantityToProduce')?.hasError('required')">
-        A quantidade é obrigatória.
-      </mat-error>
-      <mat-error *ngIf="form.get('quantityToProduce')?.hasError('min')">
-        A quantidade deve ser no mínimo 1.
-      </mat-error>
+      @if (form.get('quantityToProduce')?.hasError('required')) {
+        <mat-error>
+          A quantidade é obrigatória.
+        </mat-error>
+      }
+      @if (form.get('quantityToProduce')?.hasError('min')) {
+        <mat-error>
+          A quantidade deve ser no mínimo 1.
+        </mat-error>
+      }
     </mat-form-field>
 
     <div class="actions">

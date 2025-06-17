@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,12 +15,11 @@ import { CustomerFormDialogComponent } from '../customer-form-dialog/customer-fo
   selector: 'app-customer-list',
   standalone: true,
   imports: [
-    CommonModule,
     MatTableModule,
     MatIconModule,
     MatButtonModule,
-    MatTooltipModule,
-  ],
+    MatTooltipModule
+],
   host: {
     class: 'page-list'
   },

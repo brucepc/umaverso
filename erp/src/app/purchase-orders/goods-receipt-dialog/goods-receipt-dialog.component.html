@@ -6,13 +6,17 @@
   <p>Você está prestes a confirmar o recebimento dos seguintes itens, que irão atualizar o estoque:</p>
 
   <mat-list role="list">
-    <mat-list-item *ngFor="let item of order.items" role="listitem">
-      <span matListItemTitle>{{ item.productName }} ({{ item.productSku }})</span>
-      <span matListItemLine>Quantidade: {{ item.quantity }}</span>
-    </mat-list-item>
+    @for (item of order.items; track item) {
+      <mat-list-item role="listitem">
+        <span matListItemTitle>{{ item.productName }} ({{ item.productSku }})</span>
+        <span matListItemLine>Quantidade: {{ item.quantity }}</span>
+      </mat-list-item>
+    }
   </mat-list>
 
-  <mat-progress-bar mode="indeterminate" *ngIf="isProcessing"></mat-progress-bar>
+  @if (isProcessing) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
 
 </mat-dialog-content>
 

@@ -9,22 +9,28 @@
         <mat-form-field appearance="fill">
           <mat-label>Email</mat-label>
           <input matInput formControlName="email" type="email" required>
-          <mat-error *ngIf="form.get('email')?.hasError('required')">
-            O email é obrigatório.
-          </mat-error>
-          <mat-error *ngIf="form.get('email')?.hasError('email')">
-            Forneça um email válido.
-          </mat-error>
+          @if (form.get('email')?.hasError('required')) {
+            <mat-error>
+              O email é obrigatório.
+            </mat-error>
+          }
+          @if (form.get('email')?.hasError('email')) {
+            <mat-error>
+              Forneça um email válido.
+            </mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="fill">
           <mat-label>Senha</mat-label>
           <input matInput formControlName="password" type="password" required>
-           <mat-error *ngIf="form.get('password')?.hasError('required')">
-            A senha é obrigatória.
-          </mat-error>
+          @if (form.get('password')?.hasError('required')) {
+            <mat-error>
+              A senha é obrigatória.
+            </mat-error>
+          }
         </mat-form-field>
-        
+
         <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
           Entrar
         </button>
@@ -35,4 +41,4 @@
       <!-- <a routerLink="/register">Não tem uma conta? Registre-se</a> -->
     </mat-card-actions>
   </mat-card>
-</div> 
+</div>
