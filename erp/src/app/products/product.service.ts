@@ -1,4 +1,9 @@
-import { Injectable, inject } from '@angular/core';
+import {
+  Injectable,
+  inject,
+  Injector,
+  runInInjectionContext,
+} from '@angular/core';
 import {
   Firestore,
   addDoc,
@@ -13,10 +18,17 @@ import {
   where,
 } from '@angular/fire/firestore';
 import { Product } from '../models/product.model';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
+import { switchMap } from 'rxjs';
 import { StockMovement } from '@models/stock-movement.model';
 import { StockMovementService } from '../stock-movements/stock-movement.service';
 import { ProductType } from '@models/product-type.enum';
+import {
+  Storage,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from '@angular/fire/storage';
 
 interface StockUpdateData {
   productId: string;
@@ -26,26 +38,38 @@ interface StockUpdateData {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductService {
   private firestore: Firestore = inject(Firestore);
+  private storage: Storage = inject(Storage);
   private productsCollection = collection(this.firestore, 'products');
   private stockMovementService = inject(StockMovementService);
+  private injector = inject(Injector);
 
-  constructor() { }
+  constructor() {}
 
   getProducts(): Observable<Product[]> {
-    return collectionData(this.productsCollection, { idField: 'id' }) as Observable<Product[]>;
+    return collectionData(this.productsCollection, {
+      idField: 'id',
+    }) as Observable<Product[]>;
   }
 
   getRawMaterials(): Observable<Product[]> {
-    const q = query(this.productsCollection, where('productType', '==', ProductType.MateriaPrima), where('isActive', '==', true));
+    const q = query(
+      this.productsCollection,
+      where('productType', '==', ProductType.MateriaPrima),
+      where('isActive', '==', true)
+    );
     return collectionData(q, { idField: 'id' }) as Observable<Product[]>;
   }
 
   getFinishedGoods(): Observable<Product[]> {
-    const q = query(this.productsCollection, where('productType', '==', ProductType.FabricoProprio), where('isActive', '==', true));
+    const q = query(
+      this.productsCollection,
+      where('productType', '==', ProductType.FabricoProprio),
+      where('isActive', '==', true)
+    );
     return collectionData(q, { idField: 'id' }) as Observable<Product[]>;
   }
 
@@ -53,10 +77,27 @@ export class ProductService {
     return addDoc(this.productsCollection, product);
   }
 
-  updateProduct(product: Product) {
-    const productDocRef = doc(this.firestore, `products/${product.id}`);
-    const { id, ...dataToUpdate } = product;
-    return updateDoc(productDocRef, dataToUpdate);
+  async updateProduct(product: Product) {
+    return from(
+      runInInjectionContext(this.injector, async () => {
+        const productDocRef = doc(this.firestore, `products/${product.id}`);
+        const { id, ...dataToUpdate } = product;
+        return updateDoc(productDocRef, dataToUpdate);
+      })
+    );
+  }
+
+  uploadProductImage(file: File): Observable<string | null> {
+    return from(
+      runInInjectionContext(this.injector, async () => {
+        const filePath = `products/${Date.now()}_${file.name}`;
+        const storageRef = ref(this.storage, filePath);
+        const result = await uploadBytes(storageRef, file);
+        return runInInjectionContext(this.injector, () =>
+          getDownloadURL(result.ref)
+        );
+      })
+    );
   }
 
   toggleIsActive(product: Product) {
@@ -66,17 +107,17 @@ export class ProductService {
 
   async updateStock(data: StockUpdateData): Promise<void> {
     const productDocRef = doc(this.firestore, `products/${data.productId}`);
-    
+
     return runTransaction(this.firestore, async (transaction) => {
       const productDoc = await transaction.get(productDocRef);
       if (!productDoc.exists()) {
         throw new Error(`Product with ID ${data.productId} does not exist!`);
       }
-      
+
       const productData = productDoc.data() as Product;
       const currentStock = productData.currentStock || 0;
       const newStock = currentStock + data.quantityChange;
-      
+
       // Step 1: Create the stock movement log
       const movementLog: Omit<StockMovement, 'id'> = {
         productId: data.productId,

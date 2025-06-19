@@ -1,4 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,6 +17,7 @@ import { Product } from '@models/product.model';
 import { ProductService } from '../product.service';
 import { ProductFormDialogComponent } from '../product-form-dialog/product-form-dialog.component';
 import { ProductStockHistoryComponent } from '../product-stock-history/product-stock-history.component';
+import { ImagePreviewDialogComponent } from '../image-preview-dialog/image-preview-dialog.component';
 
 @Component({
   selector: 'app-product-list',
@@ -29,6 +35,7 @@ import { ProductStockHistoryComponent } from '../product-stock-history/product-s
   },
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductListComponent {
   private productService = inject(ProductService);
@@ -37,6 +44,7 @@ export class ProductListComponent {
 
   products$: Observable<Product[]> = this.productService.getProducts();
   displayedColumns: string[] = [
+    'mainImageUrl',
     'sku',
     'name',
     'currentStock',
@@ -65,16 +73,24 @@ export class ProductListComponent {
   toggleProductStatus(product: Product): void {
     this.productService.toggleIsActive(product).then(() => {
       this.snackBar.open(
-        `Produto ${product.isActive ? 'ativado' : 'desativado'} com sucesso.`,
+        `Artigo ${product.isActive ? 'ativado' : 'desativado'} com sucesso.`,
         'Fechar',
         { duration: 3000 }
       );
     });
   }
 
+  showLargeImage(imageUrl: string, product: Product): void {
+    if (!imageUrl || imageUrl.includes('placehold.co')) return; // Não abre para imagens placeholder
+    this.dialog.open(ImagePreviewDialogComponent, {
+      data: { imageUrl, product },
+      panelClass: 'image-preview-dialog',
+    });
+  }
+
   viewStockHistory(product: Product): void {
     this.dialog.open(ProductStockHistoryComponent, {
-      width: '750px',
+      minWidth: 800,
       data: { product: product },
     });
   }

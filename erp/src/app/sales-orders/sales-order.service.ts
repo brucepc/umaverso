@@ -53,7 +53,8 @@ export class SalesOrderService {
         if (!productSnap.exists()) {
           throw new Error(`Produto ${item.productName} não encontrado.`);
         }
-        const newStock = productSnap.data().currentStock - item.quantity;
+        const currentStock = productSnap.data().currentStock ?? 0;
+        const newStock = currentStock - item.quantity;
         if (newStock < 0) {
           throw new Error(`Stock insuficiente para ${item.productName}.`);
         }

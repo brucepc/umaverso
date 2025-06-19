@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject, runInInjectionContext, Injector } from '@angular/core';
 import {
   Firestore,
   addDoc,
@@ -15,14 +15,14 @@ import { Supplier } from '@models/supplier.model';
   providedIn: 'root',
 })
 export class SupplierService {
-  private suppliersCollection;
+  private firestore: Firestore = inject(Firestore);
+  private suppliersCollection = collection(this.firestore, 'suppliers');
+  private injector = inject(Injector);
 
-  constructor(private firestore: Firestore) {
-    this.suppliersCollection = collection(this.firestore, 'suppliers');
-  }
-
-  getSuppliers(): Observable<Supplier[]> {
-    return collectionData(this.suppliersCollection, { idField: 'id' }) as Observable<Supplier[]>;
+  getSuppliers = (): Observable<Supplier[]> => {
+    return runInInjectionContext(this.injector, () =>
+      collectionData(this.suppliersCollection, { idField: 'id' }) as Observable<Supplier[]>
+    );
   }
 
   addSupplier(supplier: Omit<Supplier, 'id'>) {

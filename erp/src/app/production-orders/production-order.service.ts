@@ -75,12 +75,13 @@ export class ProductionOrderService {
 
         const componentData = componentDoc.data() as Product;
         const requiredQuantity = component.quantity * orderData.quantityToProduce;
+        const currentStock = componentData.currentStock ?? 0;
 
-        if (componentData.currentStock < requiredQuantity) {
-          throw new Error(`Insufficient stock for component ${componentData.name}. Required: ${requiredQuantity}, Available: ${componentData.currentStock}`);
+        if (currentStock < requiredQuantity) {
+          throw new Error(`Insufficient stock for component ${componentData.name}. Required: ${requiredQuantity}, Available: ${currentStock}`);
         }
 
-        const newStock = componentData.currentStock - requiredQuantity;
+        const newStock = currentStock - requiredQuantity;
         transaction.update(componentRef, { currentStock: newStock });
         totalCost += (componentData.averageCost || 0) * requiredQuantity;
       }
@@ -114,8 +115,11 @@ export class ProductionOrderService {
       }
 
       const productData = productDoc.data() as Product;
-      const newStock = productData.currentStock + orderData.quantityToProduce;
-      const newAverageCost = ((productData.averageCost * productData.currentStock) + (orderData.totalCost || 0)) / newStock;
+      const currentStock = productData.currentStock ?? 0;
+      const currentAverageCost = productData.averageCost ?? 0;
+
+      const newStock = currentStock + orderData.quantityToProduce;
+      const newAverageCost = ((currentAverageCost * currentStock) + (orderData.totalCost || 0)) / newStock;
 
       transaction.update(productRef, {
         currentStock: newStock,

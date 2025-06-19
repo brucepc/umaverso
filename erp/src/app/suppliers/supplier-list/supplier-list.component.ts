@@ -1,4 +1,3 @@
-
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -19,8 +18,8 @@ import { SupplierService } from '../supplier.service';
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
-    MatTooltipModule
-],
+    MatTooltipModule,
+  ],
   host: {
     class: 'page-list',
   },
@@ -45,7 +44,7 @@ export class SupplierListComponent {
 
   openSupplierDialog(supplier?: Supplier): void {
     const dialogRef = this.dialog.open(SupplierFormDialogComponent, {
-      width: '800px',
+      minWidth: 800,
       data: { supplier },
     });
 

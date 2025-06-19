@@ -8,14 +8,19 @@ export interface BomItem {
 
 export interface Product {
   id: string;
-  categoryId: string;
-  sku: string;
   name: string;
+  sku: string;
+  categoryId: string;
+  categoryName?: string;
   productType: ProductType;
   unitOfMeasure: string;
-  currentStock: number;
-  averageCost: number;
-  salePrice?: number;
+  currentStock?: number;
+  averageCost?: number;
+  salePrice: number;
   isActive: boolean;
+  weight?: number; // in kg
+  size?: string; // e.g., "10x20x5 cm"
+  mainImageUrl?: string;
+  imageUrls?: string[];
   bom?: BomItem[]; // Bill of Materials for FABRICO_PROPRIO
 } 

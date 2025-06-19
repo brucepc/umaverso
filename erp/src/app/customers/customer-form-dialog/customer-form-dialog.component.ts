@@ -25,32 +25,35 @@ import { MatInputModule } from '@angular/material/input';
   styleUrls: ['./customer-form-dialog.component.scss']
 })
 export class CustomerFormDialogComponent {
-  private fb = inject(FormBuilder);
-  private customerService = inject(CustomerService);
-  private dialogRef = inject(MatDialogRef<CustomerFormDialogComponent>);
-  private snackBar = inject(MatSnackBar);
-
   form: FormGroup;
-  isEditMode: boolean;
+  isEditMode = false;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data?: Customer) {
-    this.isEditMode = !!data;
-
+  constructor(
+    private fb: FormBuilder,
+    public dialogRef: MatDialogRef<CustomerFormDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: Customer | null,
+    private customerService: CustomerService
+  ) {
     this.form = this.fb.group({
-      name: [data?.name || '', Validators.required],
-      document: [data?.document || '', Validators.required],
-      email: [data?.email || '', [Validators.required, Validators.email]],
-      phone: [data?.phone || ''],
+      name: ['', Validators.required],
+      nif: ['', Validators.required],
+      email: ['', [Validators.email]],
+      phone: [''],
       address: this.fb.group({
-        street: [data?.address?.street || '', Validators.required],
-        number: [data?.address?.number || '', Validators.required],
-        complement: [data?.address?.complement || ''],
-        zipCode: [data?.address?.zipCode || '', Validators.required],
-        city: [data?.address?.city || '', Validators.required],
-        state: [data?.address?.state || '', Validators.required],
+        street: [''],
+        number: [''],
+        complement: [''],
+        zipCode: [''],
+        city: [''],
+        state: [''],
       }),
-      isActive: [data?.isActive ?? true]
+      isActive: [true],
     });
+
+    if (this.data) {
+      this.isEditMode = true;
+      this.form.patchValue(this.data);
+    }
   }
 
   onSave(): void {
@@ -59,18 +62,16 @@ export class CustomerFormDialogComponent {
       return;
     }
 
-    const customerData = this.form.value;
-    const saveOperation = this.isEditMode && this.data
-      ? this.customerService.updateCustomer({ ...this.data, ...customerData })
+    const customerData: Omit<Customer, 'id'> = this.form.value;
+
+    const save$ = this.isEditMode
+      ? this.customerService.updateCustomer({
+          id: this.data!.id,
+          ...customerData,
+        })
       : this.customerService.addCustomer(customerData);
 
-    saveOperation.then(() => {
-      this.snackBar.open(`Cliente ${this.isEditMode ? 'atualizado' : 'salvo'} com sucesso!`, 'Fechar', { duration: 3000 });
-      this.dialogRef.close(true);
-    }).catch(err => {
-      console.error(err);
-      this.snackBar.open(`Erro ao ${this.isEditMode ? 'atualizar' : 'salvar'} cliente.`, 'Fechar', { duration: 3000 });
-    });
+    save$.then(() => this.dialogRef.close(true));
   }
 
   onCancel(): void {

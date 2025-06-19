@@ -14,37 +14,39 @@ import { CustomerFormDialogComponent } from '../customer-form-dialog/customer-fo
 @Component({
   selector: 'app-customer-list',
   standalone: true,
-  imports: [
-    MatTableModule,
-    MatIconModule,
-    MatButtonModule,
-    MatTooltipModule
-],
+  imports: [MatTableModule, MatIconModule, MatButtonModule, MatTooltipModule],
   host: {
-    class: 'page-list'
+    class: 'page-list',
   },
   templateUrl: './customer-list.component.html',
-  styleUrls: ['./customer-list.component.scss']
+  styleUrls: ['./customer-list.component.scss'],
 })
 export class CustomerListComponent {
   private customerService = inject(CustomerService);
   private dialog = inject(MatDialog);
 
   customers$: Observable<Customer[]> = this.customerService.getCustomers();
-  displayedColumns: string[] = ['name', 'document', 'email', 'phone', 'city', 'actions'];
+  displayedColumns: string[] = [
+    'name',
+    'document',
+    'email',
+    'phone',
+    'city',
+    'actions',
+  ];
 
   addCustomer(): void {
     this.dialog.open(CustomerFormDialogComponent, {
-      width: '600px',
-      disableClose: true
+      minWidth: 800,
+      disableClose: true,
     });
   }
-  
+
   editCustomer(customer: Customer): void {
     this.dialog.open(CustomerFormDialogComponent, {
-      width: '600px',
+      minWidth: 800,
       disableClose: true,
-      data: customer
+      data: customer,
     });
   }
 }

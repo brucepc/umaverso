@@ -1,30 +1,37 @@
-.form-section {
-  margin-bottom: 20px;
-}
+:host {
+  .form-grid,
+  .address-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 10px;
+  }
 
-.form-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 10px;
-}
+  .name-field {
+    grid-column: 1 / 4;
+  }
 
-.full-width {
-  grid-column: 1 / -1;
-}
+  .document-field {
+    grid-column: 4 / 5;
+  }
 
-.street-field {
-  grid-column: 1 / 4; /* Takes up 3/4 of the space */
-}
+  .first-half-row {
+    grid-column: 1 / 3;
+  }
 
-.number-field {
-  grid-column: 4 / 5; /* Takes up 1/4 of the space */
-}
+  .second-half-row {
+    grid-column: 3 / 5;
+  }
 
-mat-form-field {
-  width: 100%;
-}
+  .address-grid {
+    grid-column: 1 / 5;
+  }
 
-mat-dialog-content {
-  padding-top: 20px;
+  .street-field {
+    grid-column: 1 / 4;
+  }
+
+  .number-field {
+    grid-column: 4 / 5;
+  }
 }

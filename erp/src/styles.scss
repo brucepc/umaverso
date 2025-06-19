@@ -4,7 +4,7 @@
 @use "./styles/page-list.scss";
 
 // Include the common styles for Angular Material
-@include mat.core();
+//@include mat.core();
 
 // Create the theme object
 $theme: mat.define-theme(
@@ -14,16 +14,13 @@ $theme: mat.define-theme(
       primary: primary-colors.$primary-palette,
       tertiary: primary-colors.$primary-palette,
       use-system-variables: true,
-      system-variables-prefix: "md-sys",
     ),
     typography: (
       brand-family: "Roboto",
-      plain-family: '"Helvetica Neue", sans-serif',
+      //plain-family: '"Helvetica Neue", sans-serif',
       bold-weight: 700,
       medium-weight: 500,
       regular-weight: 400,
-      use-system-variables: true,
-      system-variables-prefix: "md-sys",
     ),
     density: (
       scale: 0,
@@ -38,8 +35,12 @@ body {
   margin: 0;
   height: 100%;
   color-scheme: light dark;
+}
+
+html {
   @include mat.all-component-themes($theme);
   @include primary-colors.high-contrast-overrides(color-scheme);
+  @include mat.typography-hierarchy($theme);
 }
 
 :root {
@@ -48,4 +49,11 @@ body {
 
 .mat-mdc-form-field {
   margin: 8px;
+}
+.cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
+  background: rgb(0 0 0 / 22%);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(2.5px);
+  -webkit-backdrop-filter: blur(2.5px);
 }

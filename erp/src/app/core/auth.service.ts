@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, User } from '@angular/fire/auth';
+import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, User, authState } from '@angular/fire/auth';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -8,31 +8,22 @@ import { Observable } from 'rxjs';
 export class AuthService {
   private auth: Auth = inject(Auth);
   
-  // Observable to get the current user
-  public readonly currentUser: Observable<User | null>;
+  public readonly currentUser: Observable<User | null> = authState(this.auth);
 
-  constructor() {
-    this.currentUser = new Observable(subscriber => {
-      const unsubscribe = onAuthStateChanged(this.auth, user => {
-        subscriber.next(user);
-      });
-      // Unsubscribe when the observable is unsubscribed
-      return unsubscribe;
-    });
-  }
+  constructor() {}
 
   // Login a user
-  login(email: string, password: string): Promise<any> {
+  login = (email: string, password: string): Promise<any> => {
     return signInWithEmailAndPassword(this.auth, email, password);
   }
 
   // Logout the current user
-  logout(): Promise<void> {
+  logout = (): Promise<void> => {
     return signOut(this.auth);
   }
   
   // Register a new user
-  register(email: string, password: string): Promise<any> {
+  register = (email: string, password: string): Promise<any> => {
     return createUserWithEmailAndPassword(this.auth, email, password);
   }
 } 

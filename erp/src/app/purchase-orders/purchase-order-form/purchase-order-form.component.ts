@@ -22,6 +22,7 @@ import { Product } from '@models/product.model';
 import { PurchaseOrder } from '@models/purchase-order.model';
 import { Supplier } from '@models/supplier.model';
 import {
+  NgHeaderTemplateDirective,
   NgOptionTemplateDirective,
   NgSelectComponent,
 } from '@ng-select/ng-select';
@@ -36,6 +37,7 @@ import { ProductService } from '../../products/product.service';
 import { PurchaseOrderService } from '../../purchase-orders/purchase-order.service';
 import { SupplierFormDialogComponent } from '../../suppliers/supplier-form-dialog/supplier-form-dialog.component';
 import { SupplierService } from '../../suppliers/supplier.service';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-purchase-order-form',
@@ -52,9 +54,11 @@ import { SupplierService } from '../../suppliers/supplier.service';
     MatIconModule,
     MatTableModule,
     MatTooltipModule,
+    NgHeaderTemplateDirective,
     MatDialogModule,
     NgSelectComponent,
     NgOptionTemplateDirective,
+    NgSelectModule,
   ],
   templateUrl: './purchase-order-form.component.html',
   styleUrl: './purchase-order-form.component.scss',
@@ -101,6 +105,10 @@ export class PurchaseOrderFormComponent {
     } else {
       this.addItem();
     }
+  }
+
+  compareProducts(p1: Product, p2: Product): boolean {
+    return p1 && p2 ? p1.id === p2.id : p1 === p2;
   }
 
   loadOrderData(id: string): void {

@@ -1,0 +1,9 @@
+<div class="image-preview-header">
+    <h2 mat-dialog-title>{{ data.product.name }}</h2>
+    <button mat-icon-button (click)="closeDialog()" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<mat-dialog-content class="image-container">
+    <img [src]="data.imageUrl" alt="Pré-visualização da Imagem do Artigo" />
+</mat-dialog-content>

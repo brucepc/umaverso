@@ -2,61 +2,59 @@
 
 <form [formGroup]="form" (ngSubmit)="onSave()">
   <mat-dialog-content>
-    
-    <div class="form-section">
-      <h2>Dados Pessoais</h2>
-      <div class="form-row">
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Nome Completo</mat-label>
-          <input matInput formControlName="name" required>
-        </mat-form-field>
-      </div>
-      <div class="form-row">
-        <mat-form-field appearance="fill">
-          <mat-label>CPF / CNPJ</mat-label>
-          <input matInput formControlName="document" required>
-        </mat-form-field>
-        <mat-form-field appearance="fill">
-          <mat-label>Email</mat-label>
-          <input matInput formControlName="email" type="email" required>
-        </mat-form-field>
-        <mat-form-field appearance="fill">
-          <mat-label>Telefone</mat-label>
-          <input matInput formControlName="phone">
-        </mat-form-field>
-      </div>
-    </div>
 
-    <div class="form-section" formGroupName="address">
-      <h2>Endereço</h2>
-      <div class="form-row">
-        <mat-form-field appearance="fill" class="street-field">
-          <mat-label>Logradouro</mat-label>
-          <input matInput formControlName="street" required>
+    <div class="form-grid">
+      <!-- Personal Data -->
+      <mat-form-field appearance="outline" class="name-field">
+        <mat-label>Nome Completo</mat-label>
+        <input matInput formControlName="name" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="document-field">
+        <mat-label>NIF</mat-label>
+        <input matInput formControlName="document" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="first-half-row">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="second-half-row">
+        <mat-label>Telemóvel</mat-label>
+        <input matInput formControlName="phone">
+      </mat-form-field>
+
+      <!-- Address -->
+      <div formGroupName="address" class="address-grid">
+        <mat-form-field appearance="outline" class="street-field">
+          <mat-label>Morada</mat-label>
+          <input matInput formControlName="street">
         </mat-form-field>
-        <mat-form-field appearance="fill" class="number-field">
+
+        <mat-form-field appearance="outline" class="number-field">
           <mat-label>Número</mat-label>
-          <input matInput formControlName="number" required>
+          <input matInput formControlName="number">
         </mat-form-field>
-      </div>
-      <div class="form-row">
-        <mat-form-field appearance="fill">
+
+        <mat-form-field appearance="outline" class="street-field">
           <mat-label>Complemento</mat-label>
           <input matInput formControlName="complement">
         </mat-form-field>
-        <mat-form-field appearance="fill">
-          <mat-label>CEP</mat-label>
-          <input matInput formControlName="zipCode" required>
+
+        <mat-form-field appearance="outline" class="number-field">
+          <mat-label>Código Postal</mat-label>
+          <input matInput formControlName="zipCode">
         </mat-form-field>
-      </div>
-      <div class="form-row">
-        <mat-form-field appearance="fill">
-          <mat-label>Cidade</mat-label>
-          <input matInput formControlName="city" required>
+
+        <mat-form-field appearance="outline" class="first-half-row">
+          <mat-label>Localidade</mat-label>
+          <input matInput formControlName="city">
         </mat-form-field>
-        <mat-form-field appearance="fill">
-          <mat-label>Estado</mat-label>
-          <input matInput formControlName="state" required>
+
+        <mat-form-field appearance="outline" class="second-half-row">
+          <mat-label>Distrito</mat-label>
+          <input matInput formControlName="state">
         </mat-form-field>
       </div>
     </div>
@@ -64,9 +62,9 @@
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
-    <button mat-button type="button" (click)="onCancel()">Cancelar</button>
+    <button mat-stroked-button type="button" (click)="onCancel()">Cancelar</button>
     <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
-      {{ isEditMode ? 'Atualizar' : 'Salvar' }}
+      {{ isEditMode ? 'Atualizar' : 'Guardar' }}
     </button>
   </mat-dialog-actions>
 </form>

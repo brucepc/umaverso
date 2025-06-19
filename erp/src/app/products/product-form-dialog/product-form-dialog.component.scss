@@ -1,8 +1,16 @@
 :host {
+  section {
+    padding: var(--mat-dialog-content-padding);
+    h6 {
+      font: var(--mat-sys-title-large);
+    }
+  }
+
   .form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
+    margin-top: 16px;
   }
 
   .form-row {
@@ -32,5 +40,79 @@
 
   .bom-item-row mat-form-field {
     flex-grow: 1;
+  }
+
+  .image-gallery-container {
+    margin-top: 16px;
+
+    .image-previews {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .image-preview {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid transparent;
+      transition: border-color 0.3s ease;
+
+      &.main-image {
+        border-color: #3f51b5; // Cor primária do Angular Material
+        box-shadow: 0 0 8px rgba(63, 81, 181, 0.5);
+      }
+
+      img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+      }
+
+      .image-actions {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        background-color: rgba(255, 255, 255, 0.5);
+        border-radius: 4px;
+        padding: 2px;
+      }
+
+      .remove-image-button,
+      .main-image-button {
+        color: white;
+        ::ng-deep .mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+      }
+
+      .main-image-badge {
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+        background-color: #3f51b5;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+    }
+
+    .image-preview-spinner {
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px dashed #ccc;
+      border-radius: 8px;
+    }
   }
 }
