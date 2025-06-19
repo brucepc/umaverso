@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @use "@angular/material" as mat;
 @use "./styles/_theme-colors" as primary-colors;
-@use "./styles/page-list.scss";
+@use "./styles/page-list";
 
 // Include the common styles for Angular Material
 //@include mat.core();
@@ -23,7 +23,7 @@ $theme: mat.define-theme(
       regular-weight: 400,
     ),
     density: (
-      scale: 0,
+      scale: -1,
     ),
   )
 );

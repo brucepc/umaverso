@@ -25,6 +25,7 @@ import {
   NgHeaderTemplateDirective,
   NgOptionTemplateDirective,
   NgSelectComponent,
+  NgSelectModule,
 } from '@ng-select/ng-select';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import {
@@ -37,7 +38,6 @@ import { ProductService } from '../../products/product.service';
 import { PurchaseOrderService } from '../../purchase-orders/purchase-order.service';
 import { SupplierFormDialogComponent } from '../../suppliers/supplier-form-dialog/supplier-form-dialog.component';
 import { SupplierService } from '../../suppliers/supplier.service';
-import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-purchase-order-form',
@@ -57,7 +57,6 @@ import { NgSelectModule } from '@ng-select/ng-select';
     NgHeaderTemplateDirective,
     MatDialogModule,
     NgSelectComponent,
-    NgOptionTemplateDirective,
     NgSelectModule,
   ],
   templateUrl: './purchase-order-form.component.html',
@@ -74,13 +73,14 @@ export class PurchaseOrderFormComponent {
   private dialog = inject(MatDialog);
 
   private suppliersSubject = new BehaviorSubject<void>(undefined);
+  private orderId: string | null = null;
+
   suppliers$ = this.suppliersSubject
     .asObservable()
     .pipe(switchMap(() => this.supplierService.getSuppliers()));
   products$ = this.productService.getProducts();
 
   isEditMode = false;
-  private orderId: string | null = null;
 
   form = this.fb.group({
     supplier: [null as Supplier | null, Validators.required],
@@ -221,7 +221,7 @@ export class PurchaseOrderFormComponent {
 
   addNewSupplier(): void {
     const dialogRef = this.dialog.open(SupplierFormDialogComponent, {
-      width: '500px',
+      minWidth: 800,
     });
 
     dialogRef.afterClosed().subscribe((newSupplier) => {

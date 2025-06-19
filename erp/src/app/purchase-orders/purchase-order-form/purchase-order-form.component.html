@@ -3,22 +3,18 @@
 
   <form [formGroup]="form" (ngSubmit)="onSave()" class="form-container">
     <div class="form-row">
-        <ng-select [items]="suppliers$ | async"
-                   bindLabel="name"
-                   formControlName="supplier"
-                   placeholder="Selecione um fornecedor"
-                   class="full-width"
-                   [notFoundText]="'Nenhum fornecedor encontrado'">
-          <ng-template ng-header-tmp>
-            <button mat-stroked-button (click)="addNewSupplier()" type="button" class="add-new-button">
-              <mat-icon>add</mat-icon> Adicionar Fornecedor
-            </button>
-          </ng-template>
-          <ng-template ng-option-tmp let-item="item">
-            <div>{{ item.name }}</div>
-            <small>{{ item.nif }}</small>
-          </ng-template>
-        </ng-select>
+      <ng-select [items]="suppliers$ | async" bindLabel="name" formControlName="supplier"
+        placeholder="Selecione um fornecedor" class="full-width" notFoundText='Nenhum fornecedor encontrado'>
+        <ng-template ng-header-tmp>
+          <button mat-stroked-button (click)="addNewSupplier()" type="button" class="add-new-button">
+            <mat-icon>add</mat-icon> Adicionar Fornecedor
+          </button>
+        </ng-template>
+        <ng-template ng-option-tmp let-item="item">
+          <div>{{ item.name }}</div>
+          <small>{{ item.nif }}</small>
+        </ng-template>
+      </ng-select>
     </div>
 
     <div class="form-row">
@@ -28,9 +24,9 @@
         <mat-datepicker-toggle matIconSuffix [for]="emissionPicker"></mat-datepicker-toggle>
         <mat-datepicker #emissionPicker></mat-datepicker>
         @if (form.get('emissionDate')?.hasError('required')) {
-          <mat-error>
-            A data de emissão é obrigatória.
-          </mat-error>
+        <mat-error>
+          A data de emissão é obrigatória.
+        </mat-error>
         }
       </mat-form-field>
 
@@ -40,9 +36,9 @@
         <mat-datepicker-toggle matIconSuffix [for]="deliveryPicker"></mat-datepicker-toggle>
         <mat-datepicker #deliveryPicker></mat-datepicker>
         @if (form.get('estimatedDeliveryDate')?.hasError('required')) {
-          <mat-error>
-            A data de entrega é obrigatória.
-          </mat-error>
+        <mat-error>
+          A data de entrega é obrigatória.
+        </mat-error>
         }
       </mat-form-field>
     </div>
@@ -59,9 +55,9 @@
             <mat-form-field appearance="outline" class="item-form-field">
               <mat-select formControlName="product" required [compareWith]="compareProducts">
                 @for (p of products$ | async; track p.id) {
-                  <mat-option [value]="p">
-                    {{ p.name }}
-                  </mat-option>
+                <mat-option [value]="p">
+                  {{ p.name }}
+                </mat-option>
                 }
               </mat-select>
             </mat-form-field>
