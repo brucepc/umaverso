@@ -1,8 +1,9 @@
-/* You can add global styles to this file, and also import other style files */
+/* You can add globl styles to this file, and also import other style files */
 @use "@angular/material" as mat;
 @use "./styles/_theme-colors" as primary-colors;
 @use "./styles/page-list";
 
+@import "./styles/tailwind.css";
 // Include the common styles for Angular Material
 //@include mat.core();
 
@@ -47,7 +48,8 @@ html {
   --mat-dialog-with-actions-content-padding: 16px;
 }
 
-.mat-mdc-form-field {
+.mat-mdc-form-field,
+.ng-select {
   margin: 8px;
 }
 .cdk-overlay-backdrop.cdk-overlay-backdrop-showing {

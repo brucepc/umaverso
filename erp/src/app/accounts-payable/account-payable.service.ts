@@ -1,40 +1,51 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
-  Firestore,
-  collection,
   collectionData,
-  doc,
+  Firestore,
   updateDoc,
+  doc,
+  addDoc,
+  deleteDoc,
+  collection,
 } from '@angular/fire/firestore';
 import { AccountPayable } from '@models/account-payable.model';
 import { Observable } from 'rxjs';
-import { Timestamp } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AccountPayableService {
   private firestore: Firestore = inject(Firestore);
-  private accountsPayableCollection;
-
-  constructor() {
-    this.accountsPayableCollection = collection(this.firestore, 'accountsPayable');
-  }
+  private payablesCollection = collection(this.firestore, 'accountsPayable');
 
   getAccountsPayable(): Observable<AccountPayable[]> {
-    return collectionData(this.accountsPayableCollection, {
+    return collectionData(this.payablesCollection, {
       idField: 'id',
     }) as Observable<AccountPayable[]>;
   }
 
-  updatePaymentStatus(id: string, status: 'Aberta' | 'Liquidada') {
-    const accountDoc = doc(this.firestore, `accountsPayable/${id}`);
-    const updateData: { status: 'Aberta' | 'Liquidada', settlementDate?: Timestamp } = { status };
-    if (status === 'Liquidada') {
-      updateData.settlementDate = Timestamp.now();
-    } else {
-      updateData.settlementDate = undefined;
-    }
-    return updateDoc(accountDoc, updateData);
+  addAccountPayable(payable: Omit<AccountPayable, 'id'>): Promise<any> {
+    return addDoc(this.payablesCollection, payable);
+  }
+
+  updateAccountPayable(
+    id: string,
+    payable: Partial<AccountPayable>
+  ): Promise<void> {
+    const payableDoc = doc(this.firestore, `accountsPayable/${id}`);
+    return updateDoc(payableDoc, payable);
+  }
+
+  deleteAccountPayable(id: string): Promise<void> {
+    const payableDoc = doc(this.firestore, `accountsPayable/${id}`);
+    return deleteDoc(payableDoc);
+  }
+
+  approvePayable(id: string): Promise<void> {
+    return this.updateAccountPayable(id, { status: 'Aprovada' });
+  }
+
+  rejectPayable(id: string): Promise<void> {
+    return this.updateAccountPayable(id, { status: 'Rejeitada' });
   }
 } 

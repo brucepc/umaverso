@@ -1,28 +1,37 @@
-<h1 mat-dialog-title>Confirmar Recebimento</h1>
-<h2 class="mat-body-2">Pedido: {{ order.id }}</h2>
-<h3 class="mat-subheading-2">Fornecedor: {{ order.supplierName }}</h3>
+<h2 mat-dialog-title>Confirmar Receção de Mercadoria</h2>
 
 <mat-dialog-content>
-  <p>Você está prestes a confirmar o recebimento dos seguintes itens, que irão atualizar o estoque:</p>
+  <p>
+    Está prestes a confirmar a receção para o pedido de compra
+    <strong>{{ order.code }}</strong
+    >.
+  </p>
+  <p>Os seguintes itens terão o seu stock atualizado:</p>
 
   <mat-list role="list">
-    @for (item of order.items; track item) {
-      <mat-list-item role="listitem">
-        <span matListItemTitle>{{ item.productName }} ({{ item.productSku }})</span>
-        <span matListItemLine>Quantidade: {{ item.quantity }}</span>
-      </mat-list-item>
+    @for (item of order.items; track item.productId) {
+    <mat-list-item role="listitem">
+      {{ item.productName }} - Quantidade: {{ item.quantity }}
+    </mat-list-item>
     }
   </mat-list>
 
+  <p>Confirma esta ação?</p>
   @if (isProcessing) {
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   }
-
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()" [disabled]="isProcessing">Cancelar</button>
-  <button mat-flat-button color="primary" (click)="onConfirmReceipt()" [disabled]="isProcessing">
-    Confirmar Recebimento
+  <button mat-button (click)="onCancel()" [disabled]="isProcessing">
+    Cancelar
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onConfirmReceipt()"
+    [disabled]="isProcessing"
+  >
+    Confirmar Receção
   </button>
 </mat-dialog-actions>

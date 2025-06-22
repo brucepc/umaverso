@@ -1,0 +1,17 @@
+.invoice-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.loading-indicator {
+  padding: 16px;
+  text-align: center;
+
+  span {
+    margin-top: 8px;
+    display: block;
+    font-weight: 500;
+  }
+}

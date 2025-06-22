@@ -12,6 +12,7 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { GoodsReceiptDialogComponent } from '../goods-receipt-dialog/goods-receipt-dialog.component';
 import { PurchaseOrderService } from '../purchase-order.service';
+import { PurchaseOrderStatusPipe } from '../purchase-order-status.pipe';
 
 @Component({
   selector: 'app-purchase-order-list',
@@ -24,6 +25,7 @@ import { PurchaseOrderService } from '../purchase-order.service';
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
+    PurchaseOrderStatusPipe,
   ],
   host: {
     class: 'page-list'
@@ -69,7 +71,7 @@ export class PurchaseOrderListComponent implements OnInit {
 
   openReceiptDialog(order: PurchaseOrder): void {
     this.dialog.open(GoodsReceiptDialogComponent, {
-      width: '500px',
+      minWidth: 800,
       data: order
     });
   }

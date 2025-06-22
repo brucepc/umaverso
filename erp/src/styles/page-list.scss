@@ -46,7 +46,7 @@
     border-radius: 16px;
     font-size: 12px;
     font-weight: 500;
-    color: white;
+    color: var(--mat-sys-on-primary);
   }
 
   // Status colors
@@ -67,15 +67,13 @@
     background-color: #757575; // Cinza
   }
 
-  .status-open,
-  .status-pendente {
-    background-color: #2196f3; // Azul
-  }
-
-  .status-approved,
-  .status-em-produção {
+  .status-approved {
     background-color: #ffc107; // Amarelo
     color: #333;
+  }
+
+  .status-pending_approval {
+    background-color: #2196f3;
   }
 
   // Inactive row style

@@ -2,7 +2,6 @@ import { AsyncPipe, CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Timestamp } from '@angular/fire/firestore';
 import {
-  FormArray,
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
@@ -15,15 +14,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Product } from '@models/product.model';
-import { PurchaseOrder } from '@models/purchase-order.model';
+import { PurchaseOrder, PurchaseOrderStatus } from '@models/purchase-order.model';
 import { Supplier } from '@models/supplier.model';
 import {
   NgHeaderTemplateDirective,
-  NgOptionTemplateDirective,
   NgSelectComponent,
   NgSelectModule,
 } from '@ng-select/ng-select';
@@ -74,6 +72,11 @@ export class PurchaseOrderFormComponent {
 
   private suppliersSubject = new BehaviorSubject<void>(undefined);
   private orderId: string | null = null;
+  private order: PurchaseOrder | null = null;
+  private items = this.fb.array<FormGroup>(
+    [],
+    [Validators.required, Validators.minLength(1)]
+  );
 
   suppliers$ = this.suppliersSubject
     .asObservable()
@@ -81,21 +84,19 @@ export class PurchaseOrderFormComponent {
   products$ = this.productService.getProducts();
 
   isEditMode = false;
+  status: PurchaseOrderStatus | null = null;
 
   form = this.fb.group({
     supplier: [null as Supplier | null, Validators.required],
     emissionDate: [new Date(), Validators.required],
     estimatedDeliveryDate: [new Date(), Validators.required],
-    status: ['OPEN', Validators.required],
-    items: this.fb.array([], [Validators.required, Validators.minLength(1)]),
+    status: [null as PurchaseOrderStatus | null],
+    items: this.items,
     total: [{ value: 0, disabled: true }],
   });
+  dataSource = new MatTableDataSource(this.items.controls);
 
   displayedColumns = ['product', 'quantity', 'unitCost', 'total', 'actions'];
-
-  get items() {
-    return this.form.get('items') as FormArray;
-  }
 
   constructor() {
     this.orderId = this.route.snapshot.paramMap.get('id');
@@ -103,6 +104,7 @@ export class PurchaseOrderFormComponent {
       this.isEditMode = true;
       this.loadOrderData(this.orderId);
     } else {
+      this.status = 'PENDING_APPROVAL';
       this.addItem();
     }
   }
@@ -113,10 +115,13 @@ export class PurchaseOrderFormComponent {
 
   loadOrderData(id: string): void {
     this.purchaseOrderService
-      .getPurchaseOrderById(id)
+      .getPurchaseOrders()
       .pipe(take(1))
-      .subscribe((order) => {
+      .subscribe((orders) => {
+        const order = orders.find((o) => o.id === id);
         if (order) {
+          this.order = order;
+          this.status = order.status;
           combineLatest([this.suppliers$, this.products$])
             .pipe(take(1))
             .subscribe(([suppliers, products]) => {
@@ -129,7 +134,7 @@ export class PurchaseOrderFormComponent {
               });
 
               this.items.clear();
-              order.items.forEach((item) => {
+              order.items.forEach((item: any) => {
                 const product = products.find((p) => p.id === item.productId);
                 const itemGroup = this.createItem();
                 itemGroup.patchValue({
@@ -139,6 +144,8 @@ export class PurchaseOrderFormComponent {
                 });
                 this.items.push(itemGroup);
               });
+              this.dataSource.data = this.items.controls;
+              this.updateTotal();
             });
         }
       });
@@ -155,16 +162,38 @@ export class PurchaseOrderFormComponent {
     itemGroup
       .get('quantity')
       ?.valueChanges.pipe(debounceTime(300), distinctUntilChanged())
-      .subscribe(() => this.updateItemTotal(itemGroup));
+      .subscribe(() => {
+        const quantity = itemGroup.get('quantity')?.value || 0;
+        const unitCost = itemGroup.get('unitCost')?.value || 0;
+        itemGroup
+          .get('total')
+          ?.setValue(quantity * unitCost, { emitEvent: false });
+        this.updateTotal();
+      });
     itemGroup
       .get('unitCost')
       ?.valueChanges.pipe(debounceTime(300), distinctUntilChanged())
-      .subscribe(() => this.updateItemTotal(itemGroup));
+      .subscribe(() => {
+        const quantity = itemGroup.get('quantity')?.value || 0;
+        const unitCost = itemGroup.get('unitCost')?.value || 0;
+        itemGroup
+          .get('total')
+          ?.setValue(quantity * unitCost, { emitEvent: false });
+        this.updateTotal();
+      });
+
     itemGroup
       .get('total')
       ?.valueChanges.pipe(debounceTime(300), distinctUntilChanged())
-      .subscribe((totalValue) => {
-        this.updateUnitCost(itemGroup, totalValue);
+      .subscribe(() => {
+        const quantity = itemGroup.get('quantity')?.value;
+        const total = itemGroup.get('total')?.value || 0;
+        if (quantity) {
+          itemGroup
+            .get('unitCost')
+            ?.setValue(total / quantity, { emitEvent: false });
+        }
+        this.updateTotal();
       });
 
     itemGroup
@@ -176,47 +205,45 @@ export class PurchaseOrderFormComponent {
     return itemGroup;
   }
 
-  updateItemTotal(itemGroup: FormGroup): void {
-    const quantity = itemGroup.get('quantity')?.value || 0;
-    const unitCost = itemGroup.get('unitCost')?.value || 0;
-    itemGroup
-      .get('total')
-      ?.patchValue(quantity * unitCost, { emitEvent: false });
-    this.updateTotal();
-  }
-
-  updateUnitCost(itemGroup: FormGroup, totalValue: number | null): void {
-    if (totalValue === null) return;
-    const quantity = itemGroup.get('quantity')?.value || 0;
-    if (quantity > 0) {
-      itemGroup
-        .get('unitCost')
-        ?.patchValue(totalValue / quantity, { emitEvent: false });
-    }
-    this.updateTotal();
-  }
-
   updateTotal(): void {
-    const totalValue = this.items
-      .getRawValue()
-      .reduce(
-        (acc: number, item: any) =>
-          acc + (item.quantity || 0) * (item.unitCost || 0),
-        0
-      );
-    this.form.get('total')?.setValue(totalValue, { emitEvent: false });
+    const totalValue = this.items.getRawValue().reduce((acc: number, item) => {
+      const quantity = item['quantity'] || 0;
+      const unitCost = item['unitCost'] || 0;
+      return acc + quantity * unitCost;
+    }, 0);
+    this.form.get('total')?.setValue(totalValue);
   }
 
   addItem(): void {
-    this.items.push(this.createItem());
+    const newItem = this.createItem();
+    this.items.push(newItem);
+    this.dataSource.data = this.items.controls;
   }
 
   removeItem(index: number): void {
     this.items.removeAt(index);
+    this.dataSource.data = this.items.controls;
+    this.updateTotal();
   }
 
   goBack(): void {
     this.router.navigate(['/purchase-orders']);
+  }
+
+  onApprove(): void {
+    if (!this.order) return;
+    this.purchaseOrderService
+      .approvePurchaseOrder(this.order)
+      .then(() => this.router.navigate(['/purchase-orders']))
+      .catch((err) => console.error('Error approving order', err));
+  }
+
+  onReject(): void {
+    if (!this.orderId) return;
+    this.purchaseOrderService
+      .rejectPurchaseOrder(this.orderId)
+      .then(() => this.router.navigate(['/purchase-orders']))
+      .catch((err) => console.error('Error rejecting order', err));
   }
 
   addNewSupplier(): void {
@@ -240,38 +267,39 @@ export class PurchaseOrderFormComponent {
 
     const formValue = this.form.getRawValue();
 
-    const purchaseOrderData = {
-      code: `PO-${Date.now()}`,
+    const purchaseOrderData: Partial<PurchaseOrder> = {
       supplierId: formValue.supplier!.id,
       supplierName: formValue.supplier!.name,
       emissionDate: Timestamp.fromDate(formValue.emissionDate!),
       estimatedDeliveryDate: Timestamp.fromDate(
         formValue.estimatedDeliveryDate!
       ),
-      status: this.isEditMode ? this.form.value.status : 'OPEN',
-      items: formValue.items.map((item: any) => ({
-        productId: item.product.id,
-        productName: item.product.name,
-        productSku: item.product.sku,
-        quantity: item.quantity,
-        unitCost: item.unitCost,
-        totalPrice: item.quantity * item.unitCost,
-      })),
-      total: formValue.total,
+      items: formValue.items.map((item: any) => {
+        const quantity = item.quantity || 0;
+        const unitCost = item.unitCost || 0;
+        return {
+          productId: item.product.id,
+          productName: item.product.name,
+          quantity: quantity,
+          unitCost: unitCost,
+          totalPrice: quantity * unitCost,
+        };
+      }),
+      total: formValue.total || 0,
     };
 
-    const saveOperation =
-      this.isEditMode && this.orderId
-        ? this.purchaseOrderService.updatePurchaseOrder({
-            id: this.orderId,
-            ...purchaseOrderData,
-          } as PurchaseOrder)
-        : this.purchaseOrderService.addPurchaseOrder(
-            purchaseOrderData as Omit<PurchaseOrder, 'id'>
-          );
+    if (this.isEditMode && this.orderId) {
+      this.purchaseOrderService
+        .updatePurchaseOrder(this.orderId, purchaseOrderData)
+        .then(() => this.router.navigate(['/purchase-orders']));
+    } else {
+      const { status, ...orderDataForCreation } = purchaseOrderData;
 
-    saveOperation
-      .then(() => this.router.navigate(['/purchase-orders']))
-      .catch((err) => console.error('Error saving purchase order', err));
+      this.purchaseOrderService
+        .addPurchaseOrder(
+          orderDataForCreation as Omit<PurchaseOrder, 'id' | 'status' | 'code'>
+        )
+        .then(() => this.router.navigate(['/purchase-orders']));
+    }
   }
 }

@@ -5,10 +5,11 @@ export interface AccountPayable {
   supplierId: string;
   supplierName: string; // Denormalized for display
   purchaseOrderId: string;
-  purchaseOrderCode: string; // Denormalized for display
+  invoiceNumber?: string; // Optional
   issueDate: Timestamp;
   dueDate: Timestamp;
   totalAmount: number;
-  status: 'Aberta' | 'Liquidada';
+  status: 'Aberta' | 'Aprovada' | 'Rejeitada' | 'Paga' | 'Vencida';
   settlementDate?: Timestamp;
+  installments: number; // Number of installments
 }
