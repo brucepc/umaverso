@@ -1,7 +1,7 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
@@ -13,6 +13,7 @@ import { tap } from 'rxjs/operators';
 import { GoodsReceiptDialogComponent } from '../goods-receipt-dialog/goods-receipt-dialog.component';
 import { PurchaseOrderService } from '../purchase-order.service';
 import { PurchaseOrderStatusPipe } from '../purchase-order-status.pipe';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-purchase-order-list',
@@ -25,7 +26,9 @@ import { PurchaseOrderStatusPipe } from '../purchase-order-status.pipe';
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
+    MatDialogModule,
     PurchaseOrderStatusPipe,
+    MatCardModule,
   ],
   host: {
     class: 'page-list'

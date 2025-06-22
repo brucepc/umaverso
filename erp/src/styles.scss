@@ -59,3 +59,11 @@ html {
   backdrop-filter: blur(2.5px);
   -webkit-backdrop-filter: blur(2.5px);
 }
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.mat-mdc-card-header-text {
+  margin-bottom: 24px;
+}

@@ -11,6 +11,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterModule } from '@angular/router';
 import { Observable } from 'rxjs';
+import { MatCardModule } from '@angular/material/card';
 
 import { Product } from '@models/product.model';
 import { ImagePreviewDialogComponent } from '../image-preview-dialog/image-preview-dialog.component';
@@ -30,6 +31,7 @@ import { ProductService } from '../product.service';
     MatPaginatorModule,
     MatSortModule,
     RouterModule,
+    MatCardModule,
   ],
   host: {
     class: 'page-list',

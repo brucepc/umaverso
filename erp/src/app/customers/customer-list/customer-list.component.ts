@@ -1,10 +1,12 @@
 import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
 import { Observable } from 'rxjs';
 
 import { Customer } from '@models/customer.model';
@@ -14,7 +16,14 @@ import { CustomerFormDialogComponent } from '../customer-form-dialog/customer-fo
 @Component({
   selector: 'app-customer-list',
   standalone: true,
-  imports: [MatTableModule, MatIconModule, MatButtonModule, MatTooltipModule],
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule,
+    MatCardModule,
+  ],
   host: {
     class: 'page-list',
   },

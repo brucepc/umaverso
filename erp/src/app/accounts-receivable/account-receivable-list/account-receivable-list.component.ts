@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCardModule } from '@angular/material/card';
 import { AccountReceivable } from '@models/account-receivable.model';
 import { Observable } from 'rxjs';
 import { AccountReceivableService } from '../account-receivable.service';
@@ -25,6 +26,7 @@ import { RouterModule } from '@angular/router';
     MatButtonModule,
     MatTooltipModule,
     MatSlideToggleModule,
+    MatCardModule,
   ],
   host: {
     class: 'page-list'

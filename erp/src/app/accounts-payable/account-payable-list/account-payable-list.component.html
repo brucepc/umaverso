@@ -1,77 +1,80 @@
-<div class="header">
-  <h1>Contas a Pagar</h1>
-</div>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Contas a Pagar</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="table-container mat-elevation-z8">
+      <table
+        mat-table
+        [dataSource]="(accounts$ | async) || []"
+        class="full-width-table"
+        aria-label="Tabela de contas a pagar"
+      >
+        <!-- Due Date Column -->
+        <ng-container matColumnDef="dueDate">
+          <th mat-header-cell *matHeaderCellDef>Vencimento</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.dueDate.toDate() | date: 'dd/MM/yyyy' }}
+          </td>
+        </ng-container>
 
-<div class="table-container mat-elevation-z8">
-  <table
-    mat-table
-    [dataSource]="(accounts$ | async) || []"
-    class="full-width-table"
-    aria-label="Tabela de contas a pagar"
-  >
-    <!-- Due Date Column -->
-    <ng-container matColumnDef="dueDate">
-      <th mat-header-cell *matHeaderCellDef>Vencimento</th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.dueDate.toDate() | date: 'dd/MM/yyyy' }}
-      </td>
-    </ng-container>
+        <!-- Supplier Name Column -->
+        <ng-container matColumnDef="supplierName">
+          <th mat-header-cell *matHeaderCellDef>Fornecedor</th>
+          <td mat-cell *matCellDef="let element">{{ element.supplierName }}</td>
+        </ng-container>
 
-    <!-- Supplier Name Column -->
-    <ng-container matColumnDef="supplierName">
-      <th mat-header-cell *matHeaderCellDef>Fornecedor</th>
-      <td mat-cell *matCellDef="let element">{{ element.supplierName }}</td>
-    </ng-container>
+        <!-- PO Code Column -->
+        <ng-container matColumnDef="purchaseOrderCode">
+          <th mat-header-cell *matHeaderCellDef>Pedido de Compra</th>
+          <td mat-cell *matCellDef="let element">
+            <a [routerLink]="['/purchase-orders/edit', element.purchaseOrderId]">{{
+              element.purchaseOrderCode
+              }}</a>
+          </td>
+        </ng-container>
 
-    <!-- PO Code Column -->
-    <ng-container matColumnDef="purchaseOrderCode">
-      <th mat-header-cell *matHeaderCellDef>Pedido de Compra</th>
-      <td mat-cell *matCellDef="let element">
-        <a [routerLink]="['/purchase-orders/edit', element.purchaseOrderId]">{{
-          element.purchaseOrderCode
-          }}</a>
-      </td>
-    </ng-container>
+        <!-- Total Amount Column -->
+        <ng-container matColumnDef="totalAmount">
+          <th mat-header-cell *matHeaderCellDef>Valor Total</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.totalAmount | currency: 'EUR' }}
+          </td>
+        </ng-container>
 
-    <!-- Total Amount Column -->
-    <ng-container matColumnDef="totalAmount">
-      <th mat-header-cell *matHeaderCellDef>Valor Total</th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.totalAmount | currency: 'EUR' }}
-      </td>
-    </ng-container>
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let element">
+            <mat-chip [ngClass]="getStatusChipClass(element.status)" selected>
+              {{ element.status }}
+            </mat-chip>
+          </td>
+        </ng-container>
 
-    <!-- Status Column -->
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef>Status</th>
-      <td mat-cell *matCellDef="let element">
-        <mat-chip [ngClass]="getStatusChipClass(element.status)" selected>
-          {{ element.status }}
-        </mat-chip>
-      </td>
-    </ng-container>
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Ações</th>
+          <td mat-cell *matCellDef="let element">
+            @if (element.status === AccountPayableStatus.OPEN) {
+            <button mat-icon-button color="primary" matTooltip="Aprovar Pagamento" (click)="approve(element.id)">
+              <mat-icon>thumb_up</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" matTooltip="Rejeitar Pagamento" (click)="reject(element.id)">
+              <mat-icon>thumb_down</mat-icon>
+            </button>
+            }
+          </td>
+        </ng-container>
 
-    <!-- Actions Column -->
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef>Ações</th>
-      <td mat-cell *matCellDef="let element">
-        @if (element.status === AccountPayableStatus.OPEN) {
-        <button mat-icon-button color="primary" matTooltip="Aprovar Pagamento" (click)="approve(element.id)">
-          <mat-icon>thumb_up</mat-icon>
-        </button>
-        <button mat-icon-button color="warn" matTooltip="Rejeitar Pagamento" (click)="reject(element.id)">
-          <mat-icon>thumb_down</mat-icon>
-        </button>
-        }
-      </td>
-    </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-
-    <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell table-empty-row" [attr.colspan]="displayedColumns.length" align="center">Nenhuma conta a
-        pagar encontrada.</td>
-    </tr>
-  </table>
-</div>
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell table-empty-row" [attr.colspan]="displayedColumns.length" align="center">Nenhuma conta a
+            pagar encontrada.</td>
+        </tr>
+      </table>
+    </div>
+  </mat-card-content>
+</mat-card>

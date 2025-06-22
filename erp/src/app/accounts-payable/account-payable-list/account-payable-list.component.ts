@@ -16,6 +16,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-account-payable-list',
@@ -32,6 +33,7 @@ import { MatChipsModule } from '@angular/material/chips';
     MatSlideToggleModule,
     MatSnackBarModule,
     MatChipsModule,
+    MatCardModule,
   ],
   host: {
     class: 'page-list',

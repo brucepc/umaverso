@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
+import { MatCardModule } from '@angular/material/card';
 import { Supplier } from '@models/supplier.model';
 import { Observable } from 'rxjs';
 import { SupplierFormDialogComponent } from '../supplier-form-dialog/supplier-form-dialog.component';
@@ -14,11 +16,13 @@ import { SupplierService } from '../supplier.service';
   selector: 'app-supplier-list',
   standalone: true,
   imports: [
+    CommonModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
     MatTooltipModule,
+    MatCardModule,
   ],
   host: {
     class: 'page-list',

@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCardModule } from '@angular/material/card';
 
 import { SalesOrder } from '@models/sales-order.model';
 import { SalesOrderService } from '../sales-order.service';
@@ -22,7 +23,8 @@ import { SalesOrderService } from '../sales-order.service';
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatCardModule
   ],
   host: {
     class: 'page-list'
