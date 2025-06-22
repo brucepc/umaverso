@@ -45,10 +45,7 @@ export class AccountPayableListComponent {
   private snackBar = inject(MatSnackBar);
 
   AccountPayableStatus = AccountPayableStatus;
-  accounts$: Observable<AccountPayable[]> = this.service
-    .getAccountsPayable()
-    .pipe(tap((accounts) => (this.accounts.data = accounts)));
-  accounts = new MatTableDataSource<AccountPayable>([]);
+  accounts$: Observable<AccountPayable[]> = this.service.getAccountsPayable();
   displayedColumns: string[] = [
     'dueDate',
     'supplierName',
@@ -57,6 +54,21 @@ export class AccountPayableListComponent {
     'status',
     'actions',
   ];
+
+  getStatusChipClass(status: AccountPayableStatus): string {
+    switch (status) {
+      case AccountPayableStatus.OPEN:
+        return 'chip-yellow';
+      case AccountPayableStatus.APPROVED:
+      case AccountPayableStatus.PAID:
+        return 'chip-green';
+      case AccountPayableStatus.REJECTED:
+      case AccountPayableStatus.OVERDUE:
+        return 'chip-red';
+      default:
+        return '';
+    }
+  }
 
   approve(id: string): void {
     this.service
