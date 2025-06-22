@@ -20,7 +20,7 @@
             </mat-form-field>
             <mat-form-field appearance="fill">
               <mat-label>Data de Emissão</mat-label>
-              <input matInput [matDatepicker]="picker" formControlName="issueDate">
+              <input matInput [matDatepicker]="picker" formControlName="emissionDate">
               <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
@@ -31,17 +31,37 @@
             <table mat-table [dataSource]="items.controls">
               <!-- Product Column -->
               <ng-container matColumnDef="product">
-                <th mat-header-cell *matHeaderCellDef> Produto </th>
+                <th mat-header-cell *matHeaderCellDef class="w-2/5"> Produto </th>
                 <td mat-cell *matCellDef="let item; let i = index" [formGroupName]="i">
-                  <mat-form-field appearance="outline" class="dense-form-field">
-                    <mat-select formControlName="product" required>
-                      @for (product of products$ | async; track product) {
-                        <mat-option [value]="product">
-                          {{ product.name }} ({{ product.sku }})
-                        </mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
+                  <ng-select
+                    [items]="filteredProducts$ | async"
+                    bindLabel="name"
+                    formControlName="product"
+                    placeholder="Selecione um produto"
+                    notFoundText="Nenhum produto encontrado"
+                    appendTo="body"
+                    class="dense-form-field"
+                  >
+                    <ng-template ng-header-tmp>
+                      <div (click)="$event.stopPropagation()">
+                        <mat-button-toggle-group
+                          [formControl]="productTypeFilter"
+                          aria-label="Filtrar por tipo de produto"
+                          multiple
+                        >
+                          <mat-button-toggle [value]="productType.Revenda"
+                            >Revenda</mat-button-toggle
+                          >
+                          <mat-button-toggle [value]="productType.FabricoProprio"
+                            >Fabrico Próprio</mat-button-toggle
+                          >
+                          <mat-button-toggle [value]="productType.MateriaPrima"
+                            >Matéria-prima</mat-button-toggle
+                          >
+                        </mat-button-toggle-group>
+                      </div>
+                    </ng-template>
+                  </ng-select>
                 </td>
               </ng-container>
               <!-- Quantity Column -->

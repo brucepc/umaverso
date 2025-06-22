@@ -1,23 +1,21 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  inject,
-} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router, RouterModule } from '@angular/router';
 import { Observable } from 'rxjs';
 
 import { Product } from '@models/product.model';
-import { ProductService } from '../product.service';
-import { ProductFormDialogComponent } from '../product-form-dialog/product-form-dialog.component';
-import { ProductStockHistoryComponent } from '../product-stock-history/product-stock-history.component';
 import { ImagePreviewDialogComponent } from '../image-preview-dialog/image-preview-dialog.component';
+import { ProductStockHistoryComponent } from '../product-stock-history/product-stock-history.component';
+import { ProductService } from '../product.service';
 
 @Component({
   selector: 'app-product-list',
@@ -28,8 +26,11 @@ import { ImagePreviewDialogComponent } from '../image-preview-dialog/image-previ
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
+    MatMenuModule,
+    MatPaginatorModule,
+    MatSortModule,
+    RouterModule,
   ],
-  providers: [ProductFormDialogComponent],
   host: {
     class: 'page-list',
   },
@@ -41,6 +42,7 @@ export class ProductListComponent {
   private productService = inject(ProductService);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
 
   products$: Observable<Product[]> = this.productService.getProducts();
   displayedColumns: string[] = [
@@ -56,18 +58,11 @@ export class ProductListComponent {
   ];
 
   addProduct(): void {
-    this.dialog.open(ProductFormDialogComponent, {
-      minWidth: 800,
-      disableClose: true,
-    });
+    this.router.navigate(['/products/new']);
   }
 
   editProduct(product: Product): void {
-    this.dialog.open(ProductFormDialogComponent, {
-      minWidth: 800,
-      disableClose: true,
-      data: product,
-    });
+    this.router.navigate(['/products/edit', product.id]);
   }
 
   toggleProductStatus(product: Product): void {

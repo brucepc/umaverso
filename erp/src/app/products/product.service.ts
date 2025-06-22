@@ -16,10 +16,11 @@ import {
   Timestamp,
   query,
   where,
+  getDoc,
 } from '@angular/fire/firestore';
 import { Product } from '../models/product.model';
 import { Observable, from } from 'rxjs';
-import { switchMap } from 'rxjs';
+import { switchMap, map } from 'rxjs';
 import { StockMovement } from '@models/stock-movement.model';
 import { StockMovementService } from '../stock-movements/stock-movement.service';
 import { ProductType } from '@models/product-type.enum';
@@ -28,6 +29,7 @@ import {
   getDownloadURL,
   ref,
   uploadBytes,
+  getStorage,
 } from '@angular/fire/storage';
 
 interface StockUpdateData {
@@ -53,6 +55,20 @@ export class ProductService {
     return collectionData(this.productsCollection, {
       idField: 'id',
     }) as Observable<Product[]>;
+  }
+
+  getProductById(id: string): Observable<Product | null> {
+    const productDoc = doc(this.firestore, `products/${id}`);
+    return from(
+      runInInjectionContext(this.injector, async () => {
+        const docSnap = await getDoc(productDoc);
+        if (docSnap.exists()) {
+          return { id: docSnap.id, ...docSnap.data() } as Product;
+        } else {
+          return null;
+        }
+      })
+    );
   }
 
   getRawMaterials(): Observable<Product[]> {

@@ -1,0 +1,137 @@
+<div class="form-container">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ isEditMode ? 'Editar Produto' : 'Novo Produto' }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Tipo de Artigo</mat-label>
+            <mat-select formControlName="productType" required>
+              @for (type of productTypeValues; track type) {
+              <mat-option [value]="type">
+                {{ type }}
+              </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Categoria</mat-label>
+            <mat-select formControlName="category" required [compareWith]="compareCategories">
+              @for (category of categories$ | async; track category.id) {
+              <mat-option [value]="category">
+                {{ category.name }}
+              </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>SKU</mat-label>
+            <input matInput formControlName="sku">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width-field">
+            <mat-label>Nome do Artigo</mat-label>
+            <input matInput formControlName="name" required>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Unidade de Medida</mat-label>
+            <input matInput formControlName="unitOfMeasure" required>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Peso (kg)</mat-label>
+            <input matInput formControlName="weight" type="number">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Dimensões (ex: 10x20x5 cm)</mat-label>
+            <input matInput formControlName="size">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Preço de Venda</mat-label>
+            <input matInput formControlName="salePrice" type="number">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Custo Médio</mat-label>
+            <input matInput type="number" formControlName="averageCost" required>
+          </mat-form-field>
+        </div>
+
+        @if (form.get('productType')?.value === productTypeEnum.FabricoProprio) {
+        <section>
+          <h6>Ficha Técnica (Lista de Materiais)</h6>
+          <div formArrayName="bom">
+            @for (bomItem of bom.controls; track $index; let i = $index) {
+            <div [formGroupName]="i" class="bom-item-row">
+              <mat-form-field appearance="fill">
+                <mat-label>Matéria-Prima</mat-label>
+                <mat-select formControlName="productId">
+                  @for (material of rawMaterials$ | async; track material.id) {
+                  <mat-option [value]="material.id">
+                    {{ material.name }}
+                  </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Quantidade</mat-label>
+                <input matInput type="number" formControlName="quantity" min="0.001">
+              </mat-form-field>
+              <button mat-icon-button color="warn" (click)="removeBomItem(i)" type="button">
+                <mat-icon>remove_circle</mat-icon>
+              </button>
+            </div>
+            }
+          </div>
+          <button mat-stroked-button color="primary" (click)="addBomItem()" type="button">
+            <mat-icon>add</mat-icon> Adicionar Matéria-Prima
+          </button>
+        </section>
+        }
+        <section>
+          <h6>Imagens do Artigo</h6>
+          <div class="image-gallery-container">
+            <div class="image-previews">
+              @for (url of allImageUrls; track url; let i = $index) {
+              <div class="image-preview" [class.main-image]="url === form.get('mainImageUrl')?.value">
+                <img [src]="url" alt="Imagem do Artigo" />
+                <div class="image-actions">
+                  <button color="tertiary" mat-icon-button (click)="setMainImage(url)" type="button"
+                    matTooltip="Marcar como principal">
+                    <mat-icon color="primary">{{
+                      url === form.get('mainImageUrl')?.value
+                      ? 'star'
+                      : 'star_border'
+                      }}</mat-icon>
+                  </button>
+                  <button mat-icon-button class="remove-image-button" (click)="removeImage(i)" type="button"
+                    matTooltip="Remover imagem">
+                    <mat-icon color="primary">cancel</mat-icon>
+                  </button>
+                </div>
+                @if(url === form.get('mainImageUrl')?.value){
+                <div class="main-image-badge">Principal</div>
+                }
+              </div>
+              } @if (isUploading) {
+              <div class="image-preview-spinner">
+                <mat-spinner diameter="50"></mat-spinner>
+              </div>
+              }
+            </div>
+            <input type="file" #fileInput hidden (change)="onFileSelected($event)" accept="image/*" />
+            <button mat-stroked-button type="button" (click)="fileInput.click()" [disabled]="isUploading">
+              <mat-icon>add_a_photo</mat-icon>
+              Adicionar Imagem
+            </button>
+          </div>
+        </section>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-stroked-button type="button" (click)="goBack()">Cancelar</button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
+          {{ isEditMode ? 'Atualizar' : 'Salvar' }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </form>
+</div>

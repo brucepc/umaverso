@@ -1,6 +1,13 @@
 import { Component, OnInit, Inject, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,8 +21,10 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Timestamp } from '@angular/fire/firestore';
-import { combineLatest } from 'rxjs';
-import { debounceTime, take } from 'rxjs/operators';
+import { combineLatest, Observable, of } from 'rxjs';
+import { debounceTime, map, startWith, take } from 'rxjs/operators';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 import { CustomerService } from '../../customers/customer.service';
 import { ProductService } from '../../products/product.service';
@@ -23,6 +32,7 @@ import { SalesOrderService } from '../sales-order.service';
 import { Customer } from '@models/customer.model';
 import { Product } from '@models/product.model';
 import { SalesOrder } from '@models/sales-order.model';
+import { ProductType } from '@models/product-type.enum';
 
 @Component({
   selector: 'app-sales-order-form',
@@ -31,9 +41,18 @@ import { SalesOrder } from '@models/sales-order.model';
     CommonModule,
     RouterModule,
     ReactiveFormsModule,
-    MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatDatepickerModule, MatNativeDateModule, MatButtonModule, MatIconModule,
-    MatTableModule, MatTooltipModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTableModule,
+    MatTooltipModule,
+    MatButtonToggleModule,
+    NgSelectModule,
   ],
   templateUrl: './sales-order-form.component.html',
   styleUrls: ['./sales-order-form.component.scss']
@@ -45,7 +64,14 @@ export class SalesOrderFormComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
 
   customers$ = this.customerService.getCustomers();
-  products$ = this.productService.getProducts();
+  products$: Observable<Product[]> = this.productService.getProducts();
+  filteredProducts$: Observable<Product[]> = of([]);
+
+  productTypeFilter = new FormControl([
+    ProductType.FabricoProprio,
+    ProductType.Revenda,
+  ]);
+  productType = ProductType;
 
   isEditMode = false;
   private orderId: string | null = null;
@@ -63,6 +89,17 @@ export class SalesOrderFormComponent implements OnInit {
     this.orderId = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.orderId;
     this.initForm();
+
+    this.filteredProducts$ = combineLatest([
+      this.products$,
+      this.productTypeFilter.valueChanges.pipe(
+        startWith(this.productTypeFilter.value)
+      ),
+    ]).pipe(
+      map(([products, filterTypes]) =>
+        products.filter((p) => filterTypes?.includes(p.productType))
+      )
+    );
 
     if (this.isEditMode && this.orderId) {
       this.loadOrderData(this.orderId);
