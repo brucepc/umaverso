@@ -1,20 +1,34 @@
-import { Injectable } from '@angular/core';
-import { Firestore, addDoc, collection, collectionData, doc, updateDoc, CollectionReference, DocumentData } from '@angular/fire/firestore';
+import { Injectable, inject, runInInjectionContext, Injector } from '@angular/core';
+import {
+  Firestore,
+  addDoc,
+  collection,
+  collectionData,
+  doc,
+  updateDoc,
+  CollectionReference,
+  DocumentData,
+} from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Category } from '../models/category.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CategoryService {
-  private categoriesCollection: CollectionReference<DocumentData>;
-
-  constructor(private firestore: Firestore) {
-    this.categoriesCollection = collection(this.firestore, 'categories');
-  }
+  private firestore: Firestore = inject(Firestore);
+  private injector = inject(Injector);
+  private categoriesCollection: CollectionReference<DocumentData> = collection(
+    this.firestore,
+    'categories'
+  );
 
   getCategories(): Observable<Category[]> {
-    return collectionData(this.categoriesCollection, { idField: 'id' }) as Observable<Category[]>;
+    return runInInjectionContext(this.injector, () => {
+      return collectionData(this.categoriesCollection, {
+        idField: 'id',
+      }) as Observable<Category[]>;
+    });
   }
 
   addCategory(category: Omit<Category, 'id'>) {
