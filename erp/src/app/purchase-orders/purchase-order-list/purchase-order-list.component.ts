@@ -7,7 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterModule } from '@angular/router';
-import { PurchaseOrder } from '@models/purchase-order.model';
+import { PurchaseOrder, PurchaseOrderStatus } from '@models/purchase-order.model';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { GoodsReceiptDialogComponent } from '../goods-receipt-dialog/goods-receipt-dialog.component';
@@ -58,7 +58,7 @@ export class PurchaseOrderListComponent implements OnInit {
 
   cancelOrder(order: PurchaseOrder): void {
     if (confirm('Tem certeza que deseja cancelar este pedido?')) {
-      this.purchaseOrderService.updatePurchaseOrderStatus(order.id, 'CANCELED')
+      this.purchaseOrderService.updatePurchaseOrderStatus(order.id, PurchaseOrderStatus.CANCELED)
         .then(() => {
           this.snackBar.open('Pedido cancelado com sucesso!', 'Fechar', { duration: 3000 });
         })

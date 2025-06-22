@@ -1,11 +1,12 @@
 import { Timestamp } from '@angular/fire/firestore';
 import { OrderItem } from './order-item.model';
 
-export type PurchaseOrderStatus =
-  | 'PENDING_APPROVAL'
-  | 'APPROVED'
-  | 'RECEIVED'
-  | 'CANCELED';
+export enum PurchaseOrderStatus {
+  PENDING_APPROVAL = 'Pendente de Aprovação',
+  APPROVED = 'Aprovado',
+  RECEIVED = 'Recebido',
+  CANCELED = 'Cancelado',
+}
 
 export interface PurchaseOrder {
   id: string;

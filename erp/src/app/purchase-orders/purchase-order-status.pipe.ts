@@ -6,18 +6,20 @@ import { PurchaseOrderStatus } from '@models/purchase-order.model';
   standalone: true,
 })
 export class PurchaseOrderStatusPipe implements PipeTransform {
-  transform(value: PurchaseOrderStatus): string {
+  transform(value: PurchaseOrderStatus | undefined | null): string {
+    if (!value) return '';
+
     switch (value) {
-      case 'PENDING_APPROVAL':
+      case PurchaseOrderStatus.PENDING_APPROVAL:
         return 'Pendente de Aprovação';
-      case 'APPROVED':
+      case PurchaseOrderStatus.APPROVED:
         return 'Aprovado';
-      case 'RECEIVED':
+      case PurchaseOrderStatus.RECEIVED:
         return 'Recebido';
-      case 'CANCELED':
+      case PurchaseOrderStatus.CANCELED:
         return 'Cancelado';
       default:
-        return 'Desconhecido';
+        return value;
     }
   }
 } 

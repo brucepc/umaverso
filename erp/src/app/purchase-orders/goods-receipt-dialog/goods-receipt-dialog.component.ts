@@ -5,7 +5,8 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { PurchaseOrder } from '@models/purchase-order.model';
+import { PurchaseOrder, PurchaseOrderStatus } from '@models/purchase-order.model';
+import { StockMovementType } from '@models/stock-movement.model';
 import { ProductService } from '../../products/product.service';
 import { PurchaseOrderService } from '../purchase-order.service';
 
@@ -55,7 +56,7 @@ export class GoodsReceiptDialogComponent {
         const stockUpdateData = {
           productId: item.productId,
           quantityChange: item.quantity,
-          movementType: 'PURCHASE_RECEIPT' as const,
+          movementType: StockMovementType.PURCHASE_RECEIPT,
           referenceId: this.order.id,
         };
         return this.productService.updateStock(stockUpdateData);
@@ -65,7 +66,7 @@ export class GoodsReceiptDialogComponent {
       // Step 2: Update PO status
       await this.purchaseOrderService.updatePurchaseOrderStatus(
         this.order.id,
-        'RECEIVED'
+        PurchaseOrderStatus.RECEIVED
       );
 
       this.snackBar.open(

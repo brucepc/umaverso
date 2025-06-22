@@ -55,10 +55,20 @@ export class ProductionOrderFormComponent {
 
     const { product, quantityToProduce } = this.form.getRawValue();
 
+    if (!product || !product.bom) {
+      this.snackBar.open(
+        'O produto selecionado não tem Ficha Técnica (BOM) e não pode ser produzido.',
+        'Fechar',
+        { duration: 5000 }
+      );
+      return;
+    }
+
     const newOrder = {
-      productId: product!.id,
-      productName: product!.name,
+      productId: product.id,
+      productName: product.name,
       quantityToProduce: quantityToProduce!,
+      bom: product.bom,
     };
 
     this.productionOrderService.addProductionOrder(newOrder)

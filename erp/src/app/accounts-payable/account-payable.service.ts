@@ -8,7 +8,10 @@ import {
   deleteDoc,
   collection,
 } from '@angular/fire/firestore';
-import { AccountPayable } from '@models/account-payable.model';
+import {
+  AccountPayable,
+  AccountPayableStatus,
+} from '@models/account-payable.model';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -42,10 +45,14 @@ export class AccountPayableService {
   }
 
   approvePayable(id: string): Promise<void> {
-    return this.updateAccountPayable(id, { status: 'Aprovada' });
+    return this.updateAccountPayable(id, {
+      status: AccountPayableStatus.APPROVED,
+    });
   }
 
   rejectPayable(id: string): Promise<void> {
-    return this.updateAccountPayable(id, { status: 'Rejeitada' });
+    return this.updateAccountPayable(id, {
+      status: AccountPayableStatus.REJECTED,
+    });
   }
 } 

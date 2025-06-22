@@ -85,6 +85,7 @@ export class PurchaseOrderFormComponent {
 
   isEditMode = false;
   status: PurchaseOrderStatus | null = null;
+  PurchaseOrderStatus = PurchaseOrderStatus;
 
   form = this.fb.group({
     supplier: [null as Supplier | null, Validators.required],
@@ -104,7 +105,7 @@ export class PurchaseOrderFormComponent {
       this.isEditMode = true;
       this.loadOrderData(this.orderId);
     } else {
-      this.status = 'PENDING_APPROVAL';
+      this.status = PurchaseOrderStatus.PENDING_APPROVAL;
       this.addItem();
     }
   }

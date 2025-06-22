@@ -14,7 +14,10 @@ import {
 } from '@models/purchase-order.model';
 import { AccountPayableService } from '../accounts-payable/account-payable.service';
 import { Timestamp } from '@angular/fire/firestore';
-import { AccountPayable } from '@models/account-payable.model';
+import {
+  AccountPayable,
+  AccountPayableStatus,
+} from '@models/account-payable.model';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -59,7 +62,7 @@ export class PurchaseOrderService {
     const orderWithDefaults = {
       ...calculatedOrder,
       code: `PO-${Date.now()}`,
-      status: 'PENDING_APPROVAL' as PurchaseOrderStatus,
+      status: PurchaseOrderStatus.PENDING_APPROVAL,
     };
     return addDoc(this.ordersCollection, orderWithDefaults);
   }
@@ -93,7 +96,7 @@ export class PurchaseOrderService {
     const orderRef = doc(this.firestore, `purchaseOrders/${order.id}`);
 
     try {
-      await this.updatePurchaseOrderStatus(order.id, 'APPROVED');
+      await this.updatePurchaseOrderStatus(order.id, PurchaseOrderStatus.APPROVED);
 
       // Create the account payable entry
       const dueDate = new Date();
@@ -106,7 +109,7 @@ export class PurchaseOrderService {
         issueDate: Timestamp.now(),
         dueDate: Timestamp.fromDate(dueDate),
         totalAmount: order.total,
-        status: 'Aberta',
+        status: AccountPayableStatus.OPEN,
         installments: 1, // Default to a single installment
       };
 
@@ -122,6 +125,6 @@ export class PurchaseOrderService {
   }
 
   rejectPurchaseOrder(orderId: string): Promise<void> {
-    return this.updatePurchaseOrderStatus(orderId, 'CANCELED');
+    return this.updatePurchaseOrderStatus(orderId, PurchaseOrderStatus.CANCELED);
   }
 }

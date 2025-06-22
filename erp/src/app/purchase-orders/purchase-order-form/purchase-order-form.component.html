@@ -4,8 +4,8 @@
   </h1>
 
   <form [formGroup]="form" (ngSubmit)="onSave()" class="form-container"
-    [class.form-disabled]="status !== 'PENDING_APPROVAL'">
-    <fieldset [disabled]="status !== 'PENDING_APPROVAL'">
+    [class.form-disabled]="status !== PurchaseOrderStatus.PENDING_APPROVAL">
+    <fieldset [disabled]="status !== PurchaseOrderStatus.PENDING_APPROVAL">
       <div class="flex flex-wrap">
         <ng-select [items]="suppliers$ | async" bindLabel="name" formControlName="supplier"
           placeholder="Selecione um fornecedor" notFoundText="Nenhum fornecedor encontrado">
@@ -106,7 +106,7 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
       </div>
-      @if (status === 'PENDING_APPROVAL') {
+      @if (status === PurchaseOrderStatus.PENDING_APPROVAL) {
       <div class="add-item-button">
         <button type="button" mat-stroked-button color="primary" (click)="addItem()">
           <mat-icon>add</mat-icon>
@@ -120,7 +120,7 @@
 
       <div class="form-actions">
         <!-- Botões de Aprovação -->
-        @if (status === 'PENDING_APPROVAL' && isEditMode) {
+        @if (status === PurchaseOrderStatus.PENDING_APPROVAL && isEditMode) {
         <button type="button" mat-stroked-button (click)="onReject()">
           Rejeitar
         </button>

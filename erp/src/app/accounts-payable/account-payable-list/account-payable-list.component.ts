@@ -4,7 +4,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { AccountPayable } from '@models/account-payable.model';
+import {
+  AccountPayable,
+  AccountPayableStatus,
+} from '@models/account-payable.model';
 import { Observable, tap } from 'rxjs';
 import { AccountPayableService } from '../account-payable.service';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -41,6 +44,7 @@ export class AccountPayableListComponent {
   private service = inject(AccountPayableService);
   private snackBar = inject(MatSnackBar);
 
+  AccountPayableStatus = AccountPayableStatus;
   accounts$: Observable<AccountPayable[]> = this.service
     .getAccountsPayable()
     .pipe(tap((accounts) => (this.accounts.data = accounts)));

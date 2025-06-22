@@ -1,5 +1,13 @@
 import { Timestamp } from '@angular/fire/firestore';
 
+export enum AccountPayableStatus {
+  OPEN = 'Aberta',
+  APPROVED = 'Aprovada',
+  REJECTED = 'Rejeitada',
+  PAID = 'Paga',
+  OVERDUE = 'Vencida',
+}
+
 export interface AccountPayable {
   id: string;
   supplierId: string;
@@ -9,7 +17,7 @@ export interface AccountPayable {
   issueDate: Timestamp;
   dueDate: Timestamp;
   totalAmount: number;
-  status: 'Aberta' | 'Aprovada' | 'Rejeitada' | 'Paga' | 'Vencida';
+  status: AccountPayableStatus;
   settlementDate?: Timestamp;
   installments: number; // Number of installments
 }

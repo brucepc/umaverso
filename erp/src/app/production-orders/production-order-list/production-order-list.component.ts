@@ -6,7 +6,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { RouterModule } from '@angular/router';
-import { ProductionOrder } from '@models/production-order.model';
+import {
+  ProductionOrder,
+  ProductionOrderStatus,
+} from '@models/production-order.model';
 import { Observable } from 'rxjs';
 import { ProductionOrderService } from '../production-order.service';
 
@@ -33,6 +36,7 @@ export class ProductionOrderListComponent {
   private productionOrderService = inject(ProductionOrderService);
   private snackBar = inject(MatSnackBar);
 
+  ProductionOrderStatus = ProductionOrderStatus;
   orders$: Observable<ProductionOrder[]>;
   displayedColumns: string[] = ['creationDate', 'id', 'productName', 'quantityToProduce', 'status', 'actions'];
 

@@ -11,8 +11,13 @@ import {
   serverTimestamp,
 } from '@angular/fire/firestore';
 import { Product } from '@models/product.model';
-import { ProductionOrder } from '@models/production-order.model';
+import {
+  ProductionOrder,
+  ProductionOrderStatus,
+} from '@models/production-order.model';
 import { Observable } from 'rxjs';
+import { StockMovementService } from '../stock-movements/stock-movement.service';
+import { StockMovement, StockMovementType } from '@models/stock-movement.model';
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +25,7 @@ import { Observable } from 'rxjs';
 export class ProductionOrderService {
   private firestore: Firestore = inject(Firestore);
   private injector = inject(Injector);
+  private stockMovementService = inject(StockMovementService);
   private productionOrdersCollection = collection(this.firestore, 'productionOrders');
   private productsCollection = collection(this.firestore, 'products');
 
@@ -35,7 +41,7 @@ export class ProductionOrderService {
   async addProductionOrder(order: Omit<ProductionOrder, 'id' | 'status' | 'creationDate' | 'startDate' | 'totalCost'>): Promise<any> {
     const newOrder: Omit<ProductionOrder, 'id'> = {
       ...order,
-      status: 'Pendente',
+      status: ProductionOrderStatus.PENDING,
       creationDate: Timestamp.now(),
     };
     return addDoc(this.productionOrdersCollection, newOrder);
@@ -52,7 +58,7 @@ export class ProductionOrderService {
         }
 
         const orderData = orderDoc.data() as ProductionOrder;
-        if (orderData.status !== 'Pendente') {
+        if (orderData.status !== ProductionOrderStatus.PENDING) {
           throw new Error('Apenas ordens PENDENTES podem ser iniciadas.');
         }
         
@@ -89,6 +95,20 @@ export class ProductionOrderService {
 
           const newStock = currentStock - requiredQuantity;
           stockUpdates.push({ ref: componentRef, newStock: newStock });
+
+          // Log stock movement for the component
+          const movementData: Omit<StockMovement, 'id'> = {
+            productId: component.productId,
+            productName: componentData.name,
+            productSku: componentData.sku || '',
+            quantityChange: -requiredQuantity,
+            newStockLevel: newStock,
+            movementType: StockMovementType.PRODUCTION_CONSUMPTION,
+            timestamp: Timestamp.now(), // Firestore server timestamp can be used as well
+            referenceId: orderId,
+          };
+          this.stockMovementService.addMovement(transaction, movementData);
+
           totalCost += (componentData.averageCost || 0) * requiredQuantity;
         }
 
@@ -98,7 +118,7 @@ export class ProductionOrderService {
         }
 
         transaction.update(orderRef, { 
-          status: 'Em Produção',
+          status: ProductionOrderStatus.IN_PRODUCTION,
           startDate: serverTimestamp(),
           totalCost: totalCost
         });
@@ -117,7 +137,7 @@ export class ProductionOrderService {
         }
 
         const orderData = orderDoc.data() as ProductionOrder;
-         if (orderData.status !== 'Em Produção') {
+         if (orderData.status !== ProductionOrderStatus.IN_PRODUCTION) {
           throw new Error('Apenas ordens EM PRODUÇÃO podem ser finalizadas.');
         }
 
@@ -132,16 +152,33 @@ export class ProductionOrderService {
         const currentAverageCost = productData.averageCost ?? 0;
 
         const newStock = currentStock + orderData.quantityToProduce;
-        const newAverageCost = ((currentAverageCost * currentStock) + (orderData.totalCost || 0)) / newStock;
+        const newAverageCost =
+          newStock > 0
+            ? (currentAverageCost * currentStock + (orderData.totalCost || 0)) /
+              newStock
+            : 0;
 
         transaction.update(productRef, {
           currentStock: newStock,
-          averageCost: newAverageCost
+          averageCost: newAverageCost,
         });
 
-        transaction.update(orderRef, { 
-          status: 'Finalizada',
-          completionDate: serverTimestamp()
+        // Log stock movement for the finished product
+        const movementData: Omit<StockMovement, 'id'> = {
+          productId: orderData.productId,
+          productName: productData.name,
+          productSku: productData.sku || '',
+          quantityChange: orderData.quantityToProduce,
+          newStockLevel: newStock,
+          movementType: StockMovementType.PRODUCTION_OUTPUT,
+          timestamp: Timestamp.now(),
+          referenceId: orderId,
+        };
+        this.stockMovementService.addMovement(transaction, movementData);
+
+        transaction.update(orderRef, {
+          status: ProductionOrderStatus.COMPLETED,
+          completionDate: serverTimestamp(),
         });
       })
     );

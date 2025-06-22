@@ -42,9 +42,9 @@
         <th mat-header-cell *matHeaderCellDef>Status</th>
         <td mat-cell *matCellDef="let element">
           <mat-chip [ngClass]="{
-              'chip-yellow': element.status === 'Aberta',
-              'chip-green': element.status === 'Aprovada' || element.status === 'Paga',
-              'chip-red': element.status === 'Rejeitada' || element.status === 'Vencida'
+              'chip-yellow': element.status === AccountPayableStatus.OPEN,
+              'chip-green': element.status === AccountPayableStatus.APPROVED || element.status === AccountPayableStatus.PAID,
+              'chip-red': element.status === AccountPayableStatus.REJECTED || element.status === AccountPayableStatus.OVERDUE
             }" selected>
             {{ element.status }}
           </mat-chip>
@@ -55,7 +55,7 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Ações</th>
         <td mat-cell *matCellDef="let element">
-          @if (element.status === 'Aberta') {
+          @if (element.status === AccountPayableStatus.OPEN) {
           <button mat-icon-button color="primary" matTooltip="Aprovar Pagamento" (click)="approve(element.id)">
             <mat-icon>thumb_up</mat-icon>
           </button>

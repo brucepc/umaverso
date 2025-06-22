@@ -1,4 +1,12 @@
 import { Timestamp } from '@angular/fire/firestore';
+import { BomItem } from './product.model';
+
+export enum ProductionOrderStatus {
+  PENDING = 'Pendente',
+  IN_PRODUCTION = 'Em Produção',
+  COMPLETED = 'Finalizada',
+  CANCELED = 'Cancelada',
+}
 
 export interface ProductionOrder {
   id: string;
@@ -8,6 +16,7 @@ export interface ProductionOrder {
   creationDate: Timestamp;
   startDate?: Timestamp;
   completionDate?: Timestamp;
-  status: 'Pendente' | 'Em Produção' | 'Finalizada' | 'Cancelada';
+  status: ProductionOrderStatus;
   totalCost?: number;
+  bom: BomItem[];
 } 
