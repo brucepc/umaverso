@@ -29,6 +29,7 @@ import { BehaviorSubject, combineLatest } from 'rxjs';
 import {
   debounceTime,
   distinctUntilChanged,
+  map,
   switchMap,
   take,
 } from 'rxjs/operators';
@@ -36,6 +37,7 @@ import { ProductService } from '../../products/product.service';
 import { PurchaseOrderService } from '../../purchase-orders/purchase-order.service';
 import { SupplierFormDialogComponent } from '../../suppliers/supplier-form-dialog/supplier-form-dialog.component';
 import { SupplierService } from '../../suppliers/supplier.service';
+import { ProductType } from '@models/product-type.enum';
 
 @Component({
   selector: 'app-purchase-order-form',
@@ -81,7 +83,11 @@ export class PurchaseOrderFormComponent {
   suppliers$ = this.suppliersSubject
     .asObservable()
     .pipe(switchMap(() => this.supplierService.getSuppliers()));
-  products$ = this.productService.getProducts();
+  products$ = this.productService.getProducts().pipe(
+    map(products => products.filter(p =>
+      p.productType === ProductType.Revenda || p.productType === ProductType.MateriaPrima
+    ))
+  );
 
   isEditMode = false;
   status: PurchaseOrderStatus | null = null;
