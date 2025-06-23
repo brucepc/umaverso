@@ -96,12 +96,10 @@
                 <img [src]="url" alt="Imagem do Artigo" />
                 <div class="image-actions">
                   <button color="tertiary" mat-icon-button (click)="setMainImage(url)" type="button"
+                    [class.opacity-100]="form.get('mainImageUrl')?.value === url"
+                    [class.opacity-0]="form.get('mainImageUrl')?.value !== url"
                     matTooltip="Marcar como principal">
-                    <mat-icon color="primary">{{
-                      url === form.get('mainImageUrl')?.value
-                      ? 'star'
-                      : 'star_border'
-                      }}</mat-icon>
+                    <mat-icon [class.text-amber-500]="form.get('mainImageUrl')?.value === url">star</mat-icon>
                   </button>
                   <button mat-icon-button class="remove-image-button" (click)="removeImage(i)" type="button"
                     matTooltip="Remover imagem">

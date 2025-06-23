@@ -10,12 +10,14 @@ export interface Product {
   id: string;
   name: string;
   sku: string;
+  description?: string;
   categoryId: string;
-  categoryName?: string;
+  categoryName: string;
   productType: ProductType;
   unitOfMeasure: string;
-  currentStock?: number;
-  averageCost?: number;
+  ncm?: string;
+  currentStock: number;
+  averageCost: number;
   salePrice: number;
   isActive: boolean;
   weight?: number; // in kg

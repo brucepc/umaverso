@@ -11,11 +11,12 @@ export enum PurchaseOrderStatus {
 export interface PurchaseOrder {
   id: string;
   code: string;
-  supplierId: string;
-  supplierName: string;
+  supplierId?: string;
+  supplierName?: string;
   emissionDate: Timestamp;
   estimatedDeliveryDate: Timestamp;
   status: PurchaseOrderStatus;
   items: OrderItem[];
   total: number;
+  freightCost?: number;
 } 

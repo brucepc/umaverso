@@ -9,33 +9,36 @@
   }
   .mat-mdc-form-field,
   .ng-select {
-    min-width: 200px;
     flex: 1;
   }
   .total-summary {
     @apply text-right;
   }
-}
 
-.item-form-field {
-  width: 100%;
-}
+  .item-form-field {
+    width: 100%;
+  }
 
-.add-item-button {
-  margin-top: 16px;
-}
+  .add-item-button {
+    margin-top: 16px;
+  }
 
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-  padding: 16px 0;
-}
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    padding: 16px 0;
+  }
 
-.total-summary {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 16px;
-  font-size: 1.25em;
-  font-weight: 500;
+  .total-summary {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+    font-size: 1.25em;
+    font-weight: 500;
+  }
+
+  .mat-mdc-card + .mat-mdc-card {
+    margin-top: 16px;
+  }
 }

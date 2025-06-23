@@ -6,4 +6,7 @@ export interface OrderItem {
   unitPrice?: number; // For sales orders
   unitCost?: number; // For purchase orders
   totalPrice: number;
+  freightCost?: number;
+  supplierId?: string;
+  supplierName?: string;
 } 

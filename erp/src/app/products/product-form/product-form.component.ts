@@ -74,6 +74,12 @@ export class ProductFormComponent implements OnInit {
   newImagesForUpload: ImageForUpload[] = [];
   isUploading = false;
 
+  imageFiles: File[] = [];
+  imagePreviews: string[] = [];
+  products$!: Observable<Product[]>;
+
+  private initialImageUrls: string[] = [];
+
   get allImageUrls(): string[] {
     return [...this.existingImageUrls, ...this.newImagesForUpload.map(i => i.previewUrl)];
   }
@@ -97,15 +103,21 @@ export class ProductFormComponent implements OnInit {
     this.form = this.fb.group({
       name: ['', Validators.required],
       sku: [''],
+      description: [''],
+      categoryId: ['', Validators.required],
       category: [null, Validators.required],
       productType: [ProductType.Revenda, Validators.required],
       unitOfMeasure: ['', Validators.required],
-      averageCost: [0, [Validators.required, Validators.min(0)]],
+      ncm: [''],
+      currentStock: [0, Validators.required],
+      averageCost: [{ value: 0, disabled: true }],
       salePrice: [0, [Validators.required, Validators.min(0)]],
+      isActive: [true],
       weight: [0, Validators.min(0)],
       size: [''],
       mainImageUrl: [''],
-      bom: this.fb.array([]),
+      imageUrls: this.fb.array([]),
+      bom: this.fb.array([])
     });
 
     this.form.get('productType')?.valueChanges.subscribe((type) => {
@@ -230,28 +242,28 @@ export class ProductFormComponent implements OnInit {
       if (mainImageAsNew) {
         const newImageIndex = this.newImagesForUpload.indexOf(mainImageAsNew);
         finalMainImageUrl = newImageUrls[newImageIndex];
+      } else if (!finalMainImageUrl && finalImageUrls.length > 0) {
+        finalMainImageUrl = finalImageUrls[0];
       }
 
       let productData = this.form.getRawValue();
       if (!productData.sku) {
         const category = this.form.get('category')?.value as Category;
-        const prefix = category?.prefix || 'SKU';
-        productData.sku = `${prefix}-${Date.now()}`;
+        productData.sku = `${category.name.substring(0, 3).toUpperCase()}-${Date.now()}`;
       }
-
-      const productToSave = {
-          ...productData,
-          categoryId: productData.category.id,
-          imageUrls: finalImageUrls,
-          mainImageUrl: finalMainImageUrl,
-      };
-      delete productToSave.category;
       
+      productData.categoryId = productData.category.id;
+      productData.categoryName = productData.category.name;
+      delete productData.category;
+
+      productData.imageUrls = finalImageUrls;
+      productData.mainImageUrl = finalMainImageUrl;
+
       if (this.isEditMode && this.productId) {
-        await this.productService.updateProduct({ ...productToSave, id: this.productId });
+        await this.productService.updateProduct({ ...productData, id: this.productId });
         this.snackBar.open('Produto atualizado com sucesso!', 'Fechar', { duration: 3000 });
       } else {
-        await this.productService.addProduct(productToSave);
+        await this.productService.addProduct(productData);
         this.snackBar.open('Produto adicionado com sucesso!', 'Fechar', { duration: 3000 });
       }
       this.router.navigate(['/products']);
