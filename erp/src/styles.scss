@@ -38,14 +38,26 @@ body {
   color-scheme: light dark;
 }
 
-body{
+body {
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+
   @include mat.all-component-themes($theme);
   @include primary-colors.high-contrast-overrides(color-scheme);
   @include mat.typography-hierarchy($theme);
-}
 
-:root {
-  --mat-dialog-with-actions-content-padding: 16px;
+  @include mat.theme-overrides(
+    (
+      on-error-container: light-dark(#b91111, #fff),
+    )
+  );
+
+  @include mat.dialog-overrides(
+    (
+      content-padding: 16px,
+      with-actions-content-padding: 16px,
+    ) 
+  );
 }
 
 .mat-mdc-form-field,
@@ -69,4 +81,7 @@ body{
 
 .mat-mdc-card-header-text {
   margin-bottom: 24px;
+}
+.mat-mdc-notch-piece {
+  border-right: 0;
 }

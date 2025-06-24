@@ -47,14 +47,29 @@
             <input matInput formControlName="size">
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>Preço de Venda</mat-label>
-            <input matInput formControlName="salePrice" type="number">
+            <mat-label>Dificuldade Técnica</mat-label>
+            <mat-select formControlName="technicalDifficulty">
+              <mat-option [value]="null">N/A</mat-option>
+              <mat-option [value]="1">1 - Muito Baixa</mat-option>
+              <mat-option [value]="2">2 - Baixa</mat-option>
+              <mat-option [value]="3">3 - Média</mat-option>
+              <mat-option [value]="4">4 - Alta</mat-option>
+              <mat-option [value]="5">5 - Muito Alta</mat-option>
+            </mat-select>
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>Custo Médio</mat-label>
             <input matInput type="number" formControlName="averageCost" required>
           </mat-form-field>
         </div>
+
+        @if (form.get('productType')?.value === productTypeEnum.FabricoProprio) {
+        <div class="price-reference">
+          <h6>Preços de Venda de Referência</h6>
+          <p>Mínimo: <strong>{{ calculatedMinPrice | currency:'EUR' }}</strong></p>
+          <p>Máximo: <strong>{{ calculatedMaxPrice | currency:'EUR' }}</strong></p>
+        </div>
+        }
 
         @if (form.get('productType')?.value === productTypeEnum.FabricoProprio) {
         <section>

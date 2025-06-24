@@ -11,6 +11,7 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
     margin-top: 16px;
+    align-items: center;
   }
 
   .form-row {
@@ -114,5 +115,22 @@
       border: 1px dashed #ccc;
       border-radius: 8px;
     }
+  }
+}
+
+.price-reference {
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+  background-color: #fafafa;
+
+  h6 {
+    margin-top: 0;
+    margin-bottom: 8px;
+  }
+
+  p {
+    margin: 4px 0;
   }
 }

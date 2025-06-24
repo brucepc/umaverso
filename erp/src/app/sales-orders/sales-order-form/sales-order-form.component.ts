@@ -132,7 +132,7 @@ export class SalesOrderFormComponent implements OnInit {
     });
 
     itemGroup.get('product')?.valueChanges.subscribe((product: Product | null) => {
-      itemGroup.get('unitPrice')?.patchValue(product?.salePrice || 0, { emitEvent: false });
+      itemGroup.get('unitPrice')?.patchValue(product?.minSalePrice || 0, { emitEvent: false });
       this.updateItemTotal(itemGroup);
     });
 

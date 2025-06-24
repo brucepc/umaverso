@@ -51,10 +51,12 @@ export class ProductListComponent {
     'mainImageUrl',
     'sku',
     'name',
+    'technicalDifficulty',
     'currentStock',
     'unitOfMeasure',
     'averageCost',
-    'salePrice',
+    'minSalePrice',
+    'maxSalePrice',
     'isActive',
     'actions',
   ];

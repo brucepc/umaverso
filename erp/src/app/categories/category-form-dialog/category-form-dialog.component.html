@@ -1,25 +1,27 @@
 <h1 mat-dialog-title>{{ isEditMode ? 'Editar Categoria' : 'Nova Categoria' }}</h1>
 
-<div mat-dialog-content [formGroup]="form" class="dialog-content">
-  <mat-form-field appearance="outline" class="full-width">
-    <mat-label>Nome da Categoria</mat-label>
-    <input matInput formControlName="name" required>
-    @if (form.get('name')?.hasError('required')) {
+<div mat-dialog-content>
+  <form [formGroup]="form" class="space-y-2 pt-3">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Nome da Categoria</mat-label>
+      <input matInput formControlName="name" required>
+      @if (form.get('name')?.hasError('required')) {
       <mat-error>Campo obrigatório</mat-error>
-    }
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="full-width">
-    <mat-label>Prefixo para SKU</mat-label>
-    <input matInput formControlName="prefix" required maxlength="5" #prefixInput>
-    <mat-hint align="end">{{ prefixInput.value.length }} / 5</mat-hint>
-    @if (form.get('prefix')?.hasError('required')) {
+      }
+    </mat-form-field>
+    <br>
+    <mat-form-field appearance="outline" class="w-full mt-3">
+      <mat-label>Prefixo para SKU</mat-label>
+      <input matInput formControlName="prefix" required maxlength="5" #prefixInput>
+      <mat-hint align="end">{{ prefixInput.value.length }} / 5</mat-hint>
+      @if (form.get('prefix')?.hasError('required')) {
       <mat-error>Campo obrigatório</mat-error>
-    }
-    @if (form.get('prefix')?.hasError('maxlength')) {
+      }
+      @if (form.get('prefix')?.hasError('maxlength')) {
       <mat-error>O prefixo não pode ter mais de 5 caracteres.</mat-error>
-    }
-  </mat-form-field>
+      }
+    </mat-form-field>
+  </form>
 </div>
 
 <div mat-dialog-actions align="end">

@@ -18,10 +18,12 @@ export interface Product {
   ncm?: string;
   currentStock: number;
   averageCost: number;
-  salePrice: number;
+  minSalePrice?: number;
+  maxSalePrice?: number;
   isActive: boolean;
   weight?: number; // in kg
   size?: string; // e.g., "10x20x5 cm"
+  technicalDifficulty?: number; // 1 to 5
   mainImageUrl?: string;
   imageUrls?: string[];
   bom?: BomItem[]; // Bill of Materials for FABRICO_PROPRIO

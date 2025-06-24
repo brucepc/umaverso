@@ -70,6 +70,9 @@ export class ProductFormComponent implements OnInit {
   productTypeValues: string[] = Object.values(ProductType);
   productTypeEnum = ProductType;
 
+  calculatedMinPrice: number | null = null;
+  calculatedMaxPrice: number | null = null;
+
   existingImageUrls: string[] = [];
   newImagesForUpload: ImageForUpload[] = [];
   isUploading = false;
@@ -111,10 +114,10 @@ export class ProductFormComponent implements OnInit {
       ncm: [''],
       currentStock: [0, Validators.required],
       averageCost: [{ value: 0, disabled: true }],
-      salePrice: [0, [Validators.required, Validators.min(0)]],
       isActive: [true],
       weight: [0, Validators.min(0)],
       size: [''],
+      technicalDifficulty: [{ value: null, disabled: true }],
       mainImageUrl: [''],
       imageUrls: this.fb.array([]),
       bom: this.fb.array([])
@@ -122,6 +125,23 @@ export class ProductFormComponent implements OnInit {
 
     this.form.get('productType')?.valueChanges.subscribe((type) => {
       this.updateBomValidation(type);
+      const technicalDifficultyControl = this.form.get('technicalDifficulty');
+
+      if (type === ProductType.FabricoProprio) {
+        technicalDifficultyControl?.enable();
+        this.calculatePriceRange();
+      } else {
+        technicalDifficultyControl?.disable();
+        technicalDifficultyControl?.reset(null);
+        this.calculatedMinPrice = null;
+        this.calculatedMaxPrice = null;
+      }
+    });
+
+    this.form.get('technicalDifficulty')?.valueChanges.subscribe(() => {
+      if (this.form.get('productType')?.value === ProductType.FabricoProprio) {
+        this.calculatePriceRange();
+      }
     });
   }
 
@@ -154,6 +174,16 @@ export class ProductFormComponent implements OnInit {
     this.bom.updateValueAndValidity();
   }
 
+  calculatePriceRange(): void {
+    const technicalDifficulty = this.form.get('technicalDifficulty')?.value || 0;
+    const averageCost = this.form.get('averageCost')?.value || 0;
+
+    const baseValue = Number(technicalDifficulty) + Number(averageCost);
+
+    this.calculatedMinPrice = baseValue * 1.5;
+    this.calculatedMaxPrice = baseValue * 2.5;
+  }
+
   loadProductData(id: string): void {
     this.productService.getProductById(id).pipe(take(1)).subscribe((product) => {
       if (product) {
@@ -169,6 +199,10 @@ export class ProductFormComponent implements OnInit {
                 product.bom.forEach(item => this.addBomItem(item));
             }
             this.updateBomValidation(product.productType);
+            if (product.productType === ProductType.FabricoProprio) {
+              this.form.get('technicalDifficulty')?.enable();
+              this.calculatePriceRange();
+            }
         });
       }
     });
@@ -255,6 +289,11 @@ export class ProductFormComponent implements OnInit {
       productData.categoryId = productData.category.id;
       productData.categoryName = productData.category.name;
       delete productData.category;
+
+      if (productData.productType === ProductType.FabricoProprio) {
+        productData.minSalePrice = this.calculatedMinPrice;
+        productData.maxSalePrice = this.calculatedMaxPrice;
+      }
 
       productData.imageUrls = finalImageUrls;
       productData.mainImageUrl = finalMainImageUrl;
