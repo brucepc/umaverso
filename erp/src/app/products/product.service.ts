@@ -52,9 +52,11 @@ export class ProductService {
   constructor() {}
 
   getProducts(): Observable<Product[]> {
-    return collectionData(this.productsCollection, {
-      idField: 'id',
-    }) as Observable<Product[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(this.productsCollection, {
+        idField: 'id',
+      })
+    ) as Observable<Product[]>;
   }
 
   getProductById(id: string): Observable<Product | null> {
@@ -72,21 +74,25 @@ export class ProductService {
   }
 
   getRawMaterials(): Observable<Product[]> {
-    const q = query(
-      this.productsCollection,
-      where('productType', '==', ProductType.MateriaPrima),
-      where('isActive', '==', true)
-    );
-    return collectionData(q, { idField: 'id' }) as Observable<Product[]>;
+    return runInInjectionContext(this.injector, () => {
+      const q = query(
+        this.productsCollection,
+        where('productType', '==', ProductType.MateriaPrima),
+        where('isActive', '==', true)
+      );
+      return collectionData(q, { idField: 'id' });
+    }) as Observable<Product[]>;
   }
 
   getFinishedGoods(): Observable<Product[]> {
-    const q = query(
-      this.productsCollection,
-      where('productType', '==', ProductType.FabricoProprio),
-      where('isActive', '==', true)
-    );
-    return collectionData(q, { idField: 'id' }) as Observable<Product[]>;
+    return runInInjectionContext(this.injector, () => {
+      const q = query(
+        this.productsCollection,
+        where('productType', '==', ProductType.FabricoProprio),
+        where('isActive', '==', true)
+      );
+      return collectionData(q, { idField: 'id' });
+    }) as Observable<Product[]>;
   }
 
   addProduct(product: Omit<Product, 'id'>) {

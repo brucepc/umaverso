@@ -107,6 +107,7 @@ export class PurchaseOrderFormComponent implements OnInit {
   constructor() {
     this.form = this.fb.group({
       id: [null],
+      code: [{ value: '', disabled: true }],
       supplier: [null as Supplier | null],
       emissionDate: [new Date(), Validators.required],
       estimatedDeliveryDate: [null, Validators.required],
@@ -139,6 +140,7 @@ export class PurchaseOrderFormComponent implements OnInit {
 
     this.form.get('supplier')?.valueChanges.subscribe((supplier) => {
       this.isMarketplace = !supplier;
+      this.updateItemSupplierValidation();
     });
 
     this.form
@@ -161,25 +163,37 @@ export class PurchaseOrderFormComponent implements OnInit {
       .subscribe((orders) => {
         const order = orders.find((o) => o.id === id);
         if (order) {
+          const supplier = this.suppliers.find(
+            (s) => s.id === order.supplierId
+          );
           this.form.patchValue({
             id: order.id,
+            code: order.code,
             status: order.status,
+            supplier: supplier,
             emissionDate: order.emissionDate.toDate(),
             estimatedDeliveryDate: order.estimatedDeliveryDate.toDate(),
+            freightCost: order.freightCost,
           });
+          this.status = order.status;
 
           this.items.clear();
           order.items.forEach((item: any) => {
             const product = this.products.find((p) => p.id === item.productId);
+            const itemSupplier = this.suppliers.find(
+              (s) => s.id === item.supplierId
+            );
             const itemGroup = this.createItem();
             itemGroup.patchValue({
               product: product,
               quantity: item.quantity,
-              unitCost: item.unitCost,
+              unitPrice: item.unitPrice,
+              freightCost: item.freightCost,
+              supplier: itemSupplier,
             });
             this.items.push(itemGroup);
           });
-          this.updateTotal();
+          this.updateItemSupplierValidation();
           this.updateCalculations();
         }
       });
@@ -260,7 +274,9 @@ export class PurchaseOrderFormComponent implements OnInit {
   }
 
   addItem(): void {
-    this.items.push(this.createItem());
+    const newItem = this.createItem();
+    this.items.push(newItem);
+    this.updateItemSupplierValidation();
     this.updateCalculations();
   }
 
@@ -373,16 +389,17 @@ export class PurchaseOrderFormComponent implements OnInit {
   }
 
   private reconstructOrderFromForm(formValue: any): PurchaseOrder {
-    const orderToSave: any = {
-      id: this.orderId,
+    const orderToSave: Partial<PurchaseOrder> = {
+      id: this.orderId ?? undefined,
+      code: formValue.code,
+      supplierId: formValue.supplier?.id,
+      supplierName: formValue.supplier?.name,
       emissionDate: Timestamp.fromDate(formValue.emissionDate),
       estimatedDeliveryDate: Timestamp.fromDate(
         formValue.estimatedDeliveryDate
       ),
-      status: formValue.status || this.status,
-      freightCost: formValue.freightCost || 0,
-      items: [],
-      total: formValue.total,
+      status: formValue.status,
+      freightCost: formValue.freightCost,
     };
 
     if (formValue.supplier) {
@@ -422,7 +439,7 @@ export class PurchaseOrderFormComponent implements OnInit {
           unitCost: finalUnitCost,
         };
 
-        if (this.isMarketplace && item.supplier) {
+        if (item.supplier) {
           itemToSave.supplierId = item.supplier.id;
           itemToSave.supplierName = item.supplier.name;
         }
@@ -431,5 +448,18 @@ export class PurchaseOrderFormComponent implements OnInit {
       .filter((i: any) => i !== null);
 
     return orderToSave as PurchaseOrder;
+  }
+
+  updateItemSupplierValidation(): void {
+    const isMarketplace = this.isMarketplace;
+    this.items.controls.forEach((item) => {
+      const supplierControl = item.get('supplier');
+      if (isMarketplace) {
+        supplierControl?.setValidators([Validators.required]);
+      } else {
+        supplierControl?.clearValidators();
+      }
+      supplierControl?.updateValueAndValidity();
+    });
   }
 }

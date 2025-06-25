@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, Injector, runInInjectionContext } from '@angular/core';
 import {
   Firestore,
   addDoc,
@@ -26,6 +26,7 @@ import { Observable } from 'rxjs';
 export class PurchaseOrderService {
   private firestore: Firestore = inject(Firestore);
   private accountPayableService = inject(AccountPayableService);
+  private injector = inject(Injector);
 
   private ordersCollection = collection(this.firestore, 'purchaseOrders');
 
@@ -47,46 +48,54 @@ export class PurchaseOrderService {
   }
 
   getPurchaseOrders(): Observable<PurchaseOrder[]> {
-    return collectionData(this.ordersCollection, { idField: 'id' }) as Observable<
-      PurchaseOrder[]
-    >;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(this.ordersCollection, { idField: 'id' })
+    ) as Observable<PurchaseOrder[]>;
   }
 
   addPurchaseOrder(
     order: Omit<PurchaseOrder, 'id' | 'status' | 'code'>
   ): Promise<any> {
-    const calculatedOrder = this.calculateOrderTotals(
-      order as Partial<PurchaseOrder>
-    );
+    return runInInjectionContext(this.injector, () => {
+      const calculatedOrder = this.calculateOrderTotals(
+        order as Partial<PurchaseOrder>
+      );
 
-    const orderWithDefaults = {
-      ...calculatedOrder,
-      code: `PO-${Date.now()}`,
-      status: PurchaseOrderStatus.PENDING_APPROVAL,
-    };
-    return addDoc(this.ordersCollection, orderWithDefaults);
+      const orderWithDefaults = {
+        ...calculatedOrder,
+        code: `PO-${Date.now()}`,
+        status: PurchaseOrderStatus.PENDING_APPROVAL,
+      };
+      return addDoc(this.ordersCollection, orderWithDefaults);
+    });
   }
 
   updatePurchaseOrder(
     id: string,
     order: Partial<PurchaseOrder>
   ): Promise<void> {
-    const orderDoc = doc(this.firestore, `purchaseOrders/${id}`);
-    const calculatedOrder = this.calculateOrderTotals(order);
-    return updateDoc(orderDoc, calculatedOrder);
+    return runInInjectionContext(this.injector, () => {
+      const orderDoc = doc(this.firestore, `purchaseOrders/${id}`);
+      const calculatedOrder = this.calculateOrderTotals(order);
+      return updateDoc(orderDoc, calculatedOrder);
+    });
   }
 
   deletePurchaseOrder(id: string): Promise<void> {
-    const orderDoc = doc(this.firestore, `purchaseOrders/${id}`);
-    return deleteDoc(orderDoc);
+    return runInInjectionContext(this.injector, () => {
+      const orderDoc = doc(this.firestore, `purchaseOrders/${id}`);
+      return deleteDoc(orderDoc);
+    });
   }
 
   updatePurchaseOrderStatus(
     orderId: string,
     status: PurchaseOrderStatus
   ): Promise<void> {
-    const orderDoc = doc(this.firestore, `purchaseOrders/${orderId}`);
-    return updateDoc(orderDoc, { status });
+    return runInInjectionContext(this.injector, () => {
+      const orderDoc = doc(this.firestore, `purchaseOrders/${orderId}`);
+      return updateDoc(orderDoc, { status });
+    });
   }
 
   async approvePurchaseOrder(order: PurchaseOrder): Promise<void> {

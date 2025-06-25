@@ -9,36 +9,25 @@
   }
   .mat-mdc-form-field,
   .ng-select {
-    flex: 1;
+    @apply flex-1 flex-wrap min-w-64;
   }
   .total-summary {
-    @apply text-right;
+    @apply text-right grid grid-rows-2 gap-2 justify-end;
   }
 
   .item-form-field {
-    width: 100%;
+    @apply w-full;
   }
 
   .add-item-button {
-    margin-top: 16px;
+    @apply mt-4;
   }
 
   .form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 16px;
-    padding: 16px 0;
-  }
-
-  .total-summary {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 16px;
-    font-size: 1.25em;
-    font-weight: 500;
+    @apply flex justify-end gap-4 p-4;
   }
 
   .mat-mdc-card + .mat-mdc-card {
-    margin-top: 16px;
+    @apply mt-4;
   }
 }
