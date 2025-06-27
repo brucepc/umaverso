@@ -23,7 +23,10 @@
 
         <mat-form-field appearance="fill">
           <mat-label>Senha</mat-label>
-          <input matInput formControlName="password" type="password" required>
+          <input matInput formControlName="password" [type]="passwordVisible ? 'text' : 'password'" required>
+          <button mat-icon-button matSuffix (click)="passwordVisible = !passwordVisible" type="button">
+            <mat-icon>{{passwordVisible ? 'visibility' : 'visibility_off'}}</mat-icon>
+          </button>
           @if (form.get('password')?.hasError('required')) {
             <mat-error>
               A senha é obrigatória.

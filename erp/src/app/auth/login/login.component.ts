@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '@app/core/auth.service';
+import { MatIconModule } from '@angular/material/icon';
 
 
 @Component({
@@ -18,7 +19,8 @@ import { AuthService } from '@app/core/auth.service';
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule
 ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
@@ -29,6 +31,7 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
+  passwordVisible = false;
 
   form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
