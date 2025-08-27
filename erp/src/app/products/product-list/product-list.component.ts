@@ -53,10 +53,9 @@ export class ProductListComponent {
     'name',
     'technicalDifficulty',
     'currentStock',
-    'unitOfMeasure',
+    'isDivisible',
     'averageCost',
-    'minSalePrice',
-    'maxSalePrice',
+    'priceRange',
     'isActive',
     'actions',
   ];

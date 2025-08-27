@@ -56,7 +56,7 @@ body {
     (
       content-padding: 16px,
       with-actions-content-padding: 16px,
-    ) 
+    )
   );
 }
 
@@ -81,6 +81,9 @@ body {
 
 .mat-mdc-card-header-text {
   margin-bottom: 24px;
+}
+.mat-mdc-card-actions {
+  @apply gap-5;
 }
 .mat-mdc-notch-piece {
   border-right: 0;

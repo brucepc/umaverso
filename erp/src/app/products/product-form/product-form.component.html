@@ -1,11 +1,26 @@
 <div class="form-container">
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <mat-card>
-      <mat-card-header>
-        <mat-card-title>{{ isEditMode ? 'Editar Produto' : 'Novo Produto' }}</mat-card-title>
+      <mat-card-header class="sticky top-13 rounded-t-xl">
+        <mat-card-title>
+          <div class="flex flex-row gap-3">
+            {{ isEditMode ? 'Editar Produto' : 'Novo Produto' }}
+            @if (form.get('productType')?.value === productTypeEnum.FabricoProprio) {
+            <span class="flex-1"></span>
+            <span>Custo Médio: <strong>{{ form.get('averageCost')?.value | currency:'EUR' }}</strong></span>
+            <span>Preço Mínimo: <strong>{{ calculatedMinPrice | currency:'EUR' }}</strong></span>
+            <span>Preço Máximo: <strong>{{ calculatedMaxPrice | currency:'EUR' }}</strong></span>
+            }
+          </div>
+        </mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <div class="form-grid">
+          <input type="hidden" formControlName="averageCost">
+          <mat-form-field appearance="outline" class="name-field">
+            <mat-label>Nome do Artigo</mat-label>
+            <input matInput formControlName="name" required>
+          </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>Tipo de Artigo</mat-label>
             <mat-select formControlName="productType" required>
@@ -30,25 +45,22 @@
             <mat-label>SKU</mat-label>
             <input matInput formControlName="sku">
           </mat-form-field>
-          <mat-form-field appearance="outline" class="full-width-field">
-            <mat-label>Nome do Artigo</mat-label>
-            <input matInput formControlName="name" required>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Unidade de Medida</mat-label>
-            <input matInput formControlName="unitOfMeasure" required>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Peso (kg)</mat-label>
-            <input matInput formControlName="weight" type="number">
-          </mat-form-field>
+          <div class="flex flex-row gap-3 items-center">
+            <mat-checkbox formControlName="isDivisible" class="pt-2">
+              Produto Divisível?
+            </mat-checkbox>
+            <mat-form-field appearance="outline">
+              <mat-label>Peso (kg)</mat-label>
+              <input matInput formControlName="weight" type="number">
+            </mat-form-field>
+          </div>
           <mat-form-field appearance="outline">
             <mat-label>Dimensões (ex: 10x20x5 cm)</mat-label>
             <input matInput formControlName="size">
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>Dificuldade Técnica</mat-label>
-            <mat-select formControlName="technicalDifficulty">
+            <mat-select formControlName="technicalDifficulty" (change)="updateCosts()">
               <mat-option [value]="null">N/A</mat-option>
               <mat-option [value]="1">1 - Muito Baixa</mat-option>
               <mat-option [value]="2">2 - Baixa</mat-option>
@@ -57,29 +69,19 @@
               <mat-option [value]="5">5 - Muito Alta</mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Custo Médio</mat-label>
-            <input matInput type="number" formControlName="averageCost" required>
-          </mat-form-field>
         </div>
 
-        @if (form.get('productType')?.value === productTypeEnum.FabricoProprio) {
-        <div class="price-reference">
-          <h6>Preços de Venda de Referência</h6>
-          <p>Mínimo: <strong>{{ calculatedMinPrice | currency:'EUR' }}</strong></p>
-          <p>Máximo: <strong>{{ calculatedMaxPrice | currency:'EUR' }}</strong></p>
-        </div>
-        }
+
 
         @if (form.get('productType')?.value === productTypeEnum.FabricoProprio) {
         <section>
-          <h6>Ficha Técnica (Lista de Materiais)</h6>
+          <h5 class="text-lg font-bold">Ficha Técnica (Lista de Materiais)</h5>
           <div formArrayName="bom">
             @for (bomItem of bom.controls; track $index; let i = $index) {
             <div [formGroupName]="i" class="bom-item-row">
               <mat-form-field appearance="fill">
                 <mat-label>Matéria-Prima</mat-label>
-                <mat-select formControlName="productId">
+                <mat-select formControlName="productId" (selectionChange)="updateCosts()">
                   @for (material of rawMaterials$ | async; track material.id) {
                   <mat-option [value]="material.id">
                     {{ material.name }}
@@ -89,7 +91,8 @@
               </mat-form-field>
               <mat-form-field appearance="fill">
                 <mat-label>Quantidade</mat-label>
-                <input matInput type="number" formControlName="quantity" min="0.001">
+                <input matInput type="number" formControlName="quantity" min="0.5" [step]="getStepForBomItem(bomItem)"
+                  (change)="updateCosts()">
               </mat-form-field>
               <button mat-icon-button color="warn" (click)="removeBomItem(i)" type="button">
                 <mat-icon>remove_circle</mat-icon>
@@ -112,8 +115,7 @@
                 <div class="image-actions">
                   <button color="tertiary" mat-icon-button (click)="setMainImage(url)" type="button"
                     [class.opacity-100]="form.get('mainImageUrl')?.value === url"
-                    [class.opacity-0]="form.get('mainImageUrl')?.value !== url"
-                    matTooltip="Marcar como principal">
+                    [class.opacity-0]="form.get('mainImageUrl')?.value !== url" matTooltip="Marcar como principal">
                     <mat-icon [class.text-amber-500]="form.get('mainImageUrl')?.value === url">star</mat-icon>
                   </button>
                   <button mat-icon-button class="remove-image-button" (click)="removeImage(i)" type="button"

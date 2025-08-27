@@ -152,11 +152,7 @@ export class ProductionOrderService {
         const currentAverageCost = productData.averageCost ?? 0;
 
         const newStock = currentStock + orderData.quantityToProduce;
-        const newAverageCost =
-          newStock > 0
-            ? (currentAverageCost * currentStock + (orderData.totalCost || 0)) /
-              newStock
-            : 0;
+        const newAverageCost = (orderData.totalCost || 0) / orderData.quantityToProduce;
 
         transaction.update(productRef, {
           currentStock: newStock,

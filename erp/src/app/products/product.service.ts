@@ -127,6 +127,18 @@ export class ProductService {
     return updateDoc(productDocRef, { isActive: !product.isActive });
   }
 
+  calculatePriceRange(
+    technicalDifficulty: number,
+    averageCost: number
+  ): { minSalePrice: number; maxSalePrice: number } {
+    const baseValue = Number(technicalDifficulty) + Number(averageCost);
+
+    const minSalePrice = baseValue * 1.5;
+    const maxSalePrice = baseValue * 2.5;
+
+    return { minSalePrice, maxSalePrice };
+  }
+
   async updateStock(data: StockUpdateData): Promise<void> {
     const productDocRef = doc(this.firestore, `products/${data.productId}`);
 

@@ -1,4 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormGroup,
@@ -20,6 +25,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { CategoryService } from '../../categories/category.service';
 import { Category } from '@models/category.model';
@@ -48,9 +54,11 @@ interface ImageForUpload {
     MatTooltipModule,
     MatProgressSpinnerModule,
     NgSelectModule,
+    MatCheckboxModule,
   ],
   templateUrl: './product-form.component.html',
   styleUrls: ['./product-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductFormComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -66,6 +74,7 @@ export class ProductFormComponent implements OnInit {
 
   categories$: Observable<Category[]>;
   rawMaterials$: Observable<Product[]>;
+  rawMaterials: Product[] = [];
 
   productTypeValues: string[] = Object.values(ProductType);
   productTypeEnum = ProductType;
@@ -84,12 +93,18 @@ export class ProductFormComponent implements OnInit {
   private initialImageUrls: string[] = [];
 
   get allImageUrls(): string[] {
-    return [...this.existingImageUrls, ...this.newImagesForUpload.map(i => i.previewUrl)];
+    return [
+      ...this.existingImageUrls,
+      ...this.newImagesForUpload.map((i) => i.previewUrl),
+    ];
   }
 
   constructor() {
     this.categories$ = this.categoryService.getCategories();
     this.rawMaterials$ = this.productService.getRawMaterials();
+    this.rawMaterials$.subscribe(
+      (materials) => (this.rawMaterials = materials)
+    );
   }
 
   ngOnInit(): void {
@@ -100,6 +115,8 @@ export class ProductFormComponent implements OnInit {
     if (this.isEditMode) {
       this.loadProductData(this.productId as string);
     }
+
+    this.bom.updateValueAndValidity();
   }
 
   initForm(): void {
@@ -110,7 +127,7 @@ export class ProductFormComponent implements OnInit {
       categoryId: ['', Validators.required],
       category: [null, Validators.required],
       productType: [ProductType.Revenda, Validators.required],
-      unitOfMeasure: ['', Validators.required],
+      isDivisible: [false, Validators.required],
       ncm: [''],
       currentStock: [0, Validators.required],
       averageCost: [{ value: 0, disabled: true }],
@@ -120,27 +137,24 @@ export class ProductFormComponent implements OnInit {
       technicalDifficulty: [{ value: null, disabled: true }],
       mainImageUrl: [''],
       imageUrls: this.fb.array([]),
-      bom: this.fb.array([])
+      bom: this.fb.array([]),
     });
 
-    this.form.get('productType')?.valueChanges.subscribe((type) => {
+    this.form.get('productType')?.valueChanges.subscribe(async (type) => {
       this.updateBomValidation(type);
       const technicalDifficultyControl = this.form.get('technicalDifficulty');
+      const averageCostControl = this.form.get('averageCost');
 
       if (type === ProductType.FabricoProprio) {
         technicalDifficultyControl?.enable();
-        this.calculatePriceRange();
+        averageCostControl?.disable();
+        await this.updateCosts();
       } else {
         technicalDifficultyControl?.disable();
         technicalDifficultyControl?.reset(null);
+        averageCostControl?.enable();
         this.calculatedMinPrice = null;
         this.calculatedMaxPrice = null;
-      }
-    });
-
-    this.form.get('technicalDifficulty')?.valueChanges.subscribe(() => {
-      if (this.form.get('productType')?.value === ProductType.FabricoProprio) {
-        this.calculatePriceRange();
       }
     });
   }
@@ -150,10 +164,14 @@ export class ProductFormComponent implements OnInit {
   }
 
   createBomItem(item?: BomItem): FormGroup {
-    return this.fb.group({
+    const itemFormGroup = this.fb.group({
       productId: [item?.productId || '', Validators.required],
-      quantity: [item?.quantity || 1, [Validators.required, Validators.min(0.001)]],
+      quantity: [
+        item?.quantity || 1,
+        [Validators.required, Validators.min(0.001)],
+      ],
     });
+    return itemFormGroup;
   }
 
   addBomItem(item?: BomItem): void {
@@ -174,61 +192,102 @@ export class ProductFormComponent implements OnInit {
     this.bom.updateValueAndValidity();
   }
 
-  calculatePriceRange(): void {
-    const technicalDifficulty = this.form.get('technicalDifficulty')?.value || 0;
-    const averageCost = this.form.get('averageCost')?.value || 0;
-
-    const baseValue = Number(technicalDifficulty) + Number(averageCost);
-
-    this.calculatedMinPrice = baseValue * 1.5;
-    this.calculatedMaxPrice = baseValue * 2.5;
+  getStepForBomItem(bomItem: any): number {
+    const productId = bomItem.get('productId')?.value;
+    if (!productId) {
+      return 1;
+    }
+    const product = this.rawMaterials.find((p) => p.id === productId);
+    if (product && product.isDivisible === true) {
+      return 0.5;
+    }
+    return 1;
   }
 
-  loadProductData(id: string): void {
-    this.productService.getProductById(id).pipe(take(1)).subscribe((product) => {
-      if (product) {
-        this.existingImageUrls = product.imageUrls || [];
+  async calculateBomCost(): Promise<number> {
+    if (this.bom.length === 0) {
+      return 0;
+    }
+    const rawMaterials = await firstValueFrom(this.rawMaterials$);
+    return this.bom.controls.reduce((acc, control) => {
+      const bomItem = control.value as BomItem;
+      if (!bomItem.productId) return acc;
+
+      const product = rawMaterials.find((p) => p.id === bomItem.productId);
+      const itemCost = product ? product.averageCost : 0;
+      return acc + itemCost * bomItem.quantity;
+    }, 0);
+  }
+
+  async updateCosts(): Promise<void> {
+    if (this.form.get('productType')?.value !== ProductType.FabricoProprio) {
+      this.calculatedMinPrice = null;
+      this.calculatedMaxPrice = null;
+      return;
+    }
+
+    const bomCost = await this.calculateBomCost();
+    this.form.get('averageCost')?.setValue(bomCost, { emitEvent: false });
+
+    const technicalDifficulty =
+      this.form.get('technicalDifficulty')?.value || 0;
+
+    const { minSalePrice, maxSalePrice } =
+      this.productService.calculatePriceRange(technicalDifficulty, bomCost);
+
+    this.calculatedMinPrice = minSalePrice;
+    this.calculatedMaxPrice = maxSalePrice;
+  }
+
+  async loadProductData(id: string): Promise<void> {
+    const product = await firstValueFrom(
+      this.productService.getProductById(id)
+    );
+    if (product) {
+      this.existingImageUrls = product.imageUrls || [];
+      const categories = await firstValueFrom(
         this.categories$.pipe(
-            filter(categories => categories.length > 0),
-            take(1)
-        ).subscribe(categories => {
-            const category = categories.find(c => c.id === product.categoryId);
-            this.form.patchValue({ ...product, category: category });
-            if (product.bom) {
-                this.bom.clear();
-                product.bom.forEach(item => this.addBomItem(item));
-            }
-            this.updateBomValidation(product.productType);
-            if (product.productType === ProductType.FabricoProprio) {
-              this.form.get('technicalDifficulty')?.enable();
-              this.calculatePriceRange();
-            }
-        });
+          filter((categories) => categories.length > 0),
+          take(1)
+        )
+      );
+      const category = categories.find((c) => c.id === product.categoryId);
+      this.form.patchValue({ ...product, category: category });
+      if (product.bom) {
+        this.bom.clear();
+        product.bom.forEach((item) => this.addBomItem(item));
       }
-    });
+      this.updateBomValidation(product.productType);
+      if (product.productType === ProductType.FabricoProprio) {
+        this.form.get('technicalDifficulty')?.enable();
+        await this.updateCosts();
+      }
+    }
   }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
-    
+
     const file = input.files[0];
     const newImage: ImageForUpload = {
       file: file,
-      previewUrl: URL.createObjectURL(file)
+      previewUrl: URL.createObjectURL(file),
     };
     this.newImagesForUpload.push(newImage);
 
     if (this.allImageUrls.length === 1) {
       this.setMainImage(newImage.previewUrl);
     }
-    input.value = ''; 
+    input.value = '';
   }
 
   removeImage(index: number): void {
     const removedUrl = this.allImageUrls[index];
 
-    const newImageIndex = this.newImagesForUpload.findIndex(i => i.previewUrl === removedUrl);
+    const newImageIndex = this.newImagesForUpload.findIndex(
+      (i) => i.previewUrl === removedUrl
+    );
     if (newImageIndex > -1) {
       URL.revokeObjectURL(removedUrl);
       this.newImagesForUpload.splice(newImageIndex, 1);
@@ -240,7 +299,9 @@ export class ProductFormComponent implements OnInit {
     }
 
     if (removedUrl === this.form.get('mainImageUrl')?.value) {
-      this.setMainImage(this.allImageUrls.length > 0 ? this.allImageUrls[0] : null);
+      this.setMainImage(
+        this.allImageUrls.length > 0 ? this.allImageUrls[0] : null
+      );
     }
   }
 
@@ -251,27 +312,29 @@ export class ProductFormComponent implements OnInit {
   compareCategories(c1: Category, c2: Category): boolean {
     return c1 && c2 ? c1.id === c2.id : c1 === c2;
   }
-  
+
   async onSubmit(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-    
+
     this.isUploading = true;
 
     try {
-      const uploadPromises = this.newImagesForUpload.map(image =>
+      const uploadPromises = this.newImagesForUpload.map((image) =>
         firstValueFrom(this.productService.uploadProductImage(image.file))
       );
       const newImageUrls = await Promise.all(uploadPromises);
-      
+
       const finalImageUrls = [...this.existingImageUrls, ...newImageUrls];
-      
+
       const mainImageUrlControl = this.form.get('mainImageUrl');
       const currentMainImageUrl = mainImageUrlControl?.value;
-      const mainImageAsNew = this.newImagesForUpload.find(i => i.previewUrl === currentMainImageUrl);
-      
+      const mainImageAsNew = this.newImagesForUpload.find(
+        (i) => i.previewUrl === currentMainImageUrl
+      );
+
       let finalMainImageUrl = currentMainImageUrl;
       if (mainImageAsNew) {
         const newImageIndex = this.newImagesForUpload.indexOf(mainImageAsNew);
@@ -283,9 +346,11 @@ export class ProductFormComponent implements OnInit {
       let productData = this.form.getRawValue();
       if (!productData.sku) {
         const category = this.form.get('category')?.value as Category;
-        productData.sku = `${category.name.substring(0, 3).toUpperCase()}-${Date.now()}`;
+        productData.sku = `${category.name
+          .substring(0, 3)
+          .toUpperCase()}-${Date.now()}`;
       }
-      
+
       productData.categoryId = productData.category.id;
       productData.categoryName = productData.category.name;
       delete productData.category;
@@ -299,19 +364,28 @@ export class ProductFormComponent implements OnInit {
       productData.mainImageUrl = finalMainImageUrl;
 
       if (this.isEditMode && this.productId) {
-        await this.productService.updateProduct({ ...productData, id: this.productId });
-        this.snackBar.open('Produto atualizado com sucesso!', 'Fechar', { duration: 3000 });
+        await this.productService.updateProduct({
+          ...productData,
+          id: this.productId,
+        });
+        this.snackBar.open('Produto atualizado com sucesso!', 'Fechar', {
+          duration: 3000,
+        });
       } else {
         await this.productService.addProduct(productData);
-        this.snackBar.open('Produto adicionado com sucesso!', 'Fechar', { duration: 3000 });
+        this.snackBar.open('Produto adicionado com sucesso!', 'Fechar', {
+          duration: 3000,
+        });
       }
       this.router.navigate(['/products']);
     } catch (error) {
       console.error(error);
-      this.snackBar.open('Erro ao salvar o produto.', 'Fechar', { duration: 3000 });
+      this.snackBar.open('Erro ao salvar o produto.', 'Fechar', {
+        duration: 3000,
+      });
     } finally {
       this.isUploading = false;
-      this.newImagesForUpload.forEach(i => URL.revokeObjectURL(i.previewUrl));
+      this.newImagesForUpload.forEach((i) => URL.revokeObjectURL(i.previewUrl));
     }
   }
 

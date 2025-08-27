@@ -14,7 +14,7 @@ export interface Product {
   categoryId: string;
   categoryName: string;
   productType: ProductType;
-  unitOfMeasure: string;
+  isDivisible: boolean;
   ncm?: string;
   currentStock: number;
   averageCost: number;
