@@ -2,6 +2,19 @@
   <mat-card-header>
     <mat-card-title>Gestão de Produtos</mat-card-title>
     <span class="spacer"></span>
+    
+    <!-- Botão de Gestão de Colunas -->
+    <button mat-icon-button [matMenuTriggerFor]="columnMenu" matTooltip="Gerir Colunas">
+      <mat-icon>view_column</mat-icon>
+    </button>
+    <mat-menu #columnMenu="matMenu">
+      <button mat-menu-item *ngFor="let column of allColumns" (click)="$event.stopPropagation();">
+        <mat-checkbox [checked]="column.visible" (change)="toggleColumnVisibility(column)" (click)="$event.stopPropagation();">
+          {{ column.label }}
+        </mat-checkbox>
+      </button>
+    </mat-menu>
+
     <button mat-flat-button color="primary" (click)="addProduct()">
       <mat-icon>add</mat-icon>
       <span>Adicionar Artigo</span>
@@ -41,7 +54,7 @@
   </div>
   <mat-card-content>
     <div class="table-container mat-elevation-z8">
-      <table mat-table [dataSource]="products$" class="full-width-table">
+      <table mat-table [dataSource]="products$" [trackBy]="trackByProductId" class="full-width-table">
 
         <!-- Coluna SKU -->
         <ng-container matColumnDef="sku">

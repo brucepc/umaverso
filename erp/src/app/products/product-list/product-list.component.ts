@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -43,6 +44,7 @@ import { GeneralSettingsService } from '../../core/general-settings.service';
     RouterModule,
     MatCardModule,
     MatChipsModule,
+    MatCheckboxModule,
   ],
   host: {
     class: 'page-list',
@@ -51,7 +53,7 @@ import { GeneralSettingsService } from '../../core/general-settings.service';
   styleUrls: ['./product-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductListComponent {
+export class ProductListComponent implements OnInit {
   private productService = inject(ProductService);
   private generalSettingsService = inject(GeneralSettingsService);
   private dialog = inject(MatDialog);
@@ -77,21 +79,28 @@ export class ProductListComponent {
     })
   );
 
-  displayedColumns: string[] = [
-    'mainImageUrl',
-    'sku',
-    'name',
-    'productType',
-    'technicalDifficulty',
-    'currentStock',
-    'isDivisible',
-    'averageCost',
-    'calculatedMinPrice',
-    'calculatedRecommendedPrice',
-    'minProfitAmount',
-    'isActive',
-    'actions',
+  // Definição das colunas disponíveis
+  allColumns: { id: string; label: string; visible: boolean }[] = [
+    { id: 'mainImageUrl', label: 'Imagem', visible: true },
+    { id: 'sku', label: 'SKU', visible: true },
+    { id: 'name', label: 'Nome', visible: true },
+    { id: 'productType', label: 'Tipo', visible: true },
+    { id: 'technicalDifficulty', label: 'Dificuldade', visible: false },
+    { id: 'currentStock', label: 'Estoque', visible: true },
+    { id: 'isDivisible', label: 'Divisível?', visible: false },
+    { id: 'averageCost', label: 'Custo', visible: true },
+    { id: 'calculatedMinPrice', label: 'PvP Mín.', visible: true },
+    { id: 'calculatedRecommendedPrice', label: 'PvP Rec.', visible: true },
+    { id: 'minProfitAmount', label: 'Lucro Mín.', visible: false },
+    { id: 'isActive', label: 'Status', visible: true },
+    { id: 'actions', label: 'Ações', visible: true },
   ];
+
+  displayedColumns: string[] = [];
+
+  ngOnInit(): void {
+    this.updateDisplayedColumns();
+  }
 
   // Opções do filtro de tipo de produto
   productTypeOptions = [
@@ -100,6 +109,29 @@ export class ProductListComponent {
     { value: ProductType.FabricoProprio, label: 'Fabrico Próprio' },
     { value: ProductType.Revenda, label: 'Revenda' }
   ];
+
+  /**
+   * Alterna a visibilidade de uma coluna
+   * @param column A coluna a ser alterada
+   */
+  toggleColumnVisibility(column: { id: string; label: string; visible: boolean }): void {
+    column.visible = !column.visible;
+    this.updateDisplayedColumns();
+  }
+
+  /**
+   * Atualiza o array de colunas exibidas com base na visibilidade
+   */
+  private updateDisplayedColumns(): void {
+    this.displayedColumns = this.allColumns.filter(col => col.visible).map(col => col.id);
+  }
+
+  /**
+   * Otimização para a renderização da tabela, evitando recarregamento de imagens
+   */
+  trackByProductId(index: number, product: Product): string {
+    return product.id;
+  }
 
   /**
    * Enriquece um produto com os preços calculados baseados nas regras configuráveis
