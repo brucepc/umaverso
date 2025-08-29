@@ -1,0 +1,242 @@
+<div class="settings-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>settings</mat-icon>
+        Configurações Gerais
+      </mat-card-title>
+      <mat-card-subtitle>
+        Configure as regras de negócio e parâmetros do sistema
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Seção Regras de Lucro -->
+      <mat-expansion-panel [expanded]="true" class="settings-panel">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon>trending_up</mat-icon>
+            Regras de Lucro
+          </mat-panel-title>
+          <mat-panel-description>
+            Configure os percentuais de lucro mínimo e recomendado
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <form [formGroup]="profitRulesForm" (ngSubmit)="saveProfitRules()" class="profit-rules-form">
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Lucro Mínimo (%)</mat-label>
+              <input matInput type="number" formControlName="minProfitPercentage" 
+                     placeholder="Ex: 200 para 200%">
+              <mat-hint>Percentual de lucro mínimo sobre o custo</mat-hint>
+              <mat-error *ngIf="profitRulesForm.get('minProfitPercentage')?.hasError('required')">
+                Campo obrigatório
+              </mat-error>
+              <mat-error *ngIf="profitRulesForm.get('minProfitPercentage')?.hasError('min')">
+                Deve ser maior que 0
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Lucro Recomendado (%)</mat-label>
+              <input matInput type="number" formControlName="recommendedProfitPercentage" 
+                     placeholder="Ex: 300 para 300%">
+              <mat-hint>Percentual de lucro recomendado sobre o custo</mat-hint>
+              <mat-error *ngIf="profitRulesForm.get('recommendedProfitPercentage')?.hasError('required')">
+                Campo obrigatório
+              </mat-error>
+              <mat-error *ngIf="profitRulesForm.get('recommendedProfitPercentage')?.hasError('min')">
+                Deve ser maior que 0
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>IVA (%)</mat-label>
+              <input matInput type="number" formControlName="vatPercentage" 
+                     placeholder="Ex: 23 para 23%">
+              <mat-hint>Percentual de IVA aplicado</mat-hint>
+              <mat-error *ngIf="profitRulesForm.get('vatPercentage')?.hasError('required')">
+                Campo obrigatório
+              </mat-error>
+              <mat-error *ngIf="profitRulesForm.get('vatPercentage')?.hasError('min')">
+                Deve ser maior ou igual a 0
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Preview dos cálculos -->
+          <div class="calculation-preview" *ngIf="previewCalculation">
+            <div class="preview-header">
+              <h4>Simulação de Cálculo</h4>
+              <mat-form-field appearance="outline" class="cost-input">
+                <mat-label>Custo Base para Simulação</mat-label>
+                <input matInput type="number" [formControl]="simulationCostControl" 
+                       placeholder="100" min="0" step="0.01">
+                <span matTextPrefix>€</span>
+                <mat-hint>Altere para simular diferentes custos</mat-hint>
+              </mat-form-field>
+            </div>
+            <div class="preview-grid">
+              <div class="preview-item">
+                <span class="label">Custo Base:</span>
+                <span class="value base-cost">€{{previewCalculation.averageCost | number:'1.2-2'}}</span>
+              </div>
+              <div class="preview-item">
+                <span class="label">Lucro Mínimo:</span>
+                <span class="value profit-min">€{{previewCalculation.minProfitAmount | number:'1.2-2'}}</span>
+              </div>
+              <div class="preview-item">
+                <span class="label">Lucro Recomendado:</span>
+                <span class="value profit-recommended">€{{previewCalculation.recommendedProfitAmount | number:'1.2-2'}}</span>
+              </div>
+              <div class="preview-item">
+                <span class="label">PvP Mínimo:</span>
+                <span class="value price-min">€{{previewCalculation.minSalePrice | number:'1.2-2'}}</span>
+              </div>
+              <div class="preview-item">
+                <span class="label">PvP Recomendado:</span>
+                <span class="value price-recommended">€{{previewCalculation.recommendedSalePrice | number:'1.2-2'}}</span>
+              </div>
+              <div class="preview-item">
+                <span class="label">IVA (no recomendado):</span>
+                <span class="value vat-amount">€{{previewCalculation.vatAmount | number:'1.2-2'}}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Mensagem quando não há preview -->
+          <div class="calculation-preview preview-empty" *ngIf="!previewCalculation">
+            <div class="preview-header">
+              <h4>Simulação de Cálculo</h4>
+              <mat-form-field appearance="outline" class="cost-input">
+                <mat-label>Custo Base para Simulação</mat-label>
+                <input matInput type="number" [formControl]="simulationCostControl" 
+                       placeholder="100" min="0" step="0.01">
+                <span matTextPrefix>€</span>
+                <mat-hint>Altere para simular diferentes custos</mat-hint>
+              </mat-form-field>
+            </div>
+            <p class="preview-message">Preencha os campos de percentuais acima para ver a simulação dos cálculos.</p>
+          </div>
+
+          <div class="form-actions">
+            <button mat-raised-button color="primary" type="submit" 
+                    [disabled]="profitRulesForm.invalid || isSaving">
+              <mat-icon *ngIf="isSaving">hourglass_empty</mat-icon>
+              <mat-icon *ngIf="!isSaving">save</mat-icon>
+              {{isSaving ? 'A Guardar...' : 'Guardar Regras'}}
+            </button>
+            
+            <button mat-button type="button" (click)="resetToDefault()">
+              <mat-icon>restore</mat-icon>
+              Restaurar Padrão
+            </button>
+          </div>
+        </form>
+      </mat-expansion-panel>
+
+      <!-- Seção Informações da Empresa -->
+      <mat-expansion-panel class="settings-panel">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon>business</mat-icon>
+            Informações da Empresa
+          </mat-panel-title>
+          <mat-panel-description>
+            Configure os dados da sua empresa
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <form [formGroup]="companyForm" (ngSubmit)="saveCompanyInfo()" class="company-form">
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Nome da Empresa</mat-label>
+              <input matInput formControlName="name" placeholder="Ex: Minha Empresa Lda.">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>NIF/CNPJ</mat-label>
+              <input matInput formControlName="nif" placeholder="Número de identificação fiscal">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Morada</mat-label>
+              <input matInput formControlName="address" placeholder="Endereço completo">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Telefone</mat-label>
+              <input matInput formControlName="phone" placeholder="Ex: +351 212 345 678">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Email</mat-label>
+              <input matInput type="email" formControlName="email" placeholder="contacto@empresa.pt">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Website</mat-label>
+              <input matInput formControlName="website" placeholder="https://www.empresa.pt">
+            </mat-form-field>
+          </div>
+
+          <div class="form-actions">
+            <button mat-raised-button color="primary" type="submit" 
+                    [disabled]="companyForm.invalid || isSaving">
+              <mat-icon *ngIf="isSaving">hourglass_empty</mat-icon>
+              <mat-icon *ngIf="!isSaving">save</mat-icon>
+              {{isSaving ? 'A Guardar...' : 'Guardar Informações'}}
+            </button>
+          </div>
+        </form>
+      </mat-expansion-panel>
+
+      <!-- Seção Configurações do Sistema -->
+      <mat-expansion-panel class="settings-panel">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon>tune</mat-icon>
+            Configurações do Sistema
+          </mat-panel-title>
+          <mat-panel-description>
+            Parâmetros gerais do sistema
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <form [formGroup]="systemForm" (ngSubmit)="saveSystemSettings()" class="system-form">
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Prazo de Pagamento Padrão (dias)</mat-label>
+              <input matInput type="number" formControlName="defaultPaymentTermDays" 
+                     placeholder="Ex: 30">
+              <mat-hint>Prazo padrão para vencimento de faturas</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Moeda</mat-label>
+              <mat-select formControlName="currencyCode">
+                <mat-option value="EUR">EUR - Euro</mat-option>
+                <mat-option value="USD">USD - Dólar</mat-option>
+                <mat-option value="GBP">GBP - Libra</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="form-actions">
+            <button mat-raised-button color="primary" type="submit" 
+                    [disabled]="systemForm.invalid || isSaving">
+              <mat-icon *ngIf="isSaving">hourglass_empty</mat-icon>
+              <mat-icon *ngIf="!isSaving">save</mat-icon>
+              {{isSaving ? 'A Guardar...' : 'Guardar Configurações'}}
+            </button>
+          </div>
+        </form>
+      </mat-expansion-panel>
+    </mat-card-content>
+  </mat-card>
+</div>

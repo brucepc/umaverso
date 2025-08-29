@@ -1,26 +1,98 @@
 :host {
+  // Container dos filtros
+  .filters-container {
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    background-color: var(--mat-sys-surface-container-low);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    .filters-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .filter-field {
+        min-width: 160px;
+        max-width: 200px;
+        
+        ::ng-deep {
+          .mat-mdc-form-field-wrapper {
+            margin-bottom: 0;
+          }
+          
+          .mat-mdc-form-field-bottom-align {
+            display: none; // Remove a área do hint para economizar espaço
+          }
+        }
+      }
+
+      .clear-filter-btn {
+        margin-top: -4px; // Align with the form field
+        
+        &:disabled {
+          opacity: 0.5;
+        }
+      }
+    }
+
+    .products-counter {
+      margin-left: auto;
+
+      .counter-chip.mat-mdc-chip {
+        background-color: var(--mat-sys-surface-container-high);
+        --mdc-chip-label-text-color: var(--mat-sys-on-surface-variant);
+        --mdc-chip-container-height: 32px;
+        font-weight: 500;
+      }
+    }
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+      padding: 10px 16px;
+
+      .filters-left {
+        .filter-field {
+          min-width: 100%;
+          max-width: 100%;
+        }
+      }
+
+      .products-counter {
+        margin-left: 0;
+        text-align: center;
+      }
+    }
+  }
+
   .status-chip {
     display: inline-block;
     padding: 4px 12px;
     border-radius: 16px;
     font-size: 12px;
     font-weight: 500;
-    color: white;
+    color: var(--mat-sys-on-primary);
   }
 
   .status-active {
-    background-color: #4caf50; /* Verde */
+    background-color: var(--mat-sys-tertiary);
+    color: var(--mat-sys-on-tertiary);
   }
 
   .status-inactive {
-    background-color: #f44336; /* Vermelho */
+    background-color: var(--mat-sys-error);
+    color: var(--mat-sys-on-error);
     text-decoration: none !important;
   }
 
   .mat-column-actions {
-    width: 180px;
+    width: 60px;
     text-align: right;
-    padding-right: 16px;
   }
 
   .product-image {
@@ -34,5 +106,83 @@
     &:hover {
       transform: scale(1.1);
     }
+  }
+
+  // Estilos para as colunas de preços
+  .price-warning {
+    color: var(--mat-sys-tertiary);
+    font-weight: 500;
+  }
+
+  .price-success {
+    color: var(--mat-sys-primary);
+    font-weight: 600;
+  }
+
+  .not-applicable {
+    color: var(--mat-sys-on-surface-variant);
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  // Estilos para tipos de produto usando mat-chip
+  .mat-mdc-chip {
+    &.type-materia-prima {
+      --mdc-chip-label-text-color: var(--mat-sys-on-primary-container);
+      background-color: var(--mat-sys-primary-container);
+    }
+
+    &.type-fabrico-proprio {
+      --mdc-chip-label-text-color: var(--mat-sys-on-tertiary-container);
+      background-color: var(--mat-sys-tertiary-container);
+    }
+
+    &.type-revenda {
+      --mdc-chip-label-text-color: var(--mat-sys-on-secondary-container);
+      background-color: var(--mat-sys-secondary-container);
+    }
+  }
+
+  .mat-column-sku {
+    white-space: nowrap;
+    width: 130px;
+  }
+
+  .mat-column-name {
+    width: 250px;
+    white-space: nowrap;
+  }
+
+  .mat-column-name .mat-mdc-cell {
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // Colunas de preços com largura específica
+  .mat-column-calculatedMinPrice,
+  .mat-column-calculatedRecommendedPrice,
+  .mat-column-minProfitAmount {
+    width: 120px;
+    text-align: right;
+    font-weight: 500;
+  }
+
+  .mat-column-productType {
+    width: 140px;
+    text-align: center;
+  }
+
+  .mat-column-averageCost {
+    width: 100px;
+    text-align: right;
+    font-weight: 500;
+  }
+
+  // Destaque para produtos sem preços calculados
+  tr.inactive-row {
+    opacity: 0.6;
+    background-color: var(--mat-sys-surface-container-low);
   }
 }

@@ -56,6 +56,11 @@ export class LayoutComponent {
       route: '/accounts-receivable',
       icon: 'request_quote',
     },
+    {
+      name: 'Configurações',
+      route: '/general-settings',
+      icon: 'settings',
+    },
   ];
 
   logout() {

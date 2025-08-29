@@ -53,6 +53,10 @@ export const routes: Routes = [
             {
                 path: 'accounts-receivable',
                 loadChildren: () => import('./accounts-receivable/accounts-receivable.routes').then(m => m.ACCOUNTS_RECEIVABLE_ROUTES),
+            },
+            {
+                path: 'general-settings',
+                loadChildren: () => import('./general-settings/general-settings.routes').then(m => m.GENERAL_SETTINGS_ROUTES),
             }
         ]
     },

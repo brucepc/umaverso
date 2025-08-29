@@ -20,10 +20,10 @@ import {
 } from '@angular/fire/firestore';
 import { Product } from '../models/product.model';
 import { Observable, from } from 'rxjs';
-import { switchMap, map } from 'rxjs';
 import { StockMovement } from '@models/stock-movement.model';
 import { StockMovementService } from '../stock-movements/stock-movement.service';
 import { ProductType } from '@models/product-type.enum';
+import { GeneralSettingsService } from '../core/general-settings.service';
 import {
   Storage,
   getDownloadURL,
@@ -47,6 +47,7 @@ export class ProductService {
   private storage: Storage = inject(Storage);
   private productsCollection = collection(this.firestore, 'products');
   private stockMovementService = inject(StockMovementService);
+  private generalSettingsService = inject(GeneralSettingsService);
   private injector = inject(Injector);
 
   constructor() {}
@@ -127,16 +128,32 @@ export class ProductService {
     return updateDoc(productDocRef, { isActive: !product.isActive });
   }
 
+  /**
+   * Calcula faixa de preços baseada nas regras de lucro configuradas
+   * @param technicalDifficulty Dificuldade técnica (mantido para compatibilidade)
+   * @param averageCost Custo médio do produto
+   * @returns Faixa de preços calculada
+   */
   calculatePriceRange(
     technicalDifficulty: number,
     averageCost: number
   ): { minSalePrice: number; maxSalePrice: number } {
-    const baseValue = Number(technicalDifficulty) + Number(averageCost);
+    // Usar as regras configuráveis em vez de valores fixos
+    const priceCalculation = this.generalSettingsService.calculatePrices(averageCost);
+    
+    return { 
+      minSalePrice: priceCalculation.minSalePrice,
+      maxSalePrice: priceCalculation.recommendedSalePrice 
+    };
+  }
 
-    const minSalePrice = baseValue * 1.5;
-    const maxSalePrice = baseValue * 2.5;
-
-    return { minSalePrice, maxSalePrice };
+  /**
+   * Calcula preços detalhados baseado nas regras de lucro
+   * @param averageCost Custo médio do produto
+   * @returns Cálculo completo de preços
+   */
+  calculateDetailedPrices(averageCost: number) {
+    return this.generalSettingsService.calculatePrices(averageCost);
   }
 
   async updateStock(data: StockUpdateData): Promise<void> {

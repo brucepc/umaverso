@@ -20,6 +20,11 @@ export interface Product {
   averageCost: number;
   minSalePrice?: number;
   maxSalePrice?: number;
+  // Novos campos para os preços calculados com base nas regras
+  calculatedMinPrice?: number; // PvP mínimo (custo + lucro mínimo + IVA)
+  calculatedRecommendedPrice?: number; // PvP recomendado (custo + lucro recomendado + IVA)
+  minProfitAmount?: number; // Valor do lucro mínimo
+  recommendedProfitAmount?: number; // Valor do lucro recomendado
   isActive: boolean;
   weight?: number; // in kg
   size?: string; // e.g., "10x20x5 cm"
