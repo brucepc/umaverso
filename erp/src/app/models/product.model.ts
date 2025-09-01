@@ -11,16 +11,19 @@ export interface Product {
   name: string;
   sku: string;
   description?: string;
+  barcode?: string;
+  unit?: string; // e.g., 'un', 'kg', 'm'
   categoryId: string;
   categoryName: string;
   productType: ProductType;
   isDivisible: boolean;
   ncm?: string;
   currentStock: number;
+  lowStockThreshold?: number;
   averageCost: number;
-  minSalePrice?: number;
-  maxSalePrice?: number;
-  // Novos campos para os preços calculados com base nas regras
+  salePrice?: number; // Preço de venda final
+  regularPrice?: number; // Preço "de" (antes do desconto)
+  // Campos para os preços calculados com base nas regras (PvP = Preço de Venda ao Público)
   calculatedMinPrice?: number; // PvP mínimo (custo + lucro mínimo + IVA)
   calculatedRecommendedPrice?: number; // PvP recomendado (custo + lucro recomendado + IVA)
   minProfitAmount?: number; // Valor do lucro mínimo
@@ -32,4 +35,5 @@ export interface Product {
   mainImageUrl?: string;
   imageUrls?: string[];
   bom?: BomItem[]; // Bill of Materials for FABRICO_PROPRIO
+  masterProductId?: string; // ID of the master product if this is a variant
 } 

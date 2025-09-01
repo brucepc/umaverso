@@ -62,22 +62,33 @@ export class ProductListComponent implements OnInit {
 
   private readonly columnsStorageKey = 'product-list-columns';
 
-  // Controle do filtro por tipo de produto
+  // Controles de filtro
   productTypeFilter = new FormControl('ALL');
+  statusFilter = new FormControl('ALL');
 
   // Lista de produtos filtrada e enriquecida com preços
   products$: Observable<Product[]> = combineLatest([
     this.productService.getProducts(),
-    this.productTypeFilter.valueChanges.pipe(startWith('ALL'))
+    this.productTypeFilter.valueChanges.pipe(startWith('ALL')),
+    this.statusFilter.valueChanges.pipe(startWith('ALL'))
   ]).pipe(
-    map(([products, selectedType]) => {
-      // Primeiro filtrar por tipo
-      const filteredProducts = selectedType === 'ALL' 
-        ? products 
+    map(([products, selectedType, selectedStatus]) => {
+      // Primeiro, filtrar por tipo
+      const typeFilteredProducts = selectedType === 'ALL'
+        ? products
         : products.filter(product => product.productType === selectedType);
       
-      // Depois enriquecer com preços
-      return filteredProducts.map(product => this.enrichProductWithPrices(product));
+      // Depois, filtrar por status
+      const statusFilteredProducts = selectedStatus === 'ALL'
+        ? typeFilteredProducts
+        : typeFilteredProducts.filter(product => {
+            if (selectedStatus === 'ACTIVE') return product.isActive;
+            if (selectedStatus === 'INACTIVE') return !product.isActive;
+            return true;
+          });
+      
+      // Finalmente, enriquecer com preços
+      return statusFilteredProducts.map(product => this.enrichProductWithPrices(product));
     })
   );
 
@@ -111,6 +122,12 @@ export class ProductListComponent implements OnInit {
     { value: ProductType.MateriaPrima, label: 'Matéria-Prima' },
     { value: ProductType.FabricoProprio, label: 'Fabrico Próprio' },
     { value: ProductType.Revenda, label: 'Revenda' }
+  ];
+
+  statusFilterOptions = [
+    { value: 'ALL', label: 'Todos os Status' },
+    { value: 'ACTIVE', label: 'Ativados' },
+    { value: 'INACTIVE', label: 'Desativados' }
   ];
 
   /**
@@ -207,6 +224,7 @@ export class ProductListComponent implements OnInit {
    */
   clearFilter(): void {
     this.productTypeFilter.setValue('ALL');
+    this.statusFilter.setValue('ALL');
   }
 
   addProduct(): void {

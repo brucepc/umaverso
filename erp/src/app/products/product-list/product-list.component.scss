@@ -190,3 +190,24 @@
     background-color: var(--mat-sys-surface-container-low);
   }
 }
+
+mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+
+  .header-filters {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+}
+
+.spacer {
+  flex-grow: 1;
+}
+
+.mat-mdc-form-field {
+  width: 200px;
+}

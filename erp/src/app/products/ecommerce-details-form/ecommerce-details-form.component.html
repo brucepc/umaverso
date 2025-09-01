@@ -1,0 +1,41 @@
+<div [formGroup]="form">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Configurações da Loja Online</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="form-row">
+        <mat-slide-toggle formControlName="displayInOnlineStore">Exibir na Loja Online</mat-slide-toggle>
+        <mat-slide-toggle formControlName="onSale">Em promoção</mat-slide-toggle>
+      </div>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Taxa de Imposto (%)</mat-label>
+        <input matInput type="number" formControlName="taxRate">
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>SEO (Otimização para Buscadores)</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-form-field appearance="fill">
+        <mat-label>Título SEO</mat-label>
+        <input matInput formControlName="seoTitle" placeholder="Ex: Camiseta de Algodão Orgânico">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Descrição SEO</mat-label>
+        <textarea matInput formControlName="seoDescription" placeholder="Descreva o produto para os buscadores..."></textarea>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="actions">
+    <button mat-raised-button color="primary" (click)="onSave()" [disabled]="form.invalid || form.pristine">
+      Salvar Alterações
+    </button>
+  </div>
+</div>

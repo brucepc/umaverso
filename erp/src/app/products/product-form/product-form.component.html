@@ -15,131 +15,242 @@
         </mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="form-grid">
-          <input type="hidden" formControlName="averageCost">
-          <mat-form-field appearance="outline" class="name-field">
-            <mat-label>Nome do Artigo</mat-label>
-            <input matInput formControlName="name" required>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Tipo de Artigo</mat-label>
-            <mat-select formControlName="productType" required>
-              @for (type of productTypeValues; track type) {
-              <mat-option [value]="type">
-                {{ type }}
-              </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Categoria</mat-label>
-            <mat-select formControlName="category" required [compareWith]="compareCategories">
-              @for (category of categories$ | async; track category.id) {
-              <mat-option [value]="category">
-                {{ category.name }}
-              </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>SKU</mat-label>
-            <input matInput formControlName="sku">
-          </mat-form-field>
-          <div class="flex flex-row gap-3 items-center">
-            <mat-checkbox formControlName="isDivisible" class="pt-2">
-              Produto Divisível?
-            </mat-checkbox>
-            <mat-form-field appearance="outline">
-              <mat-label>Peso (kg)</mat-label>
-              <input matInput formControlName="weight" type="number">
-            </mat-form-field>
-          </div>
-          <mat-form-field appearance="outline">
-            <mat-label>Dimensões (ex: 10x20x5 cm)</mat-label>
-            <input matInput formControlName="size">
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Dificuldade Técnica</mat-label>
-            <mat-select formControlName="technicalDifficulty" (change)="updateCosts()">
-              <mat-option [value]="null">N/A</mat-option>
-              <mat-option [value]="1">1 - Muito Baixa</mat-option>
-              <mat-option [value]="2">2 - Baixa</mat-option>
-              <mat-option [value]="3">3 - Média</mat-option>
-              <mat-option [value]="4">4 - Alta</mat-option>
-              <mat-option [value]="5">5 - Muito Alta</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
+        <mat-tab-group>
+          <mat-tab label="Dados Principais">
+            <div class="tab-content">
+              <div class="form-grid">
+                <input type="hidden" formControlName="averageCost">
+                <mat-form-field appearance="outline" class="name-field">
+                  <mat-label>Nome do Artigo</mat-label>
+                  <input matInput formControlName="name" required>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Tipo de Artigo</mat-label>
+                  <mat-select formControlName="productType" required>
+                    @for (type of productTypeValues; track type) {
+                    <mat-option [value]="type">
+                      {{ type }}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Categoria</mat-label>
+                  <mat-select formControlName="category" required [compareWith]="compareCategories">
+                    @for (category of categories$ | async; track category.id) {
+                    <mat-option [value]="category">
+                      {{ category.name }}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>SKU</mat-label>
+                  <input matInput formControlName="sku">
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Código de Barras (EAN, UPC)</mat-label>
+                  <input matInput formControlName="barcode">
+                </mat-form-field>
+              </div>
+
+              <div class="form-grid pricing-grid">
+                <mat-form-field appearance="outline">
+                  <mat-label>Custo Médio</mat-label>
+                  <input matInput type="number" formControlName="averageCost">
+                  <span matTextPrefix>€&nbsp;</span>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Preço de Venda</mat-label>
+                  <input matInput type="number" formControlName="salePrice" required>
+                  <span matTextPrefix>€&nbsp;</span>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Preço Regular (De)</mat-label>
+                  <input matInput type="number" formControlName="regularPrice">
+                  <span matTextPrefix>€&nbsp;</span>
+                  <mat-hint>O preço original antes de um desconto.</mat-hint>
+                </mat-form-field>
+              </div>
+
+              <div class="form-grid stock-grid">
+                <mat-form-field appearance="outline">
+                  <mat-label>Estoque Atual</mat-label>
+                  <input matInput type="number" formControlName="currentStock" required>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Nível Baixo de Estoque</mat-label>
+                  <input matInput type="number" formControlName="lowStockThreshold">
+                  <mat-hint>O sistema pode avisar quando o estoque atingir este nível.</mat-hint>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Unidade</mat-label>
+                  <input matInput formControlName="unit">
+                  <mat-hint>Ex: un, kg, m, L</mat-hint>
+                </mat-form-field>
+                <mat-checkbox formControlName="isDivisible" class="pt-2">
+                  Produto Divisível?
+                </mat-checkbox>
+              </div>
+
+              <div class="form-grid details-grid">
+                <mat-form-field appearance="outline">
+                  <mat-label>Peso (kg)</mat-label>
+                  <input matInput formControlName="weight" type="number">
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Dimensões (ex: 10x20x5 cm)</mat-label>
+                  <input matInput formControlName="size">
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Dificuldade Técnica</mat-label>
+                  <mat-select formControlName="technicalDifficulty" (change)="updateCosts()">
+                    <mat-option [value]="null">N/A</mat-option>
+                    <mat-option [value]="1">1 - Muito Baixa</mat-option>
+                    <mat-option [value]="2">2 - Baixa</mat-option>
+                    <mat-option [value]="3">3 - Média</mat-option>
+                    <mat-option [value]="4">4 - Alta</mat-option>
+                    <mat-option [value]="5">5 - Muito Alta</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
 
 
 
-        @if (form.get('productType')?.value === productTypeEnum.FabricoProprio) {
-        <section>
-          <h5 class="text-lg font-bold">Ficha Técnica (Lista de Materiais)</h5>
-          <div formArrayName="bom">
-            @for (bomItem of bom.controls; track $index; let i = $index) {
-            <div [formGroupName]="i" class="bom-item-row">
-              <mat-form-field appearance="fill">
-                <mat-label>Matéria-Prima</mat-label>
-                <mat-select formControlName="productId" (selectionChange)="updateCosts()">
-                  @for (material of rawMaterials$ | async; track material.id) {
-                  <mat-option [value]="material.id">
-                    {{ material.name }}
-                  </mat-option>
+              @if (form.get('productType')?.value === productTypeEnum.FabricoProprio) {
+              @if (isMasterProduct$ | async) {
+              <div class="info-box">
+                <mat-icon>info</mat-icon>
+                <span>Um produto mestre não pode ter uma Ficha Técnica. A Ficha Técnica deve ser definida em cada variante individual.</span>
+              </div>
+              } @else {
+              <section>
+                <h5 class="text-lg font-bold">Ficha Técnica (Lista de Materiais)</h5>
+                <div formArrayName="bom">
+                  @for (bomItem of bom.controls; track $index; let i = $index) {
+                  <div [formGroupName]="i" class="bom-item-row">
+                    <mat-form-field appearance="fill">
+                      <mat-label>Matéria-Prima</mat-label>
+                      <mat-select formControlName="productId" (selectionChange)="updateCosts()">
+                        @for (material of rawMaterials$ | async; track material.id) {
+                        <mat-option [value]="material.id">
+                          {{ material.name }}
+                        </mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                      <mat-label>Quantidade</mat-label>
+                      <input matInput type="number" formControlName="quantity" min="0.5" [step]="getStepForBomItem(bomItem)"
+                        (change)="updateCosts()">
+                    </mat-form-field>
+                    <button mat-icon-button color="warn" (click)="removeBomItem(i)" type="button">
+                      <mat-icon>remove_circle</mat-icon>
+                    </button>
+                  </div>
                   }
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field appearance="fill">
-                <mat-label>Quantidade</mat-label>
-                <input matInput type="number" formControlName="quantity" min="0.5" [step]="getStepForBomItem(bomItem)"
-                  (change)="updateCosts()">
-              </mat-form-field>
-              <button mat-icon-button color="warn" (click)="removeBomItem(i)" type="button">
-                <mat-icon>remove_circle</mat-icon>
-              </button>
-            </div>
-            }
-          </div>
-          <button mat-stroked-button color="primary" (click)="addBomItem()" type="button">
-            <mat-icon>add</mat-icon> Adicionar Matéria-Prima
-          </button>
-        </section>
-        }
-        <section>
-          <h6>Imagens do Artigo</h6>
-          <div class="image-gallery-container">
-            <div class="image-previews">
-              @for (url of allImageUrls; track url; let i = $index) {
-              <div class="image-preview" [class.main-image]="url === form.get('mainImageUrl')?.value">
-                <img [src]="url" alt="Imagem do Artigo" />
-                <div class="image-actions">
-                  <button color="tertiary" mat-icon-button (click)="setMainImage(url)" type="button"
-                    [class.opacity-100]="form.get('mainImageUrl')?.value === url"
-                    [class.opacity-0]="form.get('mainImageUrl')?.value !== url" matTooltip="Marcar como principal">
-                    <mat-icon [class.text-amber-500]="form.get('mainImageUrl')?.value === url">star</mat-icon>
-                  </button>
-                  <button mat-icon-button class="remove-image-button" (click)="removeImage(i)" type="button"
-                    matTooltip="Remover imagem">
-                    <mat-icon color="primary">cancel</mat-icon>
+                </div>
+                <button mat-stroked-button color="primary" (click)="addBomItem()" type="button">
+                  <mat-icon>add</mat-icon> Adicionar Matéria-Prima
+                </button>
+              </section>
+              }
+              }
+              <section>
+                <h6>Imagens do Artigo</h6>
+                <div class="image-gallery-container">
+                  <div class="image-previews">
+                    @for (url of allImageUrls; track url; let i = $index) {
+                    <div class="image-preview" [class.main-image]="url === form.get('mainImageUrl')?.value">
+                      <img [src]="url" alt="Imagem do Artigo" />
+                      <div class="image-actions">
+                        <button color="tertiary" mat-icon-button (click)="setMainImage(url)" type="button"
+                          [class.opacity-100]="form.get('mainImageUrl')?.value === url"
+                          [class.opacity-0]="form.get('mainImageUrl')?.value !== url" matTooltip="Marcar como principal">
+                          <mat-icon [class.text-amber-500]="form.get('mainImageUrl')?.value === url">star</mat-icon>
+                        </button>
+                        <button mat-icon-button class="remove-image-button" (click)="removeImage(i)" type="button"
+                          matTooltip="Remover imagem">
+                          <mat-icon color="primary">cancel</mat-icon>
+                        </button>
+                      </div>
+                      @if(url === form.get('mainImageUrl')?.value){
+                      <div class="main-image-badge">Principal</div>
+                      }
+                    </div>
+                    } @if (isUploading) {
+                    <div class="image-preview-spinner">
+                      <mat-spinner diameter="50"></mat-spinner>
+                    </div>
+                    }
+                  </div>
+                  <input type="file" #fileInput hidden (change)="onFileSelected($event)" accept="image/*" />
+                  <button mat-stroked-button type="button" (click)="fileInput.click()" [disabled]="isUploading">
+                    <mat-icon>add_a_photo</mat-icon>
+                    Adicionar Imagem
                   </button>
                 </div>
-                @if(url === form.get('mainImageUrl')?.value){
-                <div class="main-image-badge">Principal</div>
-                }
-              </div>
-              } @if (isUploading) {
-              <div class="image-preview-spinner">
-                <mat-spinner diameter="50"></mat-spinner>
-              </div>
+              </section>
+            </div>
+          </mat-tab>
+          <mat-tab label="Loja Online" [disabled]="!isEditMode">
+            <div class="tab-content">
+              @if (isEditMode) {
+              <app-ecommerce-details-form [productId]="productId!"></app-ecommerce-details-form>
+              } @else {
+              <p class="text-center p-6">Salve o produto primeiro para habilitar as configurações da loja online.</p>
               }
             </div>
-            <input type="file" #fileInput hidden (change)="onFileSelected($event)" accept="image/*" />
-            <button mat-stroked-button type="button" (click)="fileInput.click()" [disabled]="isUploading">
-              <mat-icon>add_a_photo</mat-icon>
-              Adicionar Imagem
-            </button>
-          </div>
-        </section>
+          </mat-tab>
+          <mat-tab label="Variantes" [disabled]="!isEditMode">
+            <div class="tab-content">
+              @if(isEditMode) {
+              <section>
+                <h4 class="text-lg font-bold mb-3">Vincular como Variante</h4>
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Produto Mestre (Pai)</mat-label>
+                  <mat-select formControlName="masterProductId">
+                    <mat-option [value]="null">Nenhum (Este é um produto mestre ou simples)</mat-option>
+                    @for(product of potentialMasterProducts$ | async; track product.id) {
+                    <mat-option [value]="product.id">{{ product.name }}</mat-option>
+                    }
+                  </mat-select>
+                  <mat-hint>Selecione um produto mestre para transformar este item em uma variante.</mat-hint>
+                </mat-form-field>
+              </section>
+
+              <mat-divider class="my-6"></mat-divider>
+
+              <section>
+                <h4 class="text-lg font-bold mb-3">Variantes deste Produto</h4>
+                @if((variants$ | async)?.length) {
+                <ul class="variant-list">
+                  @for(variant of (variants$ | async); track variant.id) {
+                  <li class="variant-list-item">
+                    <a [routerLink]="['/products/edit', variant.id]" class="variant-link">
+                      <mat-icon>link</mat-icon>
+                      {{ variant.name }}
+                    </a>
+                    <span class="variant-sku">(SKU: {{ variant.sku }})</span>
+                  </li>
+                  }
+                </ul>
+                } @else {
+                <p class="text-gray-500">Este produto ainda não tem variantes.</p>
+                }
+
+                <button mat-stroked-button color="primary" (click)="createNewVariant()" type="button" class="mt-4"
+                        [disabled]="hasBomItems$ | async"
+                        matTooltip="{{ (hasBomItems$ | async) ? 'Remova os itens da Ficha Técnica para adicionar variantes.' : 'Cria um novo produto com base neste.' }}">
+                  <mat-icon>add</mat-icon> Adicionar Nova Variante
+                </button>
+              </section>
+              } @else {
+              <p class="text-center p-6">Salve o produto primeiro para habilitar as configurações de variantes.</p>
+              }
+            </div>
+          </mat-tab>
+        </mat-tab-group>
       </mat-card-content>
       <mat-card-actions align="end">
         <button mat-stroked-button type="button" (click)="goBack()">Cancelar</button>

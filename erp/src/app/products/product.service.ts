@@ -31,6 +31,7 @@ import {
   uploadBytes,
   getStorage,
 } from '@angular/fire/storage';
+import { map, switchMap } from 'rxjs/operators';
 
 interface StockUpdateData {
   productId: string;
@@ -45,81 +46,71 @@ interface StockUpdateData {
 export class ProductService {
   private firestore: Firestore = inject(Firestore);
   private storage: Storage = inject(Storage);
-  private productsCollection = collection(this.firestore, 'products');
   private stockMovementService = inject(StockMovementService);
   private generalSettingsService = inject(GeneralSettingsService);
+  private productsCollection = collection(this.firestore, 'products');
   private injector = inject(Injector);
+  private collectionName = 'products';
 
   constructor() {}
 
   getProducts(): Observable<Product[]> {
-    return runInInjectionContext(this.injector, () =>
-      collectionData(this.productsCollection, {
-        idField: 'id',
-      })
-    ) as Observable<Product[]>;
+    return collectionData(this.productsCollection, { idField: 'id' }) as Observable<Product[]>;
   }
 
-  getProductById(id: string): Observable<Product | null> {
-    const productDoc = doc(this.firestore, `products/${id}`);
-    return from(
-      runInInjectionContext(this.injector, async () => {
-        const docSnap = await getDoc(productDoc);
-        if (docSnap.exists()) {
-          return { id: docSnap.id, ...docSnap.data() } as Product;
-        } else {
-          return null;
-        }
-      })
+  getProductById(id: string): Observable<Product | undefined> {
+    const productDocRef = doc(this.firestore, `products/${id}`);
+    return from(getDoc(productDocRef)).pipe(
+      map((docSnap) => (docSnap.exists() ? ({ id: docSnap.id, ...docSnap.data() } as Product) : undefined))
     );
   }
 
   getRawMaterials(): Observable<Product[]> {
-    return runInInjectionContext(this.injector, () => {
-      const q = query(
-        this.productsCollection,
-        where('productType', '==', ProductType.MateriaPrima),
-        where('isActive', '==', true)
-      );
-      return collectionData(q, { idField: 'id' });
-    }) as Observable<Product[]>;
+    const q = query(
+      this.productsCollection,
+      where('productType', '==', ProductType.MateriaPrima),
+      where('isActive', '==', true)
+    );
+    return collectionData(q, { idField: 'id' }) as Observable<Product[]>;
   }
 
   getFinishedGoods(): Observable<Product[]> {
-    return runInInjectionContext(this.injector, () => {
-      const q = query(
-        this.productsCollection,
-        where('productType', '==', ProductType.FabricoProprio),
-        where('isActive', '==', true)
-      );
-      return collectionData(q, { idField: 'id' });
-    }) as Observable<Product[]>;
+    const q = query(
+      this.productsCollection,
+      where('productType', '==', ProductType.FabricoProprio),
+      where('isActive', '==', true)
+    );
+    return collectionData(q, { idField: 'id' }) as Observable<Product[]>;
   }
 
-  addProduct(product: Omit<Product, 'id'>) {
-    return addDoc(this.productsCollection, product);
+  getPotentialMasterProducts(): Observable<Product[]> {
+    const q = query(this.productsCollection, where('masterProductId', '==', null));
+    return collectionData(q, { idField: 'id' }) as Observable<Product[]>;
   }
 
-  async updateProduct(product: Product) {
-    return from(
-      runInInjectionContext(this.injector, async () => {
-        const productDocRef = doc(this.firestore, `products/${product.id}`);
-        const { id, ...dataToUpdate } = product;
-        return updateDoc(productDocRef, dataToUpdate);
-      })
+  getVariantsForProduct(productId: string): Observable<Product[]> {
+    const q = query(this.productsCollection, where('masterProductId', '==', productId));
+    return collectionData(q, { idField: 'id' }) as Observable<Product[]>;
+  }
+
+  addProduct(product: Omit<Product, 'id'>): Promise<string> {
+    return addDoc(this.productsCollection, product).then(
+      (docRef) => docRef.id
     );
   }
 
-  uploadProductImage(file: File): Observable<string | null> {
-    return from(
-      runInInjectionContext(this.injector, async () => {
-        const filePath = `products/${Date.now()}_${file.name}`;
-        const storageRef = ref(this.storage, filePath);
-        const result = await uploadBytes(storageRef, file);
-        return runInInjectionContext(this.injector, () =>
-          getDownloadURL(result.ref)
-        );
-      })
+  async updateProduct(product: Product) {
+    const productDocRef = doc(this.firestore, `products/${product.id}`);
+    const { id, ...dataToUpdate } = product;
+    return updateDoc(productDocRef, dataToUpdate);
+  }
+
+  uploadProductImage(file: File): Observable<string> {
+    const filePath = `products/${Date.now()}_${file.name}`;
+    const storageRef = ref(this.storage, filePath);
+    const uploadTask = from(uploadBytes(storageRef, file));
+    return uploadTask.pipe(
+      switchMap(result => from(getDownloadURL(result.ref)))
     );
   }
 

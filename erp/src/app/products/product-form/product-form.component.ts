@@ -3,6 +3,7 @@ import {
   Component,
   OnInit,
   inject,
+  OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -13,8 +14,8 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Observable, firstValueFrom } from 'rxjs';
-import { map, take, filter } from 'rxjs/operators';
+import { Observable, firstValueFrom, map, startWith } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -26,12 +27,16 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDividerModule } from '@angular/material/divider';
 
 import { CategoryService } from '../../categories/category.service';
 import { Category } from '@models/category.model';
 import { Product, BomItem } from '@models/product.model';
 import { ProductService } from '../product.service';
 import { ProductType } from '@models/product-type.enum';
+import { EcommerceDetailsFormComponent } from '../ecommerce-details-form/ecommerce-details-form.component';
 
 interface ImageForUpload {
   file: File;
@@ -55,12 +60,16 @@ interface ImageForUpload {
     MatProgressSpinnerModule,
     NgSelectModule,
     MatCheckboxModule,
+    MatTabsModule,
+    MatSnackBarModule,
+    MatDividerModule,
+    EcommerceDetailsFormComponent,
   ],
   templateUrl: './product-form.component.html',
   styleUrls: ['./product-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductFormComponent implements OnInit {
+export class ProductFormComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private productService = inject(ProductService);
   private categoryService = inject(CategoryService);
@@ -70,11 +79,15 @@ export class ProductFormComponent implements OnInit {
 
   form!: FormGroup;
   isEditMode = false;
-  private productId: string | null = null;
+  productId: string | null = null;
 
   categories$: Observable<Category[]>;
   rawMaterials$: Observable<Product[]>;
   rawMaterials: Product[] = [];
+  potentialMasterProducts$!: Observable<Product[]>;
+  variants$!: Observable<Product[]>;
+  isMasterProduct$!: Observable<boolean>;
+  hasBomItems$!: Observable<boolean>;
 
   productTypeValues: string[] = Object.values(ProductType);
   productTypeEnum = ProductType;
@@ -112,17 +125,34 @@ export class ProductFormComponent implements OnInit {
     this.productId = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.productId;
 
+    this.potentialMasterProducts$ = this.productService.getPotentialMasterProducts().pipe(
+      map(products => products.filter(p => p.id !== this.productId))
+    );
+
     if (this.isEditMode) {
       this.loadProductData(this.productId as string);
+      this.variants$ = this.productService.getVariantsForProduct(this.productId as string);
+      this.isMasterProduct$ = this.variants$.pipe(map(variants => variants && variants.length > 0));
     }
 
     this.bom.updateValueAndValidity();
+    this.hasBomItems$ = this.bom.valueChanges.pipe(
+      startWith(this.bom.value),
+      map(bomItems => bomItems && bomItems.length > 0)
+    );
+  }
+
+  ngOnDestroy(): void {
+    // This is required by the OnDestroy interface.
+    // Add cleanup logic here if needed in the future.
   }
 
   initForm(): void {
     this.form = this.fb.group({
       name: ['', Validators.required],
       sku: [''],
+      barcode: [''],
+      unit: ['un'],
       description: [''],
       categoryId: ['', Validators.required],
       category: [null, Validators.required],
@@ -130,7 +160,10 @@ export class ProductFormComponent implements OnInit {
       isDivisible: [false, Validators.required],
       ncm: [''],
       currentStock: [0, Validators.required],
+      lowStockThreshold: [null],
       averageCost: [{ value: 0, disabled: true }],
+      salePrice: [0, [Validators.required, Validators.min(0)]],
+      regularPrice: [null],
       isActive: [true],
       weight: [0, Validators.min(0)],
       size: [''],
@@ -138,6 +171,7 @@ export class ProductFormComponent implements OnInit {
       mainImageUrl: [''],
       imageUrls: this.fb.array([]),
       bom: this.fb.array([]),
+      masterProductId: [null],
     });
 
     this.form.get('productType')?.valueChanges.subscribe(async (type) => {
@@ -391,5 +425,25 @@ export class ProductFormComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/products']);
+  }
+
+  createNewVariant(): void {
+    if (!this.productId) return;
+
+    const masterProductData = this.form.getRawValue();
+    // Clone only the relevant data for the new variant
+    const variantInitialData = {
+      name: `${masterProductData.name} - Nova Variante`,
+      description: masterProductData.description,
+      categoryId: masterProductData.category.id,
+      category: masterProductData.category,
+      productType: masterProductData.productType,
+      isDivisible: masterProductData.isDivisible,
+      weight: masterProductData.weight,
+      size: masterProductData.size,
+      masterProductId: this.productId,
+    };
+
+    this.router.navigate(['/products/new'], { state: { initialData: variantInitialData } });
   }
 }
