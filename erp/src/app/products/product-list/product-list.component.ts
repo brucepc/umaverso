@@ -60,6 +60,8 @@ export class ProductListComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
 
+  private readonly columnsStorageKey = 'product-list-columns';
+
   // Controle do filtro por tipo de produto
   productTypeFilter = new FormControl('ALL');
 
@@ -99,6 +101,7 @@ export class ProductListComponent implements OnInit {
   displayedColumns: string[] = [];
 
   ngOnInit(): void {
+    this.loadColumnPreferences();
     this.updateDisplayedColumns();
   }
 
@@ -117,6 +120,7 @@ export class ProductListComponent implements OnInit {
   toggleColumnVisibility(column: { id: string; label: string; visible: boolean }): void {
     column.visible = !column.visible;
     this.updateDisplayedColumns();
+    this.saveColumnPreferences();
   }
 
   /**
@@ -124,6 +128,24 @@ export class ProductListComponent implements OnInit {
    */
   private updateDisplayedColumns(): void {
     this.displayedColumns = this.allColumns.filter(col => col.visible).map(col => col.id);
+  }
+
+  private saveColumnPreferences(): void {
+    const columnPreferences = this.allColumns.map(col => ({ id: col.id, visible: col.visible }));
+    localStorage.setItem(this.columnsStorageKey, JSON.stringify(columnPreferences));
+  }
+
+  private loadColumnPreferences(): void {
+    const savedPreferences = localStorage.getItem(this.columnsStorageKey);
+    if (savedPreferences) {
+      const preferences: { id: string; visible: boolean }[] = JSON.parse(savedPreferences);
+      this.allColumns.forEach(col => {
+        const savedCol = preferences.find(p => p.id === col.id);
+        if (savedCol) {
+          col.visible = savedCol.visible;
+        }
+      });
+    }
   }
 
   /**
