@@ -36,6 +36,11 @@
       </button>
     </mat-menu>
 
+    <button mat-stroked-button (click)="exportCsv()" matTooltip="Exportar lista para CSV">
+      <mat-icon>download</mat-icon>
+      <span>Exportar</span>
+    </button>
+
     <button mat-flat-button color="primary" (click)="addProduct()">
       <mat-icon>add</mat-icon>
       <span>Adicionar Artigo</span>

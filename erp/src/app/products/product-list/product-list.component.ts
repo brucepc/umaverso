@@ -25,6 +25,7 @@ import { ImagePreviewDialogComponent } from '../image-preview-dialog/image-previ
 import { ProductStockHistoryComponent } from '../product-stock-history/product-stock-history.component';
 import { ProductService } from '../product.service';
 import { GeneralSettingsService } from '../../core/general-settings.service';
+import { CsvExportService } from '../csv-export.service';
 
 @Component({
   selector: 'app-product-list',
@@ -59,6 +60,7 @@ export class ProductListComponent implements OnInit {
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
+  private csvExportService = inject(CsvExportService);
 
   private readonly columnsStorageKey = 'product-list-columns';
 
@@ -225,6 +227,10 @@ export class ProductListComponent implements OnInit {
   clearFilter(): void {
     this.productTypeFilter.setValue('ALL');
     this.statusFilter.setValue('ALL');
+  }
+
+  exportCsv(): void {
+    this.csvExportService.exportProductsToCsv();
   }
 
   addProduct(): void {
