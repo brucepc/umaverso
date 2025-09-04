@@ -11,8 +11,30 @@ import { ECommerceProductService } from './ecommerce-product.service';
 export class CsvExportService {
   private productService = inject(ProductService);
   private eCommerceProductService = inject(ECommerceProductService);
+  private storageBucket = 'umaverso.firebasestorage.app'; // Nome do seu bucket do Firebase Storage
 
   constructor() { }
+
+  /**
+   * Converte uma URL de download do Firebase Storage (com token) para uma URL pública e estática.
+   * @param url A URL original do Firebase.
+   * @returns A URL pública no formato do Google Cloud Storage.
+   */
+  private convertToPublicUrl(url: string): string {
+    if (!url) {
+      return '';
+    }
+    try {
+      const urlObject = new URL(url);
+      const path = urlObject.pathname;
+      // O caminho vem com /v0/b/[bucket]/o/ - precisamos extrair o que vem depois
+      const filePath = decodeURIComponent(path.substring(path.indexOf('/o/') + 3));
+      return `https://storage.googleapis.com/${this.storageBucket}/${filePath}`;
+    } catch (error) {
+      console.error('URL inválida:', url, error);
+      return ''; // Retorna vazio se a URL for inválida
+    }
+  }
 
   async exportProductsToCsv(): Promise<void> {
     const allProducts = await firstValueFrom(this.productService.getProducts());
@@ -85,7 +107,7 @@ export class CsvExportService {
       eCommerceDetails?.hasTakeawayOption ? 'Yes' : 'No',
       eCommerceDetails?.takeawayPrice || '',
       eCommerceDetails?.takeawayTaxRate || '',
-      product.unit || '',
+      (product.unit === 'un' ? 'each.each' : product.unit) || '',
       'Yes', // Track inventory?
       hasVariations ? '' : product.currentStock,
       hasVariations ? '' : product.lowStockThreshold,
@@ -95,8 +117,7 @@ export class CsvExportService {
       product.description || '',
       product.categoryName || '',
       eCommerceDetails?.posDisplayColour || '',
-      ...(product.imageUrls || []).slice(0, 7), // Imagens
-      ...Array(7 - (product.imageUrls?.length || 0)).fill(''), // Preenche o resto das imagens com vazio
+      ...this.getPublicImageUrls(product), // Imagens
       eCommerceDetails?.displayInOnlineStore ? 'Yes' : 'No',
       eCommerceDetails?.seoTitle || '',
       eCommerceDetails?.seoDescription || '',
@@ -125,7 +146,7 @@ export class CsvExportService {
       eCommerceDetails.hasTakeawayOption ? 'Yes' : 'No',
       eCommerceDetails.takeawayPrice || '',
       eCommerceDetails.takeawayTaxRate || '',
-      variant.unit || '',
+      (variant.unit === 'un' ? 'cada' : variant.unit) || '',
       'Yes', // Track inventory?
       variant.currentStock,
       variant.lowStockThreshold || '',
@@ -135,15 +156,20 @@ export class CsvExportService {
       '', // Description
       '', // Category
       '', // Display colour
-      ...(variant.imageUrls || []).slice(0, 7), // Imagens da variante, se houver
-      ...Array(7 - (variant.imageUrls?.length || 0)).fill(''),
-      '', // Display in Online Store?
+      ...this.getPublicImageUrls(variant), // Imagens da variante, se houver
+      eCommerceDetails.displayInOnlineStore ? 'Yes' : 'No',
       '', // SEO
       '', // SEO
       variant.weight || '',
       eCommerceDetails.productId, // Item id (ID do mestre)
       variant.id, // Variant id
     ];
+  }
+
+  private getPublicImageUrls(product: Product): string[] {
+    const imageUrls = (product.imageUrls || []).map(url => this.convertToPublicUrl(url)).slice(0, 7);
+    const paddedUrls = [...imageUrls, ...Array(7 - imageUrls.length).fill('')];
+    return paddedUrls;
   }
 
   private downloadCsv(data: any[][], filename: string): void {

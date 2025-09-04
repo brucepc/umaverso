@@ -9,7 +9,8 @@ import {
   deleteDoc,
   query,
   where,
-  getDocs
+  getDocs,
+  collectionData
 } from '@angular/fire/firestore';
 import { ECommerceProductDetails } from '@models/ecommerce-product-details.model';
 import { Observable, from, of } from 'rxjs';
@@ -27,14 +28,8 @@ export class ECommerceProductService {
   // Get E-commerce details by Product ID
   getDetailsByProductId(productId: string): Observable<ECommerceProductDetails | null> {
     const q = query(collection(this.firestore, this.collectionName), where('productId', '==', productId));
-    return from(getDocs(q)).pipe(
-      map(snapshot => {
-        if (snapshot.empty) {
-          return null;
-        }
-        const doc = snapshot.docs[0];
-        return { id: doc.id, ...doc.data() } as ECommerceProductDetails;
-      })
+    return (collectionData(q, { idField: 'id' }) as Observable<ECommerceProductDetails[]>).pipe(
+      map(results => (results.length > 0 ? results[0] : null))
     );
   }
 

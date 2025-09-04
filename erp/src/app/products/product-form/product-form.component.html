@@ -196,7 +196,11 @@
           <mat-tab label="Loja Online" [disabled]="!isEditMode">
             <div class="tab-content">
               @if (isEditMode) {
-              <app-ecommerce-details-form [productId]="productId!"></app-ecommerce-details-form>
+              <app-ecommerce-details-form 
+                *ngIf="productId" 
+                [productId]="productId"
+                [mainImageUrl]="form.get('mainImageUrl')?.value">
+              </app-ecommerce-details-form>
               } @else {
               <p class="text-center p-6">Salve o produto primeiro para habilitar as configurações da loja online.</p>
               }
